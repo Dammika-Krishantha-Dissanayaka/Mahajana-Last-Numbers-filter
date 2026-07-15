@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>මහජන සම්පත - විශ්ලේෂණ පැනලය</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+            background: linear-gradient(145deg, #eef2f7 0%, #f8faff 100%);
+            min-height: 100vh;
+            padding: 25px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 28px 30px 35px;
+            box-shadow: 0 25px 60px rgba(0,20,40,0.12);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+        .header-icon {
+            background: linear-gradient(135deg, #0b2a4a, #1d4a7a);
+            width: 60px; height: 60px;
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 28px;
+            box-shadow: 0 10px 25px rgba(20,60,120,0.3);
+        }
+        .header h1 { font-size: 26px; font-weight: 700; color: #0a1e32; line-height:1.2; }
+        .header h1 small { font-size: 15px; font-weight:400; color:#4d667e; display:block; margin-top:2px; }
+        .firebase-badge {
+            margin-left: auto; background:#ffca28; padding:6px 18px; border-radius:60px;
+            font-size:13px; font-weight:700; color:#1a1a1a;
+            display:flex; align-items:center; gap:8px;
+            box-shadow:0 4px 10px rgba(255,202,40,0.3);
+        }
+
+        /* Time Filter */
+        .time-filter {
+            display: flex; flex-wrap: wrap; gap:10px; margin-bottom:22px;
+            background:#f2f7fe; padding:12px 18px; border-radius:50px;
+            border:1px solid #dce5f0;
+        }
+        .time-filter .label {
+            font-weight:600; color:#1f3b5c; display:flex; align-items:center; gap:6px;
+        }
+        .time-btn {
+            padding:8px 20px; border:none; border-radius:40px; background:transparent;
+            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:14px;
+            color:#3e5a77; cursor:pointer; transition:0.2s;
+        }
+        .time-btn:hover { background:#d5e2f2; }
+        .time-btn.active { background:#1a3e66; color:#fff; box-shadow:0 6px 16px rgba(26,62,102,0.25); }
+
+        /* Tabs */
+        .tabs {
+            display: flex; gap:6px; margin-bottom:25px; border-bottom:2px solid #e3eaf2;
+            padding-bottom:4px; flex-wrap:wrap;
+        }
+        .tab-btn {
+            padding:12px 28px; border:none; background:transparent;
+            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:16px;
+            color:#5a738b; cursor:pointer; border-radius:30px 30px 0 0;
+            transition:0.2s; display:flex; align-items:center; gap:8px;
+        }
+        .tab-btn:hover { background:#eaf0f8; }
+        .tab-btn.active { background:#1a3e66; color:#fff; box-shadow:0 -4px 12px rgba(26,62,102,0.1); }
+        .tab-content { display:none; }
+        .tab-content.active { display:block; }
+
+        /* Search Box (Tab 1) */
+        .search-box {
+            display:flex; flex-wrap:wrap; align-items:center; gap:14px;
+            background:white; padding:8px 8px 8px 24px; border-radius:60px;
+            border:2px solid #dce5f0; margin-bottom:28px; transition:0.25s;
+        }
+        .search-box:focus-within { border-color:#1a3e66; box-shadow:0 0 0 5px rgba(26,62,102,0.08); }
+        .search-box i { color:#6f8aa8; font-size:18px; }
+        .search-box input {
+            flex:1; min-width:160px; padding:14px 6px; border:none; background:transparent;
+            font-size:18px; font-family:'Noto Sans Sinhala',sans-serif; color:#0b1e32; outline:none;
+        }
+        .search-box input::placeholder { color:#9aafc7; font-weight:400; }
+        .search-box .btn-group { display:flex; gap:8px; flex-wrap:wrap; }
+        .btn {
+            padding:12px 28px; border:none; border-radius:60px;
+            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:15px;
+            cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:8px;
+        }
+        .btn-primary { background:linear-gradient(145deg,#1a3e66,#2a5a8a); color:#fff; box-shadow:0 6px 18px rgba(26,62,102,0.25); }
+        .btn-primary:hover { transform:scale(1.03); box-shadow:0 10px 25px rgba(26,62,102,0.35); }
+        .btn-secondary { background:#eef3f8; color:#1f3b5c; }
+        .btn-secondary:hover { background:#dde6f0; }
+
+        /* Results (Tab 1) */
+        .result-header {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:16px; border-bottom:2px solid #e3eaf2; padding-bottom:12px;
+        }
+        .result-header span { font-weight:600; color:#1f3b5c; font-size:16px; }
+        .result-header .badge { background:#1a3e66; color:#fff; padding:4px 18px; border-radius:40px; font-size:14px; }
+        .results-wrapper {
+            max-height:460px; overflow-y:auto; padding-right:4px;
+        }
+        .results-wrapper::-webkit-scrollbar { width:5px; }
+        .results-wrapper::-webkit-scrollbar-track { background:#eef3f8; border-radius:10px; }
+        .results-wrapper::-webkit-scrollbar-thumb { background:#b3c8e0; border-radius:10px; }
+        .result-item {
+            display:flex; justify-content:space-between; align-items:center;
+            background:#fff; padding:16px 24px; margin-bottom:8px; border-radius:18px;
+            border:1px solid #eaeef5; transition:0.15s;
+        }
+        .result-item:hover { border-color:#b8cee5; background:#fafdff; transform:translateX(4px); }
+        .result-item .number { font-weight:700; color:#0b1e32; font-size:18px; letter-spacing:0.5px; }
+        .result-item .number i { color:#2a5a8a; margin-right:10px; }
+        .result-item .date { color:#4d667e; font-weight:500; background:#f0f5fc; padding:4px 16px; border-radius:40px; font-size:14px; }
+
+        /* ===== ANALYTICS TAB ===== */
+        .analytics-grid {
+            display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:10px;
+        }
+        @media (max-width:768px){ .analytics-grid { grid-template-columns:1fr; } }
+
+        .analytics-card {
+            background:#fff; border-radius:24px; padding:20px 22px;
+            border:1px solid #eaeef5; box-shadow:0 4px 12px rgba(0,0,0,0.02);
+        }
+        .analytics-card h3 {
+            font-size:18px; font-weight:700; color:#1a3e66;
+            margin-bottom:12px; display:flex; align-items:center; gap:10px;
+            border-bottom:2px solid #eef3f8; padding-bottom:10px;
+        }
+        .analytics-card h3 i { color:#2a5a8a; }
+
+        .digit-bar {
+            display:flex; align-items:center; gap:10px; margin-bottom:5px;
+        }
+        .digit-bar .label {
+            min-width:40px; font-weight:600; color:#1f3b5c; font-size:14px;
+        }
+        .digit-bar .bar-track {
+            flex:1; height:22px; background:#eef3f8; border-radius:20px; overflow:hidden; position:relative;
+        }
+        .digit-bar .bar-fill {
+            height:100%; border-radius:20px; transition:0.3s;
+            background:linear-gradient(90deg,#2a5a8a,#4a8aba);
+        }
+        .digit-bar .bar-fill.hot { background:linear-gradient(90deg,#c0392b,#e74c3c); }
+        .digit-bar .bar-fill.cold { background:linear-gradient(90deg,#2980b9,#3498db); }
+        .digit-bar .count { min-width:36px; text-align:right; font-weight:600; color:#0b1e32; font-size:14px; }
+
+        .two-digit-list {
+            display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; max-height:200px; overflow-y:auto;
+        }
+        .two-digit-item {
+            display:flex; justify-content:space-between; padding:4px 8px;
+            border-bottom:1px solid #f0f5fc; font-size:14px;
+        }
+        .two-digit-item .num { font-weight:600; color:#1a3e66; }
+        .two-digit-item .freq { color:#4d667e; }
+
+        .range-grid {
+            display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;
+        }
+        .range-box {
+            background:#f8faff; border-radius:14px; padding:10px 8px; text-align:center;
+            border:1px solid #eaeef5; transition:0.2s;
+        }
+        .range-box:hover { transform:translateY(-2px); border-color:#b8cee5; }
+        .range-box .range-label { font-weight:700; color:#1a3e66; font-size:15px; }
+        .range-box .range-count { font-size:20px; font-weight:700; color:#2a5a8a; }
+        .range-box .range-status { font-size:12px; color:#4d667e; }
+        .range-box.hot { background:#ffeaea; border-color:#e74c3c; }
+        .range-box.cold { background:#eaf4ff; border-color:#3498db; }
+
+        .missing-numbers {
+            display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
+        }
+        .missing-numbers .miss {
+            background:#f0f5fc; padding:2px 10px; border-radius:30px; font-size:13px;
+            color:#4d667e; border:1px solid #dce5f0;
+        }
+
+        .empty-state { text-align:center; padding:40px 20px; color:#6f86a1; }
+        .empty-state i { font-size:40px; color:#c5d6ea; margin-bottom:15px; }
+        .loading-spinner { text-align:center; padding:40px; color:#2a5a8a; }
+        .loading-spinner i { font-size:40px; animation:spin 1s linear infinite; }
+        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+
+        @media (max-width:768px) {
+            .container { padding:18px 15px; }
+            .header h1 { font-size:20px; }
+            .header h1 small { font-size:13px; }
+            .firebase-badge { margin-left:0; width:100%; justify-content:center; }
+            .time-filter { border-radius:28px; padding:12px 16px; }
+            .time-btn { padding:6px 14px; font-size:13px; }
+            .tab-btn { padding:10px 16px; font-size:14px; }
+            .search-box { border-radius:30px; padding:6px 6px 6px 18px; }
+            .search-box input { font-size:16px; min-width:120px; }
+            .btn { padding:10px 18px; font-size:14px; }
+            .result-item { flex-direction:column; align-items:flex-start; gap:8px; }
+            .two-digit-list { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-icon"><i class="fas fa-chart-line"></i></div>
+        <h1>මහජන සම්පත විශ්ලේෂණය <small>Hot & Cold Numbers + Range Analysis</small></h1>
+        <div class="firebase-badge"><i class="fas fa-fire"></i> Firebase</div>
+    </div>
+
+    <!-- TIME FILTER -->
+    <div class="time-filter">
+        <span class="label"><i class="far fa-clock"></i> කාල සීමාව :</span>
+        <button class="time-btn" data-range="1">මාස 1</button>
+        <button class="time-btn" data-range="2">මාස 2</button>
+        <button class="time-btn" data-range="3">මාස 3</button>
+        <button class="time-btn" data-range="6">මාස 6</button>
+        <button class="time-btn" data-range="12">අවුරුදු 1</button>
+        <button class="time-btn active" data-range="all">සියල්ල</button>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="search"><i class="fas fa-search"></i> සෙවීම</button>
+        <button class="tab-btn" data-tab="analytics"><i class="fas fa-chart-pie"></i> විශ්ලේෂණය</button>
+    </div>
+
+    <!-- ========== TAB 1: SEARCH ========== -->
+    <div class="tab-content active" id="tab-search">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="අග ඉලක්කම් ටයිප් කරන්න (e.g. 5, 27, 835)" autocomplete="off">
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="applySearch()"><i class="fas fa-arrow-right"></i> සොයන්න</button>
+                <button class="btn btn-secondary" onclick="resetSearch()"><i class="fas fa-undo-alt"></i> යළි</button>
+            </div>
+        </div>
+        <div class="result-header">
+            <span><i class="fas fa-list-ul"></i> ප්‍රතිඵල</span>
+            <span class="badge" id="resultCount">0</span>
+        </div>
+        <div class="results-wrapper" id="resultsWrapper">
+            <div class="empty-state"><i class="fas fa-database"></i><h3>දත්ත පූරණය වෙමින්...</h3></div>
+        </div>
+    </div>
+
+    <!-- ========== TAB 2: ANALYTICS ========== -->
+    <div class="tab-content" id="tab-analytics">
+        <div id="analyticsContent">
+            <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== FIREBASE CONFIG ====================
+    const firebaseConfig = {
+        apiKey: "AIzaSyDIvLPukOF4T1p0DOkXjXQ-y-9mWME5QXw",
+        authDomain: "krishanlotterysystem.firebaseapp.com",
+        databaseURL: "https://krishanlotterysystem-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "krishanlotterysystem",
+        storageBucket: "krishanlotterysystem.firebasestorage.app",
+        messagingSenderId: "114874050177",
+        appId: "1:114874050177:web:eebf9da014c8155a17cf80"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ==================== GLOBALS ====================
+    let allDocs = [];          // all fetched documents
+    let currentRange = 'all';
+    let searchTerm = '';
+
+    // DOM refs
+    const wrapper = document.getElementById('resultsWrapper');
+    const searchInput = document.getElementById('searchInput');
+    const resultCountEl = document.getElementById('resultCount');
+    const analyticsContent = document.getElementById('analyticsContent');
+
+    // ==================== HELPERS ====================
+    function formatDate(ts) {
+        if (!ts) return 'N/A';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getDateRange(range) {
+        if (range === 'all') return null;
+        const now = new Date();
+        const start = new Date(now);
+        start.setMonth(now.getMonth() - parseInt(range));
+        return start;
+    }
+
+    // ==================== FETCH DATA ====================
+    async function fetchData(range) {
+        wrapper.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">දත්ත ලබා ගනිමින්...</p></div>`;
+        analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>`;
+
+        try {
+            let query = db.collection('mahajana_results').orderBy('date', 'desc');
+            const startDate = getDateRange(range);
+            if (startDate) query = query.where('date', '>=', startDate);
+            const snapshot = await query.get();
+            const docs = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                docs.push({
+                    id: doc.id,
+                    fullNumber: data.fullNumber || '',
+                    date: data.date || null
+                });
+            });
+            allDocs = docs;
+            currentRange = range;
+            // Update Search Tab
+            updateSearchResults();
+            // Update Analytics Tab
+            renderAnalytics(allDocs);
+        } catch (err) {
+            console.error(err);
+            wrapper.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3>දත්ත ලබා ගැනීමේ දෝෂයකි</h3><p>${err.message}</p></div>`;
+            analyticsContent.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3>දත්ත ලබා ගැනීමේ දෝෂයකි</h3><p>${err.message}</p></div>`;
+        }
+    }
+
+    // ==================== SEARCH TAB ====================
+    function filterBySuffix(docs, term) {
+        if (!term || term.trim() === '') return docs;
+        const clean = term.trim();
+        return docs.filter(d => (d.fullNumber || '').endsWith(clean));
+    }
+
+    function updateSearchResults() {
+        const filtered = filterBySuffix(allDocs, searchTerm);
+        resultCountEl.textContent = filtered.length;
+        if (filtered.length === 0) {
+            wrapper.innerHTML = `<div class="empty-state"><i class="fas fa-search-minus"></i><h3>ගැලපෙන ප්‍රතිඵල හමු නොවීය</h3></div>`;
+            return;
+        }
+        let html = '';
+        filtered.forEach(d => {
+            html += `<div class="result-item">
+                <span class="number"><i class="fas fa-hashtag"></i> ${d.fullNumber}</span>
+                <span class="date"><i class="far fa-calendar-alt"></i> ${formatDate(d.date)}</span>
+            </div>`;
+        });
+        wrapper.innerHTML = html;
+    }
+
+    function applySearch() {
+        searchTerm = searchInput.value;
+        updateSearchResults();
+    }
+
+    function resetSearch() {
+        searchInput.value = '';
+        searchTerm = '';
+        updateSearchResults();
+    }
+
+    // Debounce
+    let debounceTimer;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => applySearch(), 350);
+    });
+    searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
+
+    // ==================== ANALYTICS ENGINE ====================
+    function renderAnalytics(docs) {
+        if (!docs || docs.length === 0) {
+            analyticsContent.innerHTML = `<div class="empty-state"><i class="fas fa-chart-simple"></i><h3>විශ්ලේෂණයට ප්‍රමාණවත් දත්ත නැත</h3></div>`;
+            return;
+        }
+
+        // Extract last 1 digit and last 2 digits from fullNumber
+        const numbers = docs.map(d => d.fullNumber).filter(n => n && n.length > 0);
+        if (numbers.length === 0) {
+            analyticsContent.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>`;
+            return;
+        }
+
+        // ---- Last 1 Digit Frequency ----
+        const freq1 = {};
+        for (let i=0; i<=9; i++) freq1[i] = 0;
+        numbers.forEach(n => {
+            const last = n.slice(-1);
+            const digit = parseInt(last);
+            if (!isNaN(digit)) freq1[digit] = (freq1[digit] || 0) + 1;
+        });
+
+        // ---- Last 2 Digits Frequency ----
+        const freq2 = {};
+        for (let i=0; i<=99; i++) freq2[i] = 0;
+        numbers.forEach(n => {
+            const last2 = n.slice(-2);
+            const val = parseInt(last2);
+            if (!isNaN(val) && last2.length === 2) freq2[val] = (freq2[val] || 0) + 1;
+            else if (!isNaN(val) && last2.length === 1) { // single digit, pad with 0
+                const padded = '0' + val;
+                freq2[val] = (freq2[val] || 0) + 1;
+            }
+        });
+
+        // ---- Range Analysis (00-09, 10-19 ... 90-99) ----
+        const rangeSize = 10;
+        const ranges = {};
+        for (let start=0; start<100; start+=rangeSize) {
+            const key = `${String(start).padStart(2,'0')}-${String(start+9).padStart(2,'0')}`;
+            ranges[key] = { start, end: start+9, count: 0, numbers: [] };
+        }
+        Object.keys(freq2).forEach(val => {
+            const num = parseInt(val);
+            if (!isNaN(num) && num >=0 && num <=99) {
+                const start = Math.floor(num / 10) * 10;
+                const key = `${String(start).padStart(2,'0')}-${String(start+9).padStart(2,'0')}`;
+                if (ranges[key]) {
+                    ranges[key].count += freq2[num];
+                    ranges[key].numbers.push({ num, freq: freq2[num] });
+                }
+            }
+        });
+
+        // ---- Build HTML ----
+        let html = `<div class="analytics-grid">`;
+
+        // ---- Card 1: Last 1 Digit (Hot/Cold) ----
+        const sorted1 = Object.entries(freq1).sort((a,b) => b[1] - a[1]);
+        const maxFreq1 = sorted1.length > 0 ? sorted1[0][1] : 1;
+        const hot1 = sorted1.slice(0, 3).map(x => x[0]);
+        const cold1 = sorted1.filter(x => x[1] === 0).map(x => x[0]);
+
+        html += `<div class="analytics-card">
+            <h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3>
+            <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;">
+                <span style="background:#ffebe6; padding:2px 14px; border-radius:30px; color:#c0392b;">🔥 Hot: ${hot1.join(', ') || '-'}</span>
+                <span style="background:#e6f0ff; padding:2px 14px; border-radius:30px; color:#2980b9;">❄️ Cold: ${cold1.join(', ') || 'නැත'}</span>
+            </div>
+            ${Object.entries(freq1).map(([digit, count]) => {
+                const pct = maxFreq1 > 0 ? (count / maxFreq1 * 100) : 0;
+                const isHot = hot1.includes(digit);
+                const isCold = count === 0;
+                let cls = '';
+                if (isHot) cls = 'hot';
+                else if (isCold) cls = 'cold';
+                return `<div class="digit-bar">
+                    <span class="label">${digit}</span>
+                    <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%;"></div></div>
+                    <span class="count">${count}</span>
+                </div>`;
+            }).join('')}
+        </div>`;
+
+        // ---- Card 2: Last 2 Digits - Hot & Cold ----
+        const sorted2 = Object.entries(freq2).sort((a,b) => b[1] - a[1]);
+        const top10 = sorted2.slice(0, 10);
+        const bottom10 = sorted2.filter(x => x[1] > 0).sort((a,b) => a[1] - b[1]).slice(0, 10);
+        const never = sorted2.filter(x => x[1] === 0).map(x => x[0]);
+
+        html += `<div class="analytics-card">
+            <h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;">
+                <div style="background:#ffebe6; border-radius:14px; padding:8px 12px;">
+                    <div style="font-weight:700; color:#c0392b;">🔥 Hot Top 10</div>
+                    ${top10.map(([n,c]) => `<div class="two-digit-item"><span class="num">${String(n).padStart(2,'0')}</span><span class="freq">${c} වාර</span></div>`).join('')}
+                </div>
+                <div style="background:#e6f0ff; border-radius:14px; padding:8px 12px;">
+                    <div style="font-weight:700; color:#2980b9;">❄️ Cold Bottom 10</div>
+                    ${bottom10.map(([n,c]) => `<div class="two-digit-item"><span class="num">${String(n).padStart(2,'0')}</span><span class="freq">${c} වාර</span></div>`).join('')}
+                </div>
+            </div>
+            <div style="margin-top:8px; font-size:14px; background:#f0f5fc; border-radius:14px; padding:8px 12px;">
+                <strong>🚫 කිසිදා නොඇදුණු අංක (${never.length}):</strong>
+                <div class="missing-numbers">
+                    ${never.map(n => `<span class="miss">${String(n).padStart(2,'0')}</span>`).join('')}
+                    ${never.length === 0 ? '<span>සියල්ලම ඇදී ඇත!</span>' : ''}
+                </div>
+            </div>
+        </div>`;
+
+        // ---- Card 3: Range Analysis ----
+        const rangeEntries = Object.entries(ranges);
+        const sortedRanges = rangeEntries.sort((a,b) => b[1].count - a[1].count);
+        const maxRangeCount = sortedRanges.length > 0 ? sortedRanges[0][1].count : 1;
+        const hotRange = sortedRanges[0] ? sortedRanges[0][0] : null;
+        const coldRange = sortedRanges.length > 0 ? sortedRanges[sortedRanges.length-1][0] : null;
+
+        html += `<div class="analytics-card" style="grid-column:1/-1;">
+            <h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය (00-09, 10-19 ... 90-99)</h3>
+            <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;">
+                <span style="background:#ffebe6; padding:4px 16px; border-radius:30px; color:#c0392b;">🔥 වැඩිම: ${hotRange} (${sortedRanges[0]?.[1]?.count || 0} වාර)</span>
+                <span style="background:#e6f0ff; padding:4px 16px; border-radius:30px; color:#2980b9;">❄️ අඩුම: ${coldRange} (${sortedRanges[sortedRanges.length-1]?.[1]?.count || 0} වාර)</span>
+            </div>
+            <div class="range-grid">
+                ${rangeEntries.map(([key, data]) => {
+                    const pct = maxRangeCount > 0 ? (data.count / maxRangeCount * 100) : 0;
+                    const isHot = key === hotRange;
+                    const isCold = key === coldRange && data.count > 0;
+                    let cls = '';
+                    if (isHot) cls = 'hot';
+                    else if (isCold) cls = 'cold';
+                    // find missing numbers in this range
+                    const allNums = [];
+                    for (let i=data.start; i<=data.end; i++) allNums.push(i);
+                    const existing = data.numbers.map(n => n.num);
+                    const missing = allNums.filter(n => !existing.includes(n));
+                    return `<div class="range-box ${cls}">
+                        <div class="range-label">${key}</div>
+                        <div class="range-count">${data.count}</div>
+                        <div class="range-status">වාර</div>
+                        <div style="font-size:11px; color:#4d667e; margin-top:4px;">
+                            නැති: ${missing.slice(0,5).map(n => String(n).padStart(2,'0')).join(', ')}${missing.length > 5 ? '...' : ''}
+                            ${missing.length === 0 ? '✅ සියල්ලම' : ''}
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+
+        html += `</div>`;
+        analyticsContent.innerHTML = html;
+    }
+
+    // ==================== TIME FILTER ====================
+    document.querySelectorAll('.time-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const range = this.dataset.range;
+            // Reset search input when changing time
+            searchInput.value = '';
+            searchTerm = '';
+            fetchData(range);
+        });
+    });
+
+    // ==================== TAB SWITCHING ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const tab = this.dataset.tab;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            // If switching to analytics, re-render if data exists
+            if (tab === 'analytics' && allDocs.length > 0) {
+                renderAnalytics(allDocs);
+            }
+        });
+    });
+
+    // ==================== INIT ====================
+    fetchData('all');
+</script>
+</body>
+</html>
