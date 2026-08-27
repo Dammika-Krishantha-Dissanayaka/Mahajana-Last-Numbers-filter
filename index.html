@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
     
-    <!-- ===== PHASE 2: Chart.js ===== -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
@@ -62,7 +62,7 @@
             box-shadow:0 4px 10px rgba(255,202,40,0.3);
         }
 
-        /* ========== PHASE 1 & 2: TIME FILTER ========== */
+        /* Time Filter */
         .time-filter {
             display: flex;
             flex-wrap: wrap;
@@ -193,11 +193,47 @@
             border:1px solid #eaeef5; transition:0.15s;
         }
         .result-item:hover { border-color:#b8cee5; background:#fafdff; transform:translateX(4px); }
-        .result-item .number { font-weight:700; color:#0b1e32; font-size:18px; letter-spacing:0.5px; }
-        .result-item .number i { color:#2a5a8a; margin-right:10px; }
-        .result-item .date { color:#4d667e; font-weight:500; background:#f0f5fc; padding:4px 16px; border-radius:40px; font-size:14px; }
+        .result-item .number {
+            font-weight:700;
+            color:#0b1e32;
+            font-size:18px;
+            letter-spacing:0.5px;
+            display:flex;
+            flex-wrap:wrap;
+            align-items:center;
+            gap:6px;
+        }
+        .result-item .number .draw-id {
+            font-weight:400;
+            font-size:14px;
+            color:#4d667e;
+        }
+        .result-item .number .seq-id {
+            font-weight:400;
+            font-size:14px;
+            color:#6f8aa8;
+            background:#f0f5fc;
+            padding:2px 10px;
+            border-radius:30px;
+            margin-left:4px;
+        }
+        .result-item .number .full-num {
+            font-weight:700;
+            color:#1a3e66;
+            background:#eef3f8;
+            padding:2px 14px;
+            border-radius:30px;
+        }
+        .result-item .date { 
+            color:#4d667e; 
+            font-weight:500; 
+            background:#f0f5fc; 
+            padding:4px 16px; 
+            border-radius:40px; 
+            font-size:14px; 
+        }
 
-        /* ========== PHASE 1: HEATMAP STYLES ========== */
+        /* ========== HEATMAP ========== */
         .heatmap-section {
             background: #fff;
             border-radius: 24px;
@@ -274,7 +310,7 @@
             border-radius: 20px;
         }
 
-        /* ===== PHASE 2: ADVANCED STATS GRID ===== */
+        /* ===== ADVANCED STATS ===== */
         .advanced-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -297,7 +333,7 @@
             box-shadow: 0 2px 8px rgba(102,126,234,0.3);
         }
 
-        /* ===== ANALYTICS CARDS (Basic + Advanced) ===== */
+        /* ===== ANALYTICS CARDS ===== */
         .analytics-card {
             background:#fff; border-radius:24px; padding:20px 22px;
             border:1px solid #eaeef5; box-shadow:0 4px 12px rgba(0,0,0,0.02);
@@ -378,6 +414,7 @@
             .search-box input { font-size:16px; min-width:120px; }
             .btn { padding:10px 18px; font-size:14px; }
             .result-item { flex-direction:column; align-items:flex-start; gap:8px; }
+            .result-item .number { flex-wrap:wrap; }
             .two-digit-list { grid-template-columns:1fr; }
             .heatmap-grid { min-width: 320px; }
             .heatmap-grid .cell { font-size: 10px; }
@@ -394,7 +431,7 @@
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
-    <!-- ========== TIME FILTER ========== -->
+    <!-- TIME FILTER -->
     <div class="time-filter">
         <span class="label"><i class="far fa-calendar-alt"></i> දින සීමාව :</span>
         <input type="date" id="startDate">
@@ -457,12 +494,12 @@
             </div>
         </div>
 
-        <!-- ========== PHASE 2: ADVANCED STATS ========== -->
+        <!-- ADVANCED STATS -->
         <div id="advancedStatsContainer">
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">උසස් සංඛ්‍යාන විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
 
-        <!-- BASIC ANALYTICS (Hot/Cold/Range) -->
+        <!-- BASIC ANALYTICS -->
         <div id="analyticsContent">
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
@@ -490,11 +527,9 @@
     let customStart = null;
     let customEnd = null;
 
-    // Chart.js instances
     let movingAvgChart = null;
     let expectedActualChart = null;
 
-    // DOM refs
     const wrapper = document.getElementById('resultsWrapper');
     const searchInput = document.getElementById('searchInput');
     const resultCountEl = document.getElementById('resultCount');
@@ -509,14 +544,6 @@
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    function getDateRange(range) {
-        if (range === 'all') return null;
-        const now = new Date();
-        const start = new Date(now);
-        start.setMonth(now.getMonth() - parseInt(range));
-        return start;
-    }
-
     function getFilteredByRange() {
         let data = allDocs;
         if (customStart && customEnd) {
@@ -525,11 +552,14 @@
             end.setHours(23, 59, 59, 999);
             return data.filter(r => r.date && r.date >= start && r.date <= end);
         }
-        if (currentRange === 'all') return data;
-        const now = new Date();
-        const start = new Date(now);
-        start.setMonth(now.getMonth() - parseInt(currentRange));
-        return data.filter(r => r.date && r.date >= start);
+        if (currentRange === 'all') {
+            return data;
+        } else {
+            const now = new Date();
+            const start = new Date(now);
+            start.setMonth(now.getMonth() - parseInt(currentRange));
+            return data.filter(r => r.date && r.date >= start);
+        }
     }
 
     // ========== CUSTOM DATE ==========
@@ -567,8 +597,9 @@
             snapshot.forEach(doc => {
                 const data = doc.data();
                 docs.push({
-                    id: doc.id,
+                    id: doc.id,                 // Document ID (e.g., "2026-08-25")
                     fullNumber: data.fullNumber || '',
+                    numberId: data.id || '',    // Internal sequential ID (e.g., "6290")
                     date: data.date || null
                 });
             });
@@ -583,6 +614,14 @@
             advancedContainer.innerHTML = errMsg;
             heatmapGrid.innerHTML = errMsg;
         }
+    }
+
+    function getDateRange(range) {
+        if (range === 'all') return null;
+        const now = new Date();
+        const start = new Date(now);
+        start.setMonth(now.getMonth() - parseInt(range));
+        return start;
     }
 
     function updateAllViews() {
@@ -610,8 +649,13 @@
         }
         let html = '';
         filtered.forEach(d => {
+            // 🔥 නව ආකෘතිය: 📅 2026-08-25 (6290) # U772236
             html += `<div class="result-item">
-                <span class="number"><i class="fas fa-hashtag"></i> ${d.fullNumber}</span>
+                <span class="number">
+                    <span class="draw-id">📅 ${d.id}</span>
+                    <span class="seq-id">(${d.numberId || '-'})</span>
+                    <span class="full-num"># ${d.fullNumber}</span>
+                </span>
                 <span class="date"><i class="far fa-calendar-alt"></i> ${formatDate(d.date)}</span>
             </div>`;
         });
@@ -637,7 +681,7 @@
     searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
 
     // ============================================================
-    // 🟢 PHASE 1: HEATMAP RENDERER
+    // 🟢 HEATMAP
     // ============================================================
     function renderHeatmap(docs) {
         const container = heatmapGrid;
@@ -693,7 +737,7 @@
     }
 
     // ============================================================
-    // 🟢 PHASE 2: ADVANCED STATS (Moving Avg, Prediction, Std Dev)
+    // 🟢 ADVANCED STATS
     // ============================================================
     function renderAdvancedStats(docs) {
         const container = advancedContainer;
@@ -710,18 +754,16 @@
             return;
         }
 
-        // ---- 1. MOVING AVERAGES ----
-        // Group by date
+        // Moving Averages
         const dateMap = {};
         data.forEach(d => {
             if (!d.date) return;
             const dateStr = d.date.toDate ? d.date.toDate().toISOString().slice(0,10) : new Date(d.date).toISOString().slice(0,10);
             dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
         });
-        const sortedDates = Object.keys(dateMap).sort(); // ascending
+        const sortedDates = Object.keys(dateMap).sort();
         const counts = sortedDates.map(d => dateMap[d]);
 
-        // Calculate moving averages
         const ma7 = [], ma14 = [], ma30 = [];
         for (let i=0; i<counts.length; i++) {
             const sum7 = counts.slice(Math.max(0, i-6), i+1).reduce((a,b) => a+b, 0);
@@ -732,7 +774,6 @@
             ma30.push(+(sum30 / Math.min(30, i+1)).toFixed(1));
         }
 
-        // Render Moving Avg Chart
         const maHtml = `
             <div class="advanced-stats-grid" style="margin-bottom:0;">
                 <div class="analytics-card" style="grid-column:1/-1;">
@@ -748,10 +789,8 @@
         `;
         container.innerHTML = maHtml;
 
-        // Draw Chart
         if (movingAvgChart) movingAvgChart.destroy();
         const ctx = document.getElementById('movingAvgChart').getContext('2d');
-        // Show only last 60 days for readability if too many
         let labels = sortedDates;
         let d7 = ma7, d14 = ma14, d30 = ma30;
         if (labels.length > 60) {
@@ -777,8 +816,7 @@
             }
         });
 
-        // ---- 2. PREDICTION & STD DEV ----
-        // Calculate frequencies for last 1 digit and last 2 digits
+        // Prediction & Std Dev
         const freq1 = {};
         for (let i=0; i<=9; i++) freq1[i] = 0;
         const freq2 = {};
@@ -797,7 +835,6 @@
 
         const totalDraws = numbers.length;
 
-        // Recency scoring: find last appearance date for each number
         const lastSeen1 = {};
         const lastSeen2 = {};
         data.forEach(d => {
@@ -806,12 +843,10 @@
             if (!num) return;
             const dateObj = d.date.toDate ? d.date.toDate() : new Date(d.date);
             const dayStr = dateObj.toISOString().slice(0,10);
-            // Last 1 digit
             const l1 = parseInt(num.slice(-1));
             if (!isNaN(l1)) {
                 if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr;
             }
-            // Last 2 digits
             const l2 = parseInt(num.slice(-2));
             if (!isNaN(l2)) {
                 if (!lastSeen2[l2] || dayStr > lastSeen2[l2]) lastSeen2[l2] = dayStr;
@@ -826,7 +861,6 @@
             return 1 / (daysAgo + 1);
         }
 
-        // Score = frequency weight (60%) + recency weight (40%)
         function getPredictionScores(freqMap, lastSeenMap, total) {
             const scores = {};
             const maxFreq = Math.max(...Object.values(freqMap));
@@ -845,25 +879,17 @@
         const top5_1 = Object.entries(scores1).sort((a,b) => b[1] - a[1]).slice(0,5).map(x => x[0]);
         const top5_2 = Object.entries(scores2).sort((a,b) => b[1] - a[1]).slice(0,5).map(x => x[0]);
 
-        // Standard Deviation of daily draw counts
         const dailyCounts = Object.values(dateMap);
         const mean = dailyCounts.reduce((a,b) => a+b, 0) / dailyCounts.length;
         const squaredDiffs = dailyCounts.map(v => Math.pow(v - mean, 2));
         const variance = squaredDiffs.reduce((a,b) => a+b, 0) / dailyCounts.length;
         const stdDev = Math.sqrt(variance);
 
-        // Expected vs Actual (Last Digit 1)
         const expected = totalDraws / 10;
         const actuals = freq1;
-        const diff = {};
-        Object.keys(actuals).forEach(k => {
-            diff[k] = +(actuals[k] - expected).toFixed(1);
-        });
 
-        // Append Prediction and Stats card to container
         const statsHtml = `
             <div class="advanced-stats-grid" style="margin-top:24px;">
-                <!-- Prediction Card -->
                 <div class="analytics-card">
                     <h3><i class="fas fa-brain"></i> ස්මාට් පුරෝකථනය</h3>
                     <div style="margin-bottom:12px;">
@@ -879,7 +905,6 @@
                         <span style="display:block; font-size:12px; margin-top:4px;">(සාමාන්‍ය දෛනික ප්‍රතිඵල: ${mean.toFixed(1)})</span>
                     </div>
                 </div>
-                <!-- Expected vs Actual Card -->
                 <div class="analytics-card">
                     <h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ (අග ඉලක්කම්)</h3>
                     <canvas id="expectedActualChart" style="max-height:180px; width:100%;"></canvas>
@@ -892,7 +917,6 @@
         `;
         container.innerHTML += statsHtml;
 
-        // Draw Expected vs Actual Chart
         if (expectedActualChart) expectedActualChart.destroy();
         const ctx2 = document.getElementById('expectedActualChart').getContext('2d');
         const labelsEA = Object.keys(actuals).sort();
@@ -916,7 +940,7 @@
     }
 
     // ============================================================
-    // 🟢 BASIC ANALYTICS (Hot/Cold/Range) - Existing Logic
+    // 🟢 BASIC ANALYTICS (Hot/Cold/Range)
     // ============================================================
     function renderBasicAnalytics(docs) {
         const container = analyticsContent;
@@ -931,7 +955,6 @@
             return;
         }
 
-        // ---- Last 1 Digit Frequency ----
         const freq1 = {};
         for (let i=0; i<=9; i++) freq1[i] = 0;
         numbers.forEach(n => {
@@ -940,7 +963,6 @@
             if (!isNaN(digit)) freq1[digit] = (freq1[digit] || 0) + 1;
         });
 
-        // ---- Last 2 Digits Frequency ----
         const freq2 = {};
         for (let i=0; i<=99; i++) freq2[i] = 0;
         numbers.forEach(n => {
@@ -950,7 +972,6 @@
             else if (!isNaN(val) && last2.length === 1) freq2[val] = (freq2[val] || 0) + 1;
         });
 
-        // ---- Range Analysis ----
         const ranges = {};
         for (let start=0; start<100; start+=10) {
             const key = `${String(start).padStart(2,'0')}-${String(start+9).padStart(2,'0')}`;
@@ -968,10 +989,8 @@
             }
         });
 
-        // ---- Build HTML ----
         let html = `<div class="analytics-grid">`;
 
-        // Card 1
         const sorted1 = Object.entries(freq1).sort((a,b) => b[1] - a[1]);
         const maxFreq1 = sorted1.length > 0 ? sorted1[0][1] : 1;
         const hot1 = sorted1.slice(0, 3).map(x => x[0]);
@@ -998,7 +1017,6 @@
             }).join('')}
         </div>`;
 
-        // Card 2
         const sorted2 = Object.entries(freq2).sort((a,b) => b[1] - a[1]);
         const top10 = sorted2.slice(0, 10);
         const bottom10 = sorted2.filter(x => x[1] > 0).sort((a,b) => a[1] - b[1]).slice(0, 10);
@@ -1025,7 +1043,6 @@
             </div>
         </div>`;
 
-        // Card 3: Range
         const rangeEntries = Object.entries(ranges);
         const sortedRanges = rangeEntries.sort((a,b) => b[1].count - a[1].count);
         const maxRangeCount = sortedRanges.length > 0 ? sortedRanges[0][1].count : 1;
