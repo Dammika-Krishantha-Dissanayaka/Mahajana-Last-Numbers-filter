@@ -59,22 +59,77 @@
             box-shadow:0 4px 10px rgba(255,202,40,0.3);
         }
 
-        /* Time Filter */
+        /* ========== PHASE 1: IMPROVED TIME FILTER ========== */
         .time-filter {
-            display: flex; flex-wrap: wrap; gap:10px; margin-bottom:22px;
-            background:#f2f7fe; padding:12px 18px; border-radius:50px;
-            border:1px solid #dce5f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 22px;
+            background: #f2f7fe;
+            padding: 12px 18px;
+            border-radius: 50px;
+            border: 1px solid #dce5f0;
+            align-items: center;
         }
         .time-filter .label {
-            font-weight:600; color:#1f3b5c; display:flex; align-items:center; gap:6px;
+            font-weight: 600;
+            color: #1f3b5c;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .time-filter input[type="date"] {
+            padding: 6px 12px;
+            border: 2px solid #dce5f0;
+            border-radius: 30px;
+            font-size: 14px;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            background: white;
+            outline: none;
+            transition: 0.2s;
+            color: #1f3b5c;
+        }
+        .time-filter input[type="date"]:focus {
+            border-color: #1a3e66;
+            box-shadow: 0 0 0 3px rgba(26,62,102,0.1);
+        }
+        .time-filter .date-sep {
+            color: #6f8aa8;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .time-btn-apply {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 30px;
+            background: #10b981;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .time-btn-apply:hover { background: #059669; }
+        .time-filter .divider {
+            color: #d1d5db;
+            font-size: 18px;
+            margin: 0 4px;
         }
         .time-btn {
-            padding:8px 20px; border:none; border-radius:40px; background:transparent;
-            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:14px;
-            color:#3e5a77; cursor:pointer; transition:0.2s;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
+            background: transparent;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: #3e5a77;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .time-btn:hover { background:#d5e2f2; }
-        .time-btn.active { background:#1a3e66; color:#fff; box-shadow:0 6px 16px rgba(26,62,102,0.25); }
+        .time-btn:hover { background: #d5e2f2; }
+        .time-btn.active { background: #1a3e66; color: #fff; box-shadow: 0 6px 16px rgba(26,62,102,0.25); }
 
         /* Tabs */
         .tabs {
@@ -138,6 +193,83 @@
         .result-item .number { font-weight:700; color:#0b1e32; font-size:18px; letter-spacing:0.5px; }
         .result-item .number i { color:#2a5a8a; margin-right:10px; }
         .result-item .date { color:#4d667e; font-weight:500; background:#f0f5fc; padding:4px 16px; border-radius:40px; font-size:14px; }
+
+        /* ========== PHASE 1: HEATMAP STYLES ========== */
+        .heatmap-section {
+            background: #fff;
+            border-radius: 24px;
+            padding: 20px 22px;
+            margin-bottom: 24px;
+            border: 1px solid #eaeef5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            overflow-x: auto;
+        }
+        .heatmap-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a3e66;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .heatmap-section h3 .sub {
+            font-size: 14px;
+            font-weight: 400;
+            color: #4d667e;
+        }
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 40px repeat(10, 1fr);
+            gap: 3px;
+            min-width: 420px;
+        }
+        .heatmap-grid .cell-header {
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7fafc;
+            border-radius: 6px;
+            padding: 4px 0;
+        }
+        .heatmap-grid .cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1f3b5c;
+            transition: 0.15s;
+            cursor: default;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .heatmap-grid .cell:hover {
+            transform: scale(1.12);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #4d667e;
+            flex-wrap: wrap;
+        }
+        .heatmap-legend .gradient {
+            width: 160px;
+            height: 16px;
+            background: linear-gradient(to right, #2b6cb0, #ecc94b, #e53e3e);
+            border-radius: 20px;
+        }
 
         /* ===== ANALYTICS TAB ===== */
         .analytics-grid {
@@ -217,6 +349,7 @@
             .header h1 small { font-size:13px; }
             .firebase-badge { margin-left:0; width:100%; justify-content:center; }
             .time-filter { border-radius:28px; padding:12px 16px; }
+            .time-filter input[type="date"] { font-size:12px; padding:4px 10px; width:130px; }
             .time-btn { padding:6px 14px; font-size:13px; }
             .tab-btn { padding:10px 16px; font-size:14px; }
             .search-box { border-radius:30px; padding:6px 6px 6px 18px; }
@@ -224,6 +357,8 @@
             .btn { padding:10px 18px; font-size:14px; }
             .result-item { flex-direction:column; align-items:flex-start; gap:8px; }
             .two-digit-list { grid-template-columns:1fr; }
+            .heatmap-grid { min-width: 320px; }
+            .heatmap-grid .cell { font-size: 10px; }
         }
     </style>
 </head>
@@ -232,13 +367,20 @@
     <!-- HEADER -->
     <div class="header">
         <div class="header-icon"><i class="fas fa-chart-line"></i></div>
-        <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම - 0777325563</small></h1>
+        <h1>මහජන අගඅංක සෙවීම සහ විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත දිසානයක - ආඩිඅම්බලම - 0777325563</small></h1>
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
-    <!-- TIME FILTER -->
+    <!-- ========== PHASE 1: IMPROVED TIME FILTER ========== -->
     <div class="time-filter">
-        <span class="label"><i class="far fa-clock"></i> කාල සීමාව තෝරන්න :</span>
+        <span class="label"><i class="far fa-calendar-alt"></i> දින සීමාව :</span>
+        <input type="date" id="startDate">
+        <span class="date-sep">සිට</span>
+        <input type="date" id="endDate">
+        <button class="time-btn-apply" onclick="applyCustomDateRange()"><i class="fas fa-check"></i> යොදන්න</button>
+        
+        <span class="divider">|</span>
+        <span class="label"><i class="fas fa-bolt"></i> වේගවත්</span>
         <button class="time-btn" data-range="1">මාස 1</button>
         <button class="time-btn" data-range="2">මාස 2</button>
         <button class="time-btn" data-range="3">මාස 3</button>
@@ -274,6 +416,25 @@
 
     <!-- ========== TAB 2: ANALYTICS ========== -->
     <div class="tab-content" id="tab-analytics">
+        
+        <!-- ========== PHASE 1: HEATMAP SECTION ========== -->
+        <div class="heatmap-section" id="heatmapContainer">
+            <h3>
+                <span><i class="fas fa-fire" style="color:#e74c3c;"></i> අග ඉලක්කම් 00-99 තාප සිතියම (Heatmap)</span>
+                <span class="sub">(රතු=උණුසුම්, නිල්=සීතල)</span>
+            </h3>
+            <div id="heatmapGrid" style="min-height:100px;">
+                <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">Heatmap පූරණය වෙමින්...</p></div>
+            </div>
+            <div class="heatmap-legend">
+                <span>❄️ සීතල</span>
+                <div class="gradient"></div>
+                <span>🔥 උණුසුම්</span>
+                <span style="margin-left:auto; font-size:12px; color:#9aafc7;">වාර ගණන අනුව වර්ණ ගැන්වේ</span>
+            </div>
+        </div>
+
+        <!-- Analytics Content -->
         <div id="analyticsContent">
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
@@ -295,15 +456,19 @@
     const db = firebase.firestore();
 
     // ==================== GLOBALS ====================
-    let allDocs = [];          // all fetched documents
+    let allDocs = [];
     let currentRange = 'all';
     let searchTerm = '';
+    // PHASE 1: Custom date range variables
+    let customStart = null;
+    let customEnd = null;
 
     // DOM refs
     const wrapper = document.getElementById('resultsWrapper');
     const searchInput = document.getElementById('searchInput');
     const resultCountEl = document.getElementById('resultCount');
     const analyticsContent = document.getElementById('analyticsContent');
+    const heatmapGrid = document.getElementById('heatmapGrid');
 
     // ==================== HELPERS ====================
     function formatDate(ts) {
@@ -320,10 +485,67 @@
         return start;
     }
 
+    // ========== PHASE 1: CUSTOM DATE RANGE FILTER ==========
+    function getFilteredByRange() {
+        let data = allDocs;
+
+        // Check Custom Date Range first
+        if (customStart && customEnd) {
+            const start = new Date(customStart);
+            const end = new Date(customEnd);
+            end.setHours(23, 59, 59, 999);
+            return data.filter(r => r.date && r.date >= start && r.date <= end);
+        }
+
+        // Fallback to quick buttons
+        if (currentRange === 'all') return data;
+        const now = new Date();
+        const start = new Date(now);
+        start.setMonth(now.getMonth() - parseInt(currentRange));
+        return data.filter(r => r.date && r.date >= start);
+    }
+
+    // ========== PHASE 1: APPLY CUSTOM DATE ==========
+    function applyCustomDateRange() {
+        const startVal = document.getElementById('startDate').value;
+        const endVal = document.getElementById('endDate').value;
+        
+        if (!startVal || !endVal) {
+            alert('කරුණාකර ආරම්භක සහ අවසාන දිනයන් දෙකම තෝරන්න.');
+            return;
+        }
+        if (new Date(startVal) > new Date(endVal)) {
+            alert('ආරම්භක දිනය අවසාන දිනයට වඩා පැරණි විය යුතුයි.');
+            return;
+        }
+
+        customStart = startVal;
+        customEnd = endVal;
+        
+        // Deactivate quick buttons
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+        
+        // Reset search
+        searchInput.value = '';
+        searchTerm = '';
+        
+        // Update everything
+        updateSearchResults();
+        renderAnalytics(getFilteredByRange());
+        renderHeatmap(getFilteredByRange());
+    }
+
     // ==================== FETCH DATA ====================
     async function fetchData(range) {
         wrapper.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">දත්ත ලබා ගනිමින්...</p></div>`;
         analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>`;
+        heatmapGrid.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">Heatmap පූරණය වෙමින්...</p></div>`;
+
+        // Clear custom date when quick button is clicked
+        customStart = null;
+        customEnd = null;
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
 
         try {
             let query = db.collection('mahajana_results').orderBy('date', 'desc');
@@ -341,14 +563,16 @@
             });
             allDocs = docs;
             currentRange = range;
-            // Update Search Tab
+            
+            const filtered = getFilteredByRange();
             updateSearchResults();
-            // Update Analytics Tab
-            renderAnalytics(allDocs);
+            renderAnalytics(filtered);
+            renderHeatmap(filtered);
         } catch (err) {
             console.error(err);
             wrapper.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3>දත්ත ලබා ගැනීමේ දෝෂයකි</h3><p>${err.message}</p></div>`;
             analyticsContent.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3>දත්ත ලබා ගැනීමේ දෝෂයකි</h3><p>${err.message}</p></div>`;
+            heatmapGrid.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3>දත්ත ලබා ගැනීමේ දෝෂයකි</h3></div>`;
         }
     }
 
@@ -360,7 +584,8 @@
     }
 
     function updateSearchResults() {
-        const filtered = filterBySuffix(allDocs, searchTerm);
+        const data = getFilteredByRange();
+        const filtered = filterBySuffix(data, searchTerm);
         resultCountEl.textContent = filtered.length;
         if (filtered.length === 0) {
             wrapper.innerHTML = `<div class="empty-state"><i class="fas fa-search-minus"></i><h3>ගැලපෙන ප්‍රතිඵල හමු නොවීය</h3></div>`;
@@ -387,7 +612,6 @@
         updateSearchResults();
     }
 
-    // Debounce
     let debounceTimer;
     searchInput.addEventListener('input', function() {
         clearTimeout(debounceTimer);
@@ -395,15 +619,84 @@
     });
     searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
 
+    // ============================================================
+    // 🟢 PHASE 1: HEATMAP RENDERER
+    // ============================================================
+    function renderHeatmap(docs) {
+        const container = heatmapGrid;
+        const data = docs || getFilteredByRange();
+        
+        if (!data || data.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-chart-simple"></i><h3>Heatmap සඳහා ප්‍රමාණවත් දත්ත නැත</h3></div>`;
+            return;
+        }
+
+        const numbers = data.map(d => d.fullNumber).filter(n => n && n.length > 0);
+        if (numbers.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>`;
+            return;
+        }
+
+        // Calculate frequency for 00-99
+        const freq = {};
+        for (let i=0; i<=99; i++) freq[i] = 0;
+        numbers.forEach(n => {
+            const last2 = n.slice(-2);
+            const val = parseInt(last2);
+            if (!isNaN(val)) {
+                if (last2.length === 2) freq[val] = (freq[val] || 0) + 1;
+                else if (last2.length === 1) freq[val] = (freq[val] || 0) + 1;
+            }
+        });
+
+        // Find min/max for color scaling
+        const values = Object.values(freq);
+        const maxVal = Math.max(...values);
+        const minVal = Math.min(...values);
+        const range = maxVal - minVal;
+
+        // Function to get color based on frequency
+        function getColor(count) {
+            if (range === 0) return '#e2e8f0';
+            const ratio = (count - minVal) / range; // 0 to 1
+            // Blue (43,108,176) -> Yellow (236,201,75) -> Red (229,62,62)
+            const r = Math.round(43 + (236 - 43) * ratio * 0.7 + (229 - 236) * ratio * 0.3 * ratio);
+            const g = Math.round(108 + (201 - 108) * ratio * 0.8 + (62 - 201) * ratio * 0.2);
+            const b = Math.round(176 - (176 - 75) * ratio * 0.9 + (62 - 75) * ratio * 0.1);
+            return `rgb(${Math.min(255, Math.max(0, r))}, ${Math.min(255, Math.max(0, g))}, ${Math.min(255, Math.max(0, b))})`;
+        }
+
+        // Build Grid (10 rows x 10 cols)
+        let html = '<div class="heatmap-grid">';
+        // Top-left corner (empty)
+        html += `<div class="cell-header"></div>`;
+        // Column headers (Units 0-9)
+        for (let u=0; u<=9; u++) {
+            html += `<div class="cell-header">${u}</div>`;
+        }
+        // Rows (Tens)
+        for (let t=0; t<=9; t++) {
+            html += `<div class="cell-header">${t}</div>`;
+            for (let u=0; u<=9; u++) {
+                const num = t * 10 + u;
+                const count = freq[num] || 0;
+                const color = getColor(count);
+                html += `<div class="cell" style="background-color: ${color};" title="${String(num).padStart(2,'0')}: ${count} වාර">${String(num).padStart(2,'0')}</div>`;
+            }
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
     // ==================== ANALYTICS ENGINE ====================
     function renderAnalytics(docs) {
-        if (!docs || docs.length === 0) {
+        const data = docs || getFilteredByRange();
+        if (!data || data.length === 0) {
             analyticsContent.innerHTML = `<div class="empty-state"><i class="fas fa-chart-simple"></i><h3>විශ්ලේෂණයට ප්‍රමාණවත් දත්ත නැත</h3></div>`;
             return;
         }
 
-        // Extract last 1 digit and last 2 digits from fullNumber
-        const numbers = docs.map(d => d.fullNumber).filter(n => n && n.length > 0);
+        const numbers = data.map(d => d.fullNumber).filter(n => n && n.length > 0);
         if (numbers.length === 0) {
             analyticsContent.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>`;
             return;
@@ -425,8 +718,7 @@
             const last2 = n.slice(-2);
             const val = parseInt(last2);
             if (!isNaN(val) && last2.length === 2) freq2[val] = (freq2[val] || 0) + 1;
-            else if (!isNaN(val) && last2.length === 1) { // single digit, pad with 0
-                const padded = '0' + val;
+            else if (!isNaN(val) && last2.length === 1) {
                 freq2[val] = (freq2[val] || 0) + 1;
             }
         });
@@ -528,7 +820,6 @@
                     let cls = '';
                     if (isHot) cls = 'hot';
                     else if (isCold) cls = 'cold';
-                    // find missing numbers in this range
                     const allNums = [];
                     for (let i=data.start; i<=data.end; i++) allNums.push(i);
                     const existing = data.numbers.map(n => n.num);
@@ -556,7 +847,6 @@
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             const range = this.dataset.range;
-            // Reset search input when changing time
             searchInput.value = '';
             searchTerm = '';
             fetchData(range);
@@ -571,12 +861,20 @@
             const tab = this.dataset.tab;
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tab}`).classList.add('active');
-            // If switching to analytics, re-render if data exists
-            if (tab === 'analytics' && allDocs.length > 0) {
-                renderAnalytics(allDocs);
+            
+            // Re-render analytics if switching to analytics tab
+            if (tab === 'analytics') {
+                const filtered = getFilteredByRange();
+                renderAnalytics(filtered);
+                renderHeatmap(filtered);
             }
         });
     });
+
+    // ==================== EXPOSE FUNCTIONS ====================
+    window.applySearch = applySearch;
+    window.resetSearch = resetSearch;
+    window.applyCustomDateRange = applyCustomDateRange;
 
     // ==================== INIT ====================
     fetchData('all');
