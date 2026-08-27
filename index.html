@@ -232,13 +232,13 @@
     <!-- HEADER -->
     <div class="header">
         <div class="header-icon"><i class="fas fa-chart-line"></i></div>
-        <h1>මහජන සම්පත විශ්ලේෂණය <small>Hot & Cold Numbers + Range Analysis</small></h1>
-        <div class="firebase-badge"><i class="fas fa-fire"></i> Firebase</div>
+        <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම - 0777325563</small></h1>
+        <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
     <!-- TIME FILTER -->
     <div class="time-filter">
-        <span class="label"><i class="far fa-clock"></i> කාල සීමාව :</span>
+        <span class="label"><i class="far fa-clock"></i> කාල සීමාව තෝරන්න :</span>
         <button class="time-btn" data-range="1">මාස 1</button>
         <button class="time-btn" data-range="2">මාස 2</button>
         <button class="time-btn" data-range="3">මාස 3</button>
@@ -257,14 +257,14 @@
     <div class="tab-content active" id="tab-search">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="අග ඉලක්කම් ටයිප් කරන්න (e.g. 5, 27, 835)" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="අග අංක මෙහි ටයිප් කරන්න" autocomplete="off">
             <div class="btn-group">
                 <button class="btn btn-primary" onclick="applySearch()"><i class="fas fa-arrow-right"></i> සොයන්න</button>
                 <button class="btn btn-secondary" onclick="resetSearch()"><i class="fas fa-undo-alt"></i> යළි</button>
             </div>
         </div>
         <div class="result-header">
-            <span><i class="fas fa-list-ul"></i> ප්‍රතිඵල</span>
+            <span><i class="fas fa-list-ul"></i> සෙවු දින</span>
             <span class="badge" id="resultCount">0</span>
         </div>
         <div class="results-wrapper" id="resultsWrapper">
@@ -499,7 +499,7 @@
                 </div>
             </div>
             <div style="margin-top:8px; font-size:14px; background:#f0f5fc; border-radius:14px; padding:8px 12px;">
-                <strong>🚫 කිසිදා නොඇදුණු අංක (${never.length}):</strong>
+                <strong>🚫 කාල සීමාව තුල නොඇදුණු අංක (${never.length}):</strong>
                 <div class="missing-numbers">
                     ${never.map(n => `<span class="miss">${String(n).padStart(2,'0')}</span>`).join('')}
                     ${never.length === 0 ? '<span>සියල්ලම ඇදී ඇත!</span>' : ''}
