@@ -609,7 +609,7 @@
     }
 
     // =====================================================
-    // 🟢 මෙයයි වෙනස් කළ ශ්‍රිතය (දිනය එක් වරක් පමණි)
+    // 🟢 updateSearchResults - දිනය එක් වරක් පමණි
     // =====================================================
     function updateSearchResults() {
         const data = getFilteredByRange();
@@ -908,21 +908,91 @@
     }
 
     // ============================================================
-    // BASIC ANALYTICS (Hot/Cold/Range)
+    // 🟢 BASIC ANALYTICS - දත්ත නැති විටත් "කාල සීමාව තුළ නොඇදුණු අංක" පෙන්වයි
     // ============================================================
     function renderBasicAnalytics(docs) {
         const container = analyticsContent;
         const data = docs || getFilteredByRange();
+
+        // දත්ත නැති වුවත්, "කාල සීමාව තුළ නොඇදුණු අංක" පෙන්වීමට හැකි වන පරිදි සකස් කිරීම
         if (!data || data.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-chart-simple"></i><h3>විශ්ලේෂණයට ප්‍රමාණවත් දත්ත නැත</h3></div>`;
-            return;
-        }
-        const numbers = data.map(d => d.fullNumber).filter(n => n && n.length > 0);
-        if (numbers.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>`;
+            const emptyFreq1 = {};
+            for (let i=0; i<=9; i++) emptyFreq1[i] = 0;
+            const emptyFreq2 = {};
+            for (let i=0; i<=99; i++) emptyFreq2[i] = 0;
+            
+            let emptyHtml = `<div class="analytics-grid">`;
+            
+            emptyHtml += `<div class="analytics-card">
+                <h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3>
+                <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;">
+                    <span style="background:#ffebe6; padding:2px 14px; border-radius:30px; color:#c0392b;">🔥 Hot: -</span>
+                    <span style="background:#e6f0ff; padding:2px 14px; border-radius:30px; color:#2980b9;">❄️ Cold: 0,1,2,3,4,5,6,7,8,9</span>
+                </div>
+                ${Object.entries(emptyFreq1).map(([digit, count]) => `
+                    <div class="digit-bar">
+                        <span class="label">${digit}</span>
+                        <div class="bar-track"><div class="bar-fill cold" style="width:0%;"></div></div>
+                        <span class="count">0</span>
+                    </div>
+                `).join('')}
+            </div>`;
+            
+            const allNever = Object.keys(emptyFreq2);
+            emptyHtml += `<div class="analytics-card">
+                <h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;">
+                    <div style="background:#ffebe6; border-radius:14px; padding:8px 12px;">
+                        <div style="font-weight:700; color:#c0392b;">🔥 Hot Top 10</div>
+                        <div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>
+                    </div>
+                    <div style="background:#e6f0ff; border-radius:14px; padding:8px 12px;">
+                        <div style="font-weight:700; color:#2980b9;">❄️ Cold Bottom 10</div>
+                        <div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>
+                    </div>
+                </div>
+                <div style="margin-top:8px; font-size:14px; background:#f0f5fc; border-radius:14px; padding:8px 12px;">
+                    <strong>🚫 කාල සීමාව තුල නොඇදුණු අංක (${allNever.length}):</strong>
+                    <div class="missing-numbers">
+                        ${allNever.map(n => `<span class="miss">${String(n).padStart(2,'0')}</span>`).join('')}
+                    </div>
+                </div>
+            </div>`;
+            
+            const emptyRanges = {};
+            for (let start=0; start<100; start+=10) {
+                const key = `${String(start).padStart(2,'0')}-${String(start+9).padStart(2,'0')}`;
+                emptyRanges[key] = { start, end: start+9, count: 0, numbers: [] };
+            }
+            emptyHtml += `<div class="analytics-card" style="grid-column:1/-1;">
+                <h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය (00-09, 10-19 ... 90-99)</h3>
+                <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;">
+                    <span style="background:#ffebe6; padding:4px 16px; border-radius:30px; color:#c0392b;">🔥 වැඩිම: - (0 වාර)</span>
+                    <span style="background:#e6f0ff; padding:4px 16px; border-radius:30px; color:#2980b9;">❄️ අඩුම: - (0 වාර)</span>
+                </div>
+                <div class="range-grid">
+                    ${Object.entries(emptyRanges).map(([key, data]) => {
+                        const allNums = [];
+                        for (let i=data.start; i<=data.end; i++) allNums.push(i);
+                        return `<div class="range-box cold">
+                            <div class="range-label">${key}</div>
+                            <div class="range-count">0</div>
+                            <div class="range-status">වාර</div>
+                            <div style="font-size:11px; color:#4d667e; margin-top:4px;">
+                                නැති: ${allNums.map(n => String(n).padStart(2,'0')).join(', ')}
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+            
+            emptyHtml += `</div>`;
+            container.innerHTML = emptyHtml;
             return;
         }
 
+        const numbers = data.map(d => d.fullNumber).filter(n => n && n.length > 0);
+        
         const freq1 = {};
         for (let i=0; i<=9; i++) freq1[i] = 0;
         numbers.forEach(n => {
@@ -996,17 +1066,19 @@
                 <div style="background:#ffebe6; border-radius:14px; padding:8px 12px;">
                     <div style="font-weight:700; color:#c0392b;">🔥 Hot Top 10</div>
                     ${top10.map(([n,c]) => `<div class="two-digit-item"><span class="num">${String(n).padStart(2,'0')}</span><span class="freq">${c} වාර</span></div>`).join('')}
+                    ${top10.length === 0 ? '<div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>' : ''}
                 </div>
                 <div style="background:#e6f0ff; border-radius:14px; padding:8px 12px;">
                     <div style="font-weight:700; color:#2980b9;">❄️ Cold Bottom 10</div>
                     ${bottom10.map(([n,c]) => `<div class="two-digit-item"><span class="num">${String(n).padStart(2,'0')}</span><span class="freq">${c} වාර</span></div>`).join('')}
+                    ${bottom10.length === 0 ? '<div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>' : ''}
                 </div>
             </div>
             <div style="margin-top:8px; font-size:14px; background:#f0f5fc; border-radius:14px; padding:8px 12px;">
                 <strong>🚫 කාල සීමාව තුල නොඇදුණු අංක (${never.length}):</strong>
                 <div class="missing-numbers">
                     ${never.map(n => `<span class="miss">${String(n).padStart(2,'0')}</span>`).join('')}
-                    ${never.length === 0 ? '<span>සියල්ලම ඇදී ඇත!</span>' : ''}
+                    ${never.length === 0 ? '<span>✅ සියලුම අංක ඇදී ඇත!</span>' : ''}
                 </div>
             </div>
         </div>`;
