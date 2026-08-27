@@ -510,35 +510,78 @@
     const heatmapGrid = document.getElementById('heatmapGrid');
     const advancedContainer = document.getElementById('advancedStatsContainer');
 
+    // ============================================================
+    // 🟢 HELPER FUNCTIONS
+    // ============================================================
     function formatDate(ts) {
         if (!ts) return 'N/A';
         const d = ts.toDate ? ts.toDate() : new Date(ts);
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
+    function toDateObj(value) {
+        if (!value) return null;
+        if (value.toDate) return value.toDate(); // Firestore Timestamp
+        if (value instanceof Date) return value;
+        const d = new Date(value);
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    function getDateRange(range) {
+        if (range === 'all') return null;
+        const now = new Date();
+        const start = new Date(now);
+        start.setMonth(now.getMonth() - parseInt(range));
+        start.setHours(0, 0, 0, 0);
+        return start;
+    }
+
+    // ============================================================
+    // 🟢 FILTER FUNCTION (FIXED)
+    // ============================================================
     function getFilteredByRange() {
         let data = allDocs;
+
+        // 1. Custom Date Range (from date pickers)
         if (customStart && customEnd) {
             const start = new Date(customStart);
             const end = new Date(customEnd);
             end.setHours(23, 59, 59, 999);
-            return data.filter(r => r.date && r.date >= start && r.date <= end);
+            return data.filter(r => {
+                const d = toDateObj(r.date);
+                return d && d >= start && d <= end;
+            });
         }
+
+        // 2. Quick buttons (මාස 1, 2, 3, 6, 12, සියල්ල)
         if (currentRange === 'all') {
             return data;
         } else {
             const now = new Date();
             const start = new Date(now);
             start.setMonth(now.getMonth() - parseInt(currentRange));
-            return data.filter(r => r.date && r.date >= start);
+            start.setHours(0, 0, 0, 0);
+            return data.filter(r => {
+                const d = toDateObj(r.date);
+                return d && d >= start;
+            });
         }
     }
 
+    // ============================================================
+    // 🟢 CUSTOM DATE RANGE
+    // ============================================================
     function applyCustomDateRange() {
         const startVal = document.getElementById('startDate').value;
         const endVal = document.getElementById('endDate').value;
-        if (!startVal || !endVal) { alert('කරුණාකර ආරම්භක සහ අවසාන දිනයන් දෙකම තෝරන්න.'); return; }
-        if (new Date(startVal) > new Date(endVal)) { alert('ආරම්භක දිනය අවසාන දිනයට වඩා පැරණි විය යුතුයි.'); return; }
+        if (!startVal || !endVal) {
+            alert('කරුණාකර ආරම්භක සහ අවසාන දිනයන් දෙකම තෝරන්න.');
+            return;
+        }
+        if (new Date(startVal) > new Date(endVal)) {
+            alert('ආරම්භක දිනය අවසාන දිනයට වඩා පැරණි විය යුතුයි.');
+            return;
+        }
         customStart = startVal;
         customEnd = endVal;
         document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -547,6 +590,9 @@
         updateAllViews();
     }
 
+    // ============================================================
+    // 🟢 FETCH DATA FROM FIRESTORE
+    // ============================================================
     async function fetchData(range) {
         wrapper.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">දත්ත ලබා ගනිමින්...</p></div>`;
         analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>`;
@@ -559,10 +605,8 @@
         document.getElementById('endDate').value = '';
 
         try {
-            let query = db.collection('mahajana_results').orderBy('date', 'desc');
-            const startDate = getDateRange(range);
-            if (startDate) query = query.where('date', '>=', startDate);
-            const snapshot = await query.get();
+            // Fetch ALL documents (no date filter in Firestore)
+            const snapshot = await db.collection('mahajana_results').orderBy('date', 'desc').get();
             const docs = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
@@ -570,7 +614,8 @@
                     id: doc.id,
                     fullNumber: data.fullNumber || '',
                     numberId: data.id || '',
-                    date: data.date || null
+                    // Convert Firestore Timestamp to Date object
+                    date: data.date ? data.date.toDate() : null
                 });
             });
             allDocs = docs;
@@ -586,14 +631,9 @@
         }
     }
 
-    function getDateRange(range) {
-        if (range === 'all') return null;
-        const now = new Date();
-        const start = new Date(now);
-        start.setMonth(now.getMonth() - parseInt(range));
-        return start;
-    }
-
+    // ============================================================
+    // 🟢 UPDATE ALL VIEWS
+    // ============================================================
     function updateAllViews() {
         const data = getFilteredByRange();
         updateSearchResults();
@@ -602,15 +642,15 @@
         renderBasicAnalytics(data);
     }
 
+    // ============================================================
+    // 🟢 SEARCH TAB
+    // ============================================================
     function filterBySuffix(docs, term) {
         if (!term || term.trim() === '') return docs;
         const clean = term.trim();
         return docs.filter(d => (d.fullNumber || '').endsWith(clean));
     }
 
-    // =====================================================
-    // 🟢 updateSearchResults - දිනය එක් වරක් පමණි
-    // =====================================================
     function updateSearchResults() {
         const data = getFilteredByRange();
         const filtered = filterBySuffix(data, searchTerm);
@@ -651,7 +691,7 @@
     searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
 
     // ============================================================
-    // HEATMAP
+    // 🟢 HEATMAP
     // ============================================================
     function renderHeatmap(docs) {
         const container = heatmapGrid;
@@ -707,7 +747,7 @@
     }
 
     // ============================================================
-    // ADVANCED STATS
+    // 🟢 ADVANCED STATS
     // ============================================================
     function renderAdvancedStats(docs) {
         const container = advancedContainer;
@@ -727,7 +767,7 @@
         const dateMap = {};
         data.forEach(d => {
             if (!d.date) return;
-            const dateStr = d.date.toDate ? d.date.toDate().toISOString().slice(0,10) : new Date(d.date).toISOString().slice(0,10);
+            const dateStr = d.date.toISOString().slice(0,10);
             dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
         });
         const sortedDates = Object.keys(dateMap).sort();
@@ -809,8 +849,7 @@
             if (!d.date) return;
             const num = d.fullNumber;
             if (!num) return;
-            const dateObj = d.date.toDate ? d.date.toDate() : new Date(d.date);
-            const dayStr = dateObj.toISOString().slice(0,10);
+            const dayStr = d.date.toISOString().slice(0,10);
             const l1 = parseInt(num.slice(-1));
             if (!isNaN(l1)) {
                 if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr;
@@ -908,13 +947,13 @@
     }
 
     // ============================================================
-    // 🟢 BASIC ANALYTICS - දත්ත නැති විටත් "කාල සීමාව තුළ නොඇදුණු අංක" පෙන්වයි
+    // 🟢 BASIC ANALYTICS (FIXED)
     // ============================================================
     function renderBasicAnalytics(docs) {
         const container = analyticsContent;
         const data = docs || getFilteredByRange();
 
-        // දත්ත නැති වුවත්, "කාල සීමාව තුළ නොඇදුණු අංක" පෙන්වීමට හැකි වන පරිදි සකස් කිරීම
+        // Case 1: No data at all
         if (!data || data.length === 0) {
             const emptyFreq1 = {};
             for (let i=0; i<=9; i++) emptyFreq1[i] = 0;
@@ -991,8 +1030,16 @@
             return;
         }
 
+        // Case 2: Data exists, extract numbers
         const numbers = data.map(d => d.fullNumber).filter(n => n && n.length > 0);
-        
+
+        // Case 3: Data exists but no valid numbers (fullNumber empty)
+        if (numbers.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>`;
+            return;
+        }
+
+        // ---- Build frequencies ----
         const freq1 = {};
         for (let i=0; i<=9; i++) freq1[i] = 0;
         numbers.forEach(n => {
@@ -1027,8 +1074,10 @@
             }
         });
 
+        // ---- Build HTML ----
         let html = `<div class="analytics-grid">`;
 
+        // Card 1: Last 1 Digit
         const sorted1 = Object.entries(freq1).sort((a,b) => b[1] - a[1]);
         const maxFreq1 = sorted1.length > 0 ? sorted1[0][1] : 1;
         const hot1 = sorted1.slice(0, 3).map(x => x[0]);
@@ -1055,6 +1104,7 @@
             }).join('')}
         </div>`;
 
+        // Card 2: Last 2 Digits
         const sorted2 = Object.entries(freq2).sort((a,b) => b[1] - a[1]);
         const top10 = sorted2.slice(0, 10);
         const bottom10 = sorted2.filter(x => x[1] > 0).sort((a,b) => a[1] - b[1]).slice(0, 10);
@@ -1083,6 +1133,7 @@
             </div>
         </div>`;
 
+        // Card 3: Range Analysis
         const rangeEntries = Object.entries(ranges);
         const sortedRanges = rangeEntries.sort((a,b) => b[1].count - a[1].count);
         const maxRangeCount = sortedRanges.length > 0 ? sortedRanges[0][1].count : 1;
@@ -1124,6 +1175,9 @@
         container.innerHTML = html;
     }
 
+    // ============================================================
+    // 🟢 EVENT LISTENERS
+    // ============================================================
     document.querySelectorAll('.time-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -1151,10 +1205,16 @@
         });
     });
 
+    // ============================================================
+    // 🟢 EXPOSE FUNCTIONS
+    // ============================================================
     window.applySearch = applySearch;
     window.resetSearch = resetSearch;
     window.applyCustomDateRange = applyCustomDateRange;
 
+    // ============================================================
+    // 🟢 INIT
+    // ============================================================
     fetchData('all');
 </script>
 </body>
