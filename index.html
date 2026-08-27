@@ -37,7 +37,6 @@
             box-shadow: 0 25px 60px rgba(0,20,40,0.12);
             border: 1px solid rgba(255,255,255,0.5);
         }
-        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -62,7 +61,6 @@
             box-shadow:0 4px 10px rgba(255,202,40,0.3);
         }
 
-        /* Time Filter */
         .time-filter {
             display: flex;
             flex-wrap: wrap;
@@ -134,7 +132,6 @@
         .time-btn:hover { background: #d5e2f2; }
         .time-btn.active { background: #1a3e66; color: #fff; box-shadow: 0 6px 16px rgba(26,62,102,0.25); }
 
-        /* Tabs */
         .tabs {
             display: flex; gap:6px; margin-bottom:25px; border-bottom:2px solid #e3eaf2;
             padding-bottom:4px; flex-wrap:wrap;
@@ -150,7 +147,6 @@
         .tab-content { display:none; }
         .tab-content.active { display:block; }
 
-        /* Search Box (Tab 1) */
         .search-box {
             display:flex; flex-wrap:wrap; align-items:center; gap:14px;
             background:white; padding:8px 8px 8px 24px; border-radius:60px;
@@ -174,7 +170,6 @@
         .btn-secondary { background:#eef3f8; color:#1f3b5c; }
         .btn-secondary:hover { background:#dde6f0; }
 
-        /* Results (Tab 1) */
         .result-header {
             display:flex; justify-content:space-between; align-items:center;
             margin-bottom:16px; border-bottom:2px solid #e3eaf2; padding-bottom:12px;
@@ -224,16 +219,7 @@
             padding:2px 14px;
             border-radius:30px;
         }
-        .result-item .date { 
-            color:#4d667e; 
-            font-weight:500; 
-            background:#f0f5fc; 
-            padding:4px 16px; 
-            border-radius:40px; 
-            font-size:14px; 
-        }
 
-        /* ========== HEATMAP ========== */
         .heatmap-section {
             background: #fff;
             border-radius: 24px;
@@ -310,7 +296,6 @@
             border-radius: 20px;
         }
 
-        /* ===== ADVANCED STATS ===== */
         .advanced-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -333,7 +318,6 @@
             box-shadow: 0 2px 8px rgba(102,126,234,0.3);
         }
 
-        /* ===== ANALYTICS CARDS ===== */
         .analytics-card {
             background:#fff; border-radius:24px; padding:20px 22px;
             border:1px solid #eaeef5; box-shadow:0 4px 12px rgba(0,0,0,0.02);
@@ -424,14 +408,12 @@
 </head>
 <body>
 <div class="container">
-    <!-- HEADER -->
     <div class="header">
         <div class="header-icon"><i class="fas fa-chart-line"></i></div>
         <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම - 0777325563</small></h1>
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
-    <!-- TIME FILTER -->
     <div class="time-filter">
         <span class="label"><i class="far fa-calendar-alt"></i> දින සීමාව :</span>
         <input type="date" id="startDate">
@@ -449,13 +431,11 @@
         <button class="time-btn active" data-range="all">සියල්ල</button>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="search"><i class="fas fa-search"></i> සෙවීම</button>
         <button class="tab-btn" data-tab="analytics"><i class="fas fa-chart-pie"></i> විශ්ලේෂණය</button>
     </div>
 
-    <!-- ========== TAB 1: SEARCH ========== -->
     <div class="tab-content active" id="tab-search">
         <div class="search-box">
             <i class="fas fa-search"></i>
@@ -474,10 +454,7 @@
         </div>
     </div>
 
-    <!-- ========== TAB 2: ANALYTICS ========== -->
     <div class="tab-content" id="tab-analytics">
-        
-        <!-- HEATMAP -->
         <div class="heatmap-section" id="heatmapContainer">
             <h3>
                 <span><i class="fas fa-fire" style="color:#e74c3c;"></i> අග ඉලක්කම් 00-99 තාප සිතියම (Heatmap)</span>
@@ -494,12 +471,10 @@
             </div>
         </div>
 
-        <!-- ADVANCED STATS -->
         <div id="advancedStatsContainer">
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">උසස් සංඛ්‍යාන විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
 
-        <!-- BASIC ANALYTICS -->
         <div id="analyticsContent">
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
@@ -507,7 +482,6 @@
 </div>
 
 <script>
-    // ==================== FIREBASE CONFIG ====================
     const firebaseConfig = {
         apiKey: "AIzaSyDIvLPukOF4T1p0DOkXjXQ-y-9mWME5QXw",
         authDomain: "krishanlotterysystem.firebaseapp.com",
@@ -520,7 +494,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ==================== GLOBALS ====================
     let allDocs = [];
     let currentRange = 'all';
     let searchTerm = '';
@@ -537,7 +510,6 @@
     const heatmapGrid = document.getElementById('heatmapGrid');
     const advancedContainer = document.getElementById('advancedStatsContainer');
 
-    // ==================== HELPERS ====================
     function formatDate(ts) {
         if (!ts) return 'N/A';
         const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -562,7 +534,6 @@
         }
     }
 
-    // ========== CUSTOM DATE ==========
     function applyCustomDateRange() {
         const startVal = document.getElementById('startDate').value;
         const endVal = document.getElementById('endDate').value;
@@ -576,7 +547,6 @@
         updateAllViews();
     }
 
-    // ==================== FETCH DATA ====================
     async function fetchData(range) {
         wrapper.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">දත්ත ලබා ගනිමින්...</p></div>`;
         analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>`;
@@ -597,9 +567,9 @@
             snapshot.forEach(doc => {
                 const data = doc.data();
                 docs.push({
-                    id: doc.id,                 // Document ID (e.g., "2026-08-25")
+                    id: doc.id,
                     fullNumber: data.fullNumber || '',
-                    numberId: data.id || '',    // Internal sequential ID (e.g., "6290")
+                    numberId: data.id || '',
                     date: data.date || null
                 });
             });
@@ -632,13 +602,15 @@
         renderBasicAnalytics(data);
     }
 
-    // ==================== SEARCH TAB ====================
     function filterBySuffix(docs, term) {
         if (!term || term.trim() === '') return docs;
         const clean = term.trim();
         return docs.filter(d => (d.fullNumber || '').endsWith(clean));
     }
 
+    // =====================================================
+    // 🟢 මෙයයි වෙනස් කළ ශ්‍රිතය (දිනය එක් වරක් පමණි)
+    // =====================================================
     function updateSearchResults() {
         const data = getFilteredByRange();
         const filtered = filterBySuffix(data, searchTerm);
@@ -649,14 +621,12 @@
         }
         let html = '';
         filtered.forEach(d => {
-            // 🔥 නව ආකෘතිය: 📅 2026-08-25 (6290) # U772236
             html += `<div class="result-item">
                 <span class="number">
                     <span class="draw-id">📅 ${d.id}</span>
                     <span class="seq-id">(${d.numberId || '-'})</span>
                     <span class="full-num"># ${d.fullNumber}</span>
                 </span>
-                <span class="date"><i class="far fa-calendar-alt"></i> ${formatDate(d.date)}</span>
             </div>`;
         });
         wrapper.innerHTML = html;
@@ -681,7 +651,7 @@
     searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
 
     // ============================================================
-    // 🟢 HEATMAP
+    // HEATMAP
     // ============================================================
     function renderHeatmap(docs) {
         const container = heatmapGrid;
@@ -737,7 +707,7 @@
     }
 
     // ============================================================
-    // 🟢 ADVANCED STATS
+    // ADVANCED STATS
     // ============================================================
     function renderAdvancedStats(docs) {
         const container = advancedContainer;
@@ -754,7 +724,6 @@
             return;
         }
 
-        // Moving Averages
         const dateMap = {};
         data.forEach(d => {
             if (!d.date) return;
@@ -816,7 +785,6 @@
             }
         });
 
-        // Prediction & Std Dev
         const freq1 = {};
         for (let i=0; i<=9; i++) freq1[i] = 0;
         const freq2 = {};
@@ -940,7 +908,7 @@
     }
 
     // ============================================================
-    // 🟢 BASIC ANALYTICS (Hot/Cold/Range)
+    // BASIC ANALYTICS (Hot/Cold/Range)
     // ============================================================
     function renderBasicAnalytics(docs) {
         const container = analyticsContent;
@@ -1084,7 +1052,6 @@
         container.innerHTML = html;
     }
 
-    // ==================== TIME FILTER BUTTONS ====================
     document.querySelectorAll('.time-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -1096,7 +1063,6 @@
         });
     });
 
-    // ==================== TAB SWITCHING ====================
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1113,12 +1079,10 @@
         });
     });
 
-    // ==================== EXPOSE FUNCTIONS ====================
     window.applySearch = applySearch;
     window.resetSearch = resetSearch;
     window.applyCustomDateRange = applyCustomDateRange;
 
-    // ==================== INIT ====================
     fetchData('all');
 </script>
 </body>
