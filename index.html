@@ -198,34 +198,64 @@
         .tab-content { display:none; }
         .tab-content.active { display:block; }
 
-        /* ===== SEARCH BOX ===== */
+        /* ===== SEARCH BOX - Light Card Style ===== */
         .search-box {
-            display:flex; flex-wrap:wrap; align-items:center; gap:14px;
-            background:rgba(255,255,255,0.04);
+            display:flex;
+            flex-wrap:wrap;
+            align-items:center;
+            gap:14px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
             padding:8px 8px 8px 24px;
             border-radius:60px;
-            border:1px solid rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.08);
             margin-bottom:28px;
-            transition:0.25s;
-            backdrop-filter: blur(10px);
+            transition:0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         .search-box:focus-within {
-            border-color:#667eea;
-            box-shadow:0 0 0 5px rgba(102,126,234,0.08);
-            background:rgba(255,255,255,0.06);
+            border-color: rgba(102,126,234,0.3);
+            box-shadow: 0 8px 30px rgba(102,126,234,0.08);
+            background: rgba(255,255,255,0.1);
         }
-        .search-box i { color:rgba(255,255,255,0.2); font-size:18px; }
+        .search-box i {
+            color: rgba(255,255,255,0.25);
+            font-size:18px;
+        }
         .search-box input {
-            flex:1; min-width:160px; padding:14px 6px; border:none; background:transparent;
-            font-size:18px; font-family:'Noto Sans Sinhala',sans-serif;
-            color:#e8ecf5; outline:none;
+            flex:1;
+            min-width:160px;
+            padding:14px 6px;
+            border:none;
+            background:transparent;
+            font-size:18px;
+            font-family:'Noto Sans Sinhala',sans-serif;
+            color: #e8ecf5;
+            outline:none;
         }
-        .search-box input::placeholder { color:rgba(255,255,255,0.2); font-weight:400; }
-        .search-box .btn-group { display:flex; gap:8px; flex-wrap:wrap; }
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.2);
+            font-weight:400;
+        }
+        .search-box .btn-group {
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        /* ===== BUTTONS ===== */
         .btn {
-            padding:12px 28px; border:none; border-radius:60px;
-            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:15px;
-            cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:8px;
+            padding:12px 28px;
+            border:none;
+            border-radius:60px;
+            font-family:'Noto Sans Sinhala',sans-serif;
+            font-weight:600;
+            font-size:15px;
+            cursor:pointer;
+            transition:0.2s;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
         }
         .btn-primary {
             background:linear-gradient(135deg,#667eea,#764ba2);
@@ -237,12 +267,12 @@
             box-shadow:0 10px 35px rgba(102,126,234,0.4);
         }
         .btn-secondary {
-            background:rgba(255,255,255,0.05);
-            color:rgba(255,255,255,0.4);
+            background:rgba(255,255,255,0.06);
+            color:rgba(255,255,255,0.5);
             border:1px solid rgba(255,255,255,0.06);
         }
         .btn-secondary:hover {
-            background:rgba(255,255,255,0.08);
+            background:rgba(255,255,255,0.1);
             color:#ffffff;
         }
 
@@ -295,13 +325,11 @@
             align-items:center;
             gap:8px;
         }
-        /* 📅 වාරය/දිනය - ලා නිල්, Bold */
         .result-item .number .draw-id {
             font-weight:700;
             font-size:16px;
             color: #7ec8e3;
         }
-        /* (6290) - අභ්‍යන්තර අංකය */
         .result-item .number .seq-id {
             font-weight:400;
             font-size:14px;
@@ -311,7 +339,6 @@
             border-radius:30px;
             margin-left:2px;
         }
-        /* # U772236 - ජය අංකය - ලා කොළ */
         .result-item .number .full-num {
             font-weight:700;
             font-size:18px;
@@ -423,24 +450,29 @@
             box-shadow: 0 4px 15px rgba(102,126,234,0.3);
         }
 
-        /* ===== ANALYTICS CARDS ===== */
+        /* ===== ANALYTICS CARDS - Light Card Style ===== */
         .analytics-card {
-            background: rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(12px);
             border-radius: 24px;
             padding: 20px 22px;
-            border: 1px solid rgba(255,255,255,0.04);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: 0.2s;
+        }
+        .analytics-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.08);
         }
         .analytics-card h3 {
             font-size:18px;
             font-weight:700;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.85);
             margin-bottom:12px;
             display:flex;
             align-items:center;
             gap:10px;
-            border-bottom:1px solid rgba(255,255,255,0.04);
+            border-bottom:1px solid rgba(255,255,255,0.06);
             padding-bottom:10px;
         }
         .analytics-card h3 i { color: #667eea; }
@@ -456,7 +488,7 @@
             font-size:14px;
         }
         .digit-bar .bar-track {
-            flex:1; height:22px; background:rgba(255,255,255,0.04); border-radius:20px; overflow:hidden;
+            flex:1; height:22px; background:rgba(255,255,255,0.06); border-radius:20px; overflow:hidden;
         }
         .digit-bar .bar-fill {
             height:100%; border-radius:20px; transition:0.3s;
@@ -477,7 +509,7 @@
         }
         .two-digit-item {
             display:flex; justify-content:space-between; padding:4px 8px;
-            border-bottom:1px solid rgba(255,255,255,0.03); font-size:14px;
+            border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px;
         }
         .two-digit-item .num {
             font-weight:600;
@@ -491,7 +523,7 @@
             display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;
         }
         .range-box {
-            background:rgba(255,255,255,0.02);
+            background:rgba(255,255,255,0.04);
             border-radius:14px;
             padding:10px 8px;
             text-align:center;
@@ -584,18 +616,23 @@
 
         /* ===== FEEDBACK FORM ===== */
         .feedback-card {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
             border-radius: 24px;
             padding: 24px 28px;
             border: 1px solid rgba(255,255,255,0.04);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             margin-top: 24px;
+            transition: 0.2s;
+        }
+        .feedback-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.06);
         }
         .feedback-card h3 {
             font-size: 20px;
             font-weight: 700;
-            color: #c8d6e5;
+            color: rgba(255,255,255,0.85);
             margin-bottom: 6px;
             display: flex;
             align-items: center;
@@ -620,7 +657,7 @@
         .feedback-card .form-group textarea {
             width: 100%;
             padding: 10px 14px;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 14px;
             background: rgba(255,255,255,0.04);
             color: #e8ecf5;
@@ -698,7 +735,7 @@
             margin-bottom: 12px;
         }
         .feedback-card .feedback-success h4 {
-            color: #c8d6e5;
+            color: rgba(255,255,255,0.85);
             font-size: 20px;
             margin-bottom: 4px;
         }
@@ -777,6 +814,7 @@
     </div>
 
     <div class="tab-content active" id="tab-search">
+        <!-- SEARCH BOX - Light Card Style -->
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="අග අංක මෙහි ටයිප් කරන්න" autocomplete="off">
@@ -1183,7 +1221,6 @@
         function getColor(count) {
             if (range === 0) return '#e2e8f0';
             const ratio = (count - minVal) / range;
-            // More vibrant colors for better visibility on light background
             const r = Math.round(43 + (236 - 43) * ratio * 0.6 + (229 - 236) * ratio * 0.4 * ratio);
             const g = Math.round(108 + (201 - 108) * ratio * 0.7 + (62 - 201) * ratio * 0.3);
             const b = Math.round(176 - (176 - 75) * ratio * 0.8 + (62 - 75) * ratio * 0.2);
