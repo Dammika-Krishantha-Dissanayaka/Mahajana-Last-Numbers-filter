@@ -14,10 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
-        :root {
-            --draw-date-color: #c4b5fd; /* දිනුම් වාරයේ පාට */
-        }
-
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
@@ -186,7 +182,6 @@
             border: 1px solid rgba(43,108,176,0.2);
         }
 
-        /* ===== TABS ===== */
         .tabs {
             display: flex;
             gap: 6px;
@@ -226,54 +221,6 @@
             display: block;
         }
 
-        /* ===== COLOR PICKER ===== */
-        .color-picker {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding: 10px 16px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 40px;
-            border: 1px solid rgba(255,255,255,0.06);
-            flex-wrap: wrap;
-        }
-        .color-picker .label {
-            color: rgba(255,255,255,0.4);
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .color-options {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .color-swatch {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: 0.2s;
-            padding: 0;
-            outline: none;
-        }
-        .color-swatch:hover {
-            transform: scale(1.1);
-            border-color: rgba(255,255,255,0.4);
-        }
-        .color-swatch.active {
-            border-color: #ffffff;
-            transform: scale(1.15);
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-        .color-picker .selected-label {
-            color: rgba(255,255,255,0.3);
-            font-size: 13px;
-            margin-left: 4px;
-        }
-
-        /* ===== SEARCH BOX ===== */
         .search-box {
             display:flex;
             flex-wrap:wrap;
@@ -320,7 +267,6 @@
         }
         .btn-secondary:hover { background:rgba(255,255,255,0.1); color:#ffffff; }
 
-        /* ===== RESULTS ===== */
         .result-header {
             display:flex; justify-content:space-between; align-items:center;
             margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.06);
@@ -354,7 +300,7 @@
             font-weight:700; font-size:18px; letter-spacing:0.5px;
             display:flex; flex-wrap:wrap; align-items:center; gap:8px;
         }
-        /* 📅 දිනුම් වාරය (Document ID) - Bold + #c4b5fd */
+        /* 📅 දිනුම් වාරය - Bold + #c4b5fd */
         .result-item .number .draw-id {
             font-weight: 700;
             font-size: 16px;
@@ -499,7 +445,6 @@
             border-color:rgba(43,108,176,0.2); background:rgba(255,255,255,0.06);
             transform:translateY(-2px);
         }
-        /* 📅 දිනුම් වාරය (Match Days) - Bold + #c4b5fd */
         .match-day-item .date {
             font-weight: 700;
             color: #c4b5fd;
@@ -604,8 +549,8 @@
 <div class="container">
     <div class="header">
         <div class="header-icon"><i class="fas fa-chart-line"></i></div>
-        <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම</small></h1>
-        <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY</div>
+        <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම - 0777325563</small></h1>
+        <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
     <!-- ===== TIME FILTER WITH PLACEHOLDERS ===== -->
@@ -632,20 +577,6 @@
 
     <!-- ===== TAB 1: SEARCH ===== -->
     <div class="tab-content active" id="tab-search">
-        <!-- ===== COLOR PICKER ===== -->
-        <div class="color-picker">
-            <span class="label"><i class="fas fa-palette"></i> පාට තෝරන්න (අනෙකුත් අංග සඳහා):</span>
-            <div class="color-options">
-                <button class="color-swatch active" data-color="#7ec8e3" style="background: #7ec8e3;" title="ලා නිල්"></button>
-                <button class="color-swatch" data-color="#7ddfb3" style="background: #7ddfb3;" title="ලා කොළ"></button>
-                <button class="color-swatch" data-color="#fbbf24" style="background: #fbbf24;" title="ලා කහ"></button>
-                <button class="color-swatch" data-color="#f9a8d4" style="background: #f9a8d4;" title="ලා රෝස"></button>
-                <button class="color-swatch" data-color="#c4b5fd" style="background: #c4b5fd;" title="ලා දම්"></button>
-                <button class="color-swatch" data-color="#fdba74" style="background: #fdba74;" title="ලා තැඹිලි"></button>
-            </div>
-            <span class="selected-label" id="selectedColorLabel">(වත්මන්: ලා නිල්)</span>
-        </div>
-
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="අග අංක මෙහි ටයිප් කරන්න" autocomplete="off">
@@ -655,7 +586,7 @@
             </div>
         </div>
         <div class="result-header">
-            <span><i class="fas fa-list-ul"></i> සෙවු දින</span>
+            <span><i class="fas fa-list-ul"></i> ප්‍රතිපල</span>
             <span class="badge" id="resultCount">0</span>
         </div>
         <div class="results-wrapper" id="resultsWrapper">
@@ -696,15 +627,15 @@
         <div id="feedbackContainer">
             <div class="feedback-card">
                 <h3><i class="fas fa-comment-dots" style="color:#fbbf24;"></i> අදහස් හා යෝජනා</h3>
-                <div class="subtitle">ඔබගේ අදහස් අපට වැදගත්! මෙම පැනලය වැඩිදියුණු කිරීමට උදව් කරන්න.</div>
+                <div class="subtitle">ඔබගේ අදහස් අපට වැදගත්! මෙම පැනලය වැඩිදියුණු කරමු</div>
                 <form id="feedbackForm" onsubmit="submitFeedback(event)">
                     <div class="form-group">
                         <label for="feedbackName"><i class="fas fa-user"></i> ඔබගේ නම (අනිවාර්ය නොවේ)</label>
-                        <input type="text" id="feedbackName" placeholder="උදා: ගාමිණී පෙරේරා" maxlength="100">
+                        <input type="text" id="feedbackName" placeholder="උදා: දම්මික ක්‍රිෂාන්ත දිසානායක" maxlength="100">
                     </div>
                     <div class="form-group">
                         <label for="feedbackPhone"><i class="fas fa-phone"></i> දුරකථන අංකය (අනිවාර්ය නොවේ)</label>
-                        <input type="tel" id="feedbackPhone" placeholder="071-2345678" maxlength="15">
+                        <input type="tel" id="feedbackPhone" placeholder="077-325563" maxlength="15">
                     </div>
                     <div class="form-group">
                         <label for="feedbackMessage"><i class="fas fa-pencil-alt"></i> ඔබගේ අදහස/යෝජනාව <span style="color:#e74c3c;">*</span></label>
@@ -780,59 +711,6 @@
         document.getElementById('ratingLabel').textContent = labels[value] || 'තරුවක් තෝරන්න';
     }
 
-    // ============================================================
-    // COLOR PICKER
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        // Load saved color from localStorage for the picker
-        var savedColor = localStorage.getItem('drawDateColor');
-        if (savedColor) {
-            document.documentElement.style.setProperty('--draw-date-color', savedColor);
-            updateColorLabel(savedColor);
-            updateActiveSwatch(savedColor);
-        } else {
-            // Default to #7ec8e3 as requested
-            document.documentElement.style.setProperty('--draw-date-color', '#7ec8e3');
-            updateColorLabel('#7ec8e3');
-            updateActiveSwatch('#7ec8e3');
-        }
-        
-        document.querySelectorAll('.color-swatch').forEach(function(swatch) {
-            swatch.addEventListener('click', function() {
-                var color = this.getAttribute('data-color');
-                document.documentElement.style.setProperty('--draw-date-color', color);
-                localStorage.setItem('drawDateColor', color);
-                updateColorLabel(color);
-                updateActiveSwatch(color);
-            });
-        });
-    });
-
-    function updateColorLabel(color) {
-        var labels = {
-            '#7ec8e3': 'ලා නිල්',
-            '#7ddfb3': 'ලා කොළ',
-            '#fbbf24': 'ලා කහ',
-            '#f9a8d4': 'ලා රෝස',
-            '#c4b5fd': 'ලා දම්',
-            '#fdba74': 'ලා තැඹිලි'
-        };
-        var label = labels[color] || 'තෝරාගත් පාට';
-        document.getElementById('selectedColorLabel').textContent = '(වත්මන්: ' + label + ')';
-    }
-
-    function updateActiveSwatch(color) {
-        document.querySelectorAll('.color-swatch').forEach(function(swatch) {
-            swatch.classList.remove('active');
-            if (swatch.getAttribute('data-color') === color) {
-                swatch.classList.add('active');
-            }
-        });
-    }
-
-    // ============================================================
-    // FEEDBACK
-    // ============================================================
     async function submitFeedback(event) {
         event.preventDefault();
         const name = document.getElementById('feedbackName').value.trim();
@@ -870,9 +748,6 @@
         }
     }
 
-    // ============================================================
-    // CORE FUNCTIONS
-    // ============================================================
     function formatDate(ts) {
         if (!ts) return 'N/A';
         var d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -982,7 +857,6 @@
         return docs.filter(function(d) { return (d.fullNumber || '').endsWith(clean); });
     }
 
-    // ==================== SEARCH RESULTS ====================
     function updateSearchResults() {
         var data = getFilteredByRange();
         var filtered = filterBySuffix(data, searchTerm);
@@ -993,7 +867,6 @@
         }
         var html = '';
         filtered.forEach(function(d) {
-            // සියලුම ID සඳහා Bold + #c4b5fd (යෙදී ඇත)
             html += '<div class="result-item">' +
                 '<span class="number">' +
                 '<span class="draw-id">📅 ' + d.id + '</span>' +
@@ -1023,9 +896,6 @@
     });
     searchInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
 
-    // ============================================================
-    // HEATMAP
-    // ============================================================
     function renderHeatmap(docs) {
         var container = heatmapGrid;
         var data = docs || getFilteredByRange();
@@ -1076,9 +946,6 @@
         container.innerHTML = html;
     }
 
-    // ============================================================
-    // ADVANCED STATS (සංක්ෂිප්ත - ක්‍රියාකාරීත්වය නොවෙනස්ව)
-    // ============================================================
     function renderAdvancedStats(docs) {
         var container = advancedContainer;
         var data = docs || getFilteredByRange();
@@ -1149,9 +1016,6 @@
         });
     }
 
-    // ============================================================
-    // BASIC ANALYTICS (සංක්ෂිප්ත)
-    // ============================================================
     function renderBasicAnalytics(docs) {
         var container = analyticsContent;
         var data = docs || getFilteredByRange();
@@ -1197,9 +1061,6 @@
         container.innerHTML = html;
     }
 
-    // ============================================================
-    // MATCH DAYS
-    // ============================================================
     function renderMatchDays(docs) {
         var container = matchDaysContainer;
         var data = docs || getFilteredByRange();
@@ -1214,24 +1075,21 @@
         var html = '';
         html += '<div class="analytics-card" style="margin-bottom:24px;">';
         if (matchDays1.length === 0) {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> වාරයේ අග අංක ජය අංක වුණ දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
+            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> දිනුම වාරයකට ඇදුණු දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
         } else {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> වාරයේ අග අංක ජය අංක වුණ දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays1.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 වාරයේ අග අංක 2 = ජය අංකයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays1.map(function(d) { var idLast2 = d.id.slice(-2); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + d.id + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + idLast2 + ' = ' + numLast2 + '</span></div>'; }).join('') + '</div>';
+            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> දිනුම වාරයකට ඇදුණු දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays1.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 වාරයේ අග අංක 2 = ජය අංකයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays1.map(function(d) { var idLast2 = d.id.slice(-2); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + d.id + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + idLast2 + ' = ' + numLast2 + '</span></div>'; }).join('') + '</div>';
         }
         html += '</div>';
         html += '<div class="analytics-card">';
         if (matchDays2.length === 0) {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
+            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> දිනයට ඇදුණු දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
         } else {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays2.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 ජය අංකයේ අග අංක 2 = දිනයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays2.map(function(d) { var day = d.date.getDate(); var dayStr = String(day).padStart(2, '0'); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + formatDate(d.date) + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + numLast2 + ' = ' + dayStr + '</span></div>'; }).join('') + '</div>';
+            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> දිනයට ඇදුණු දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays2.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 ජය අංකයේ අග අංක 2 = දිනයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays2.map(function(d) { var day = d.date.getDate(); var dayStr = String(day).padStart(2, '0'); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + formatDate(d.date) + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + numLast2 + ' = ' + dayStr + '</span></div>'; }).join('') + '</div>';
         }
         html += '</div>';
         container.innerHTML = html;
     }
 
-    // ============================================================
-    // TAB SWITCHING & EVENT LISTENERS
-    // ============================================================
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
         var target = document.getElementById('tab-' + tabId);
