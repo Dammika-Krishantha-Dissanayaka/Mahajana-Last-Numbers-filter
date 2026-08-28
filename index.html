@@ -17,7 +17,7 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #0a1628, #1a365d, #1e3a5f);
             min-height: 100vh;
             padding: 25px 20px;
             display: flex;
@@ -32,8 +32,8 @@
             -webkit-backdrop-filter: blur(20px);
             border-radius: 40px;
             padding: 28px 30px 35px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.06);
         }
         .header {
             display: flex;
@@ -41,23 +41,23 @@
             gap: 18px;
             flex-wrap: wrap;
             margin-bottom: 22px;
-            background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2));
+            background: linear-gradient(135deg, rgba(43,108,176,0.2), rgba(26,54,93,0.3));
             padding: 18px 24px;
             border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.06);
         }
         .header-icon {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2b6cb0, #1a365d);
             width: 60px; height: 60px;
             border-radius: 22px;
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-size: 28px;
-            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+            box-shadow: 0 10px 30px rgba(43,108,176,0.4);
         }
         .header h1 {
             font-size: 26px;
             font-weight: 700;
-            background: linear-gradient(135deg, #ffffff, #c8d6e5);
+            background: linear-gradient(135deg, #ffffff, #90cdf4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -66,7 +66,7 @@
         .header h1 small {
             font-size: 15px;
             font-weight:400;
-            background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+            background: linear-gradient(135deg, #90cdf4, #2b6cb0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -102,7 +102,7 @@
         }
         .time-filter .label {
             font-weight: 600;
-            color: #b8c6db;
+            color: #90cdf4;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -116,11 +116,11 @@
             background: rgba(255,255,255,0.05);
             outline: none;
             transition: 0.2s;
-            color: #d0d9e8;
+            color: #bee3f8;
         }
         .time-filter input[type="date"]:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+            border-color: #2b6cb0;
+            box-shadow: 0 0 0 3px rgba(43,108,176,0.2);
             background: rgba(255,255,255,0.08);
             color: #ffffff;
         }
@@ -171,10 +171,10 @@
             color: rgba(255,255,255,0.7);
         }
         .time-btn.active {
-            background: linear-gradient(135deg, rgba(102,126,234,0.3), rgba(118,75,162,0.3));
+            background: linear-gradient(135deg, rgba(43,108,176,0.3), rgba(26,54,93,0.3));
             color: #ffffff;
-            box-shadow: 0 6px 20px rgba(102,126,234,0.2);
-            border: 1px solid rgba(102,126,234,0.2);
+            box-shadow: 0 6px 20px rgba(43,108,176,0.2);
+            border: 1px solid rgba(43,108,176,0.2);
         }
 
         .tabs {
@@ -189,12 +189,10 @@
         }
         .tab-btn:hover { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); }
         .tab-btn.active {
-            background:linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15));
+            background:linear-gradient(135deg, rgba(43,108,176,0.15), rgba(26,54,93,0.15));
             color:#ffffff;
-            border-bottom:2px solid #667eea;
+            border-bottom:2px solid #2b6cb0;
         }
-        .tab-content { display:none; }
-        .tab-content.active { display:block; }
 
         .search-box {
             display:flex;
@@ -211,8 +209,8 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         .search-box:focus-within {
-            border-color: rgba(102,126,234,0.3);
-            box-shadow: 0 8px 30px rgba(102,126,234,0.08);
+            border-color: rgba(43,108,176,0.3);
+            box-shadow: 0 8px 30px rgba(43,108,176,0.08);
             background: rgba(255,255,255,0.1);
         }
         .search-box i { color: rgba(255,255,255,0.25); font-size:18px; }
@@ -230,11 +228,11 @@
             cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:8px;
         }
         .btn-primary {
-            background:linear-gradient(135deg,#667eea,#764ba2);
+            background:linear-gradient(135deg,#2b6cb0,#1a365d);
             color:#fff;
-            box-shadow:0 6px 25px rgba(102,126,234,0.3);
+            box-shadow:0 6px 25px rgba(43,108,176,0.3);
         }
-        .btn-primary:hover { transform:scale(1.03); box-shadow:0 10px 35px rgba(102,126,234,0.4); }
+        .btn-primary:hover { transform:scale(1.03); box-shadow:0 10px 35px rgba(43,108,176,0.4); }
         .btn-secondary {
             background:rgba(255,255,255,0.06);
             color:rgba(255,255,255,0.5);
@@ -249,16 +247,16 @@
         }
         .result-header span { font-weight:600; color: rgba(255,255,255,0.4); font-size:16px; }
         .result-header .badge {
-            background:linear-gradient(135deg,#667eea,#764ba2);
+            background:linear-gradient(135deg,#2b6cb0,#1a365d);
             color:#fff; padding:4px 18px; border-radius:40px;
-            font-size:14px; box-shadow:0 4px 15px rgba(102,126,234,0.2);
+            font-size:14px; box-shadow:0 4px 15px rgba(43,108,176,0.2);
         }
         .results-wrapper {
             max-height:460px; overflow-y:auto; padding-right:4px;
         }
         .results-wrapper::-webkit-scrollbar { width:5px; }
         .results-wrapper::-webkit-scrollbar-track { background:rgba(255,255,255,0.03); border-radius:10px; }
-        .results-wrapper::-webkit-scrollbar-thumb { background:rgba(102,126,234,0.3); border-radius:10px; }
+        .results-wrapper::-webkit-scrollbar-thumb { background:rgba(43,108,176,0.3); border-radius:10px; }
         .result-item {
             display:flex; justify-content:space-between; align-items:center;
             background:rgba(255,255,255,0.03);
@@ -267,7 +265,7 @@
             transition:0.15s; backdrop-filter: blur(10px);
         }
         .result-item:hover {
-            border-color:rgba(102,126,234,0.2);
+            border-color:rgba(43,108,176,0.2);
             background:rgba(255,255,255,0.06);
             transform:translateX(4px);
         }
@@ -299,11 +297,11 @@
             overflow-x: auto;
         }
         .heatmap-section h3 {
-            font-size: 18px; font-weight: 700; color: #1a3e66;
+            font-size: 18px; font-weight: 700; color: #1a365d;
             margin-bottom: 14px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 10px;
         }
-        .heatmap-section h3 .sub { font-size: 14px; font-weight: 400; color: #6f8aa8; }
+        .heatmap-section h3 .sub { font-size: 14px; font-weight: 400; color: #4a6fa5; }
         .heatmap-grid {
             display: grid; grid-template-columns: 40px repeat(10, 1fr);
             gap: 3px; min-width: 420px;
@@ -335,9 +333,9 @@
         @media (max-width: 768px) { .advanced-stats-grid { grid-template-columns: 1fr; } }
 
         .prediction-badge {
-            display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2);
+            display: inline-block; background: linear-gradient(135deg, #2b6cb0, #1a365d);
             color: white; padding: 4px 14px; border-radius: 30px; font-size: 14px;
-            font-weight: 700; margin: 2px; box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+            font-weight: 700; margin: 2px; box-shadow: 0 4px 15px rgba(43,108,176,0.3);
         }
 
         .analytics-card {
@@ -353,7 +351,7 @@
             margin-bottom:12px; display:flex; align-items:center; gap:10px;
             border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:10px;
         }
-        .analytics-card h3 i { color: #667eea; }
+        .analytics-card h3 i { color: #2b6cb0; }
         .analytics-card canvas { max-height: 180px; width: 100%; }
 
         .digit-bar { display:flex; align-items:center; gap:10px; margin-bottom:5px; }
@@ -365,7 +363,7 @@
         }
         .digit-bar .bar-fill {
             height:100%; border-radius:20px; transition:0.3s;
-            background:linear-gradient(90deg,#667eea,#764ba2);
+            background:linear-gradient(90deg,#2b6cb0,#1a365d);
         }
         .digit-bar .bar-fill.hot { background:linear-gradient(90deg,#e74c3c,#f39c12); }
         .digit-bar .bar-fill.cold { background:linear-gradient(90deg,#2193b0,#6dd5ed); }
@@ -390,7 +388,7 @@
             background:rgba(255,255,255,0.04); border-radius:14px; padding:10px 8px;
             text-align:center; border:1px solid rgba(255,255,255,0.04); transition:0.2s;
         }
-        .range-box:hover { transform:translateY(-2px); border-color:rgba(102,126,234,0.2); }
+        .range-box:hover { transform:translateY(-2px); border-color:rgba(43,108,176,0.2); }
         .range-box .range-label { font-weight:700; color: rgba(255,255,255,0.6); font-size:15px; }
         .range-box .range-count { font-size:20px; font-weight:700; color: #fbbf24; }
         .range-box .range-status { font-size:12px; color: rgba(255,255,255,0.25); }
@@ -417,7 +415,7 @@
             border:1px solid rgba(255,255,255,0.04); transition:0.15s; flex-wrap:wrap; gap:6px;
         }
         .match-day-item:hover {
-            border-color:rgba(102,126,234,0.2); background:rgba(255,255,255,0.06);
+            border-color:rgba(43,108,176,0.2); background:rgba(255,255,255,0.06);
             transform:translateY(-2px);
         }
         .match-day-item .date { font-weight:400; color: rgba(255,255,255,0.6); font-size:15px; }
@@ -454,7 +452,7 @@
         }
         .feedback-card .form-group input:focus,
         .feedback-card .form-group textarea:focus {
-            border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43,108,176,0.1);
             background: rgba(255,255,255,0.06);
         }
         .feedback-card .form-group textarea { min-height: 80px; resize: vertical; }
@@ -473,12 +471,12 @@
         .feedback-card .rating-group .star.active { text-shadow: 0 0 20px rgba(251,191,36,0.3); }
         .feedback-card .btn-submit {
             padding: 12px 36px; border: none; border-radius: 60px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2b6cb0, #1a365d);
             color: white; font-weight: 700; font-size: 16px;
             font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            cursor: pointer; transition: 0.2s; box-shadow: 0 6px 25px rgba(102,126,234,0.3);
+            cursor: pointer; transition: 0.2s; box-shadow: 0 6px 25px rgba(43,108,176,0.3);
         }
-        .feedback-card .btn-submit:hover { transform: scale(1.03); box-shadow: 0 10px 35px rgba(102,126,234,0.4); }
+        .feedback-card .btn-submit:hover { transform: scale(1.03); box-shadow: 0 10px 35px rgba(43,108,176,0.4); }
         .feedback-card .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .feedback-card .feedback-success {
             text-align: center; padding: 30px 20px; color: rgba(255,255,255,0.6);
@@ -490,7 +488,7 @@
         .empty-state i { font-size:40px; color:rgba(255,255,255,0.05); margin-bottom:15px; }
         .empty-state h3 { color: rgba(255,255,255,0.3); }
         .loading-spinner { text-align:center; padding:40px; color:rgba(255,255,255,0.2); }
-        .loading-spinner i { font-size:40px; animation:spin 1s linear infinite; color:#667eea; }
+        .loading-spinner i { font-size:40px; animation:spin 1s linear infinite; color:#2b6cb0; }
         .loading-spinner p { color: rgba(255,255,255,0.25); margin-top:12px; }
         @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
 
@@ -835,7 +833,7 @@
         return docs.filter(d => (d.fullNumber || '').endsWith(clean));
     }
 
-    // ==================== SEARCH RESULTS (අංක 4ක් ලා කහ) ====================
+    // ==================== SEARCH RESULTS ====================
     function updateSearchResults() {
         const data = getFilteredByRange();
         const filtered = filterBySuffix(data, searchTerm);
@@ -1071,7 +1069,7 @@
                     <h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ</h3>
                     <canvas id="expectedActualChart" style="max-height:180px; width:100%;"></canvas>
                     <div style="display:flex; gap:12px; justify-content:center; margin-top:6px; font-size:12px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">
-                        <span><span style="display:inline-block; width:16px; height:3px; background:#667eea; margin-right:4px;"></span> සැබෑ</span>
+                        <span><span style="display:inline-block; width:16px; height:3px; background:#2b6cb0; margin-right:4px;"></span> සැබෑ</span>
                         <span><span style="display:inline-block; width:16px; height:3px; background:#e74c3c; margin-right:4px; border-top:2px dashed #e74c3c;"></span> අපේක්ෂිත (${expected.toFixed(1)})</span>
                     </div>
                 </div>
@@ -1088,7 +1086,7 @@
             data: {
                 labels: labelsEA,
                 datasets: [
-                    { label: 'Actual', data: actualData, backgroundColor: '#667eea', borderRadius: 4 },
+                    { label: 'Actual', data: actualData, backgroundColor: '#2b6cb0', borderRadius: 4 },
                     { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false }
                 ]
             },
@@ -1270,7 +1268,7 @@
     }
 
     // ============================================================
-    // MATCH DAYS (අංක 4ක් ලා කහ)
+    // MATCH DAYS
     // ============================================================
     function renderMatchDays(docs) {
         const container = matchDaysContainer;
