@@ -14,6 +14,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
+        :root {
+            --draw-date-color: #c4b5fd; /* දිනුම් වාරයේ පාට */
+        }
+
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
@@ -117,6 +121,7 @@
             outline: none;
             transition: 0.2s;
             color: #bee3f8;
+            width: 150px;
         }
         .time-filter input[type="date"]:focus {
             border-color: #2b6cb0;
@@ -126,6 +131,10 @@
         }
         .time-filter input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
+        }
+        .time-filter input[type="date"]::placeholder {
+            color: rgba(255,255,255,0.2);
+            font-size: 13px;
         }
         .time-filter .date-sep {
             color: rgba(255,255,255,0.3);
@@ -217,6 +226,53 @@
             display: block;
         }
 
+        /* ===== COLOR PICKER ===== */
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.06);
+            flex-wrap: wrap;
+        }
+        .color-picker .label {
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .color-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 0;
+            outline: none;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+        .color-swatch.active {
+            border-color: #ffffff;
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        .color-picker .selected-label {
+            color: rgba(255,255,255,0.3);
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
         /* ===== SEARCH BOX ===== */
         .search-box {
             display:flex;
@@ -298,11 +354,11 @@
             font-weight:700; font-size:18px; letter-spacing:0.5px;
             display:flex; flex-wrap:wrap; align-items:center; gap:8px;
         }
+        /* 📅 දිනුම් වාරය (Document ID) - Bold + #c4b5fd */
         .result-item .number .draw-id {
-            font-weight:400; font-size:16px; color: rgba(255,255,255,0.6);
-        }
-        .result-item .number .draw-id.yellow {
-            font-weight:700; color: #fbbf24;
+            font-weight: 700;
+            font-size: 16px;
+            color: #c4b5fd;
         }
         .result-item .number .seq-id {
             font-weight:400; font-size:14px; color: rgba(255,255,255,0.3);
@@ -314,7 +370,6 @@
             border:1px solid rgba(125,223,179,0.1);
         }
 
-        /* ===== HEATMAP ===== */
         .heatmap-section {
             background: rgba(255,255,255,0.95);
             border-radius: 24px; padding: 20px 22px; margin-bottom: 24px;
@@ -353,7 +408,6 @@
             background: linear-gradient(to right, #2b6cb0, #ecc94b, #e53e3e);
         }
 
-        /* ===== ADVANCED STATS ===== */
         .advanced-stats-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;
         }
@@ -365,7 +419,6 @@
             font-weight: 700; margin: 2px; box-shadow: 0 4px 15px rgba(43,108,176,0.3);
         }
 
-        /* ===== ANALYTICS CARDS ===== */
         .analytics-card {
             background: rgba(255,255,255,0.06); backdrop-filter: blur(12px);
             border-radius: 24px; padding: 20px 22px;
@@ -446,8 +499,12 @@
             border-color:rgba(43,108,176,0.2); background:rgba(255,255,255,0.06);
             transform:translateY(-2px);
         }
-        .match-day-item .date { font-weight:400; color: rgba(255,255,255,0.6); font-size:15px; }
-        .match-day-item .date.yellow { font-weight:700; color: #fbbf24; }
+        /* 📅 දිනුම් වාරය (Match Days) - Bold + #c4b5fd */
+        .match-day-item .date {
+            font-weight: 700;
+            color: #c4b5fd;
+            font-size: 15px;
+        }
         .match-day-item .number { font-weight:700; color:#7ddfb3; font-size:15px; }
         .match-day-item .badge-match {
             background:rgba(125,223,179,0.15); color:#7ddfb3; padding:2px 12px;
@@ -551,11 +608,12 @@
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY</div>
     </div>
 
+    <!-- ===== TIME FILTER WITH PLACEHOLDERS ===== -->
     <div class="time-filter">
         <span class="label"><i class="far fa-calendar-alt"></i> දින සීමාව :</span>
-        <input type="date" id="startDate">
+        <input type="date" id="startDate" placeholder="ආරම්භය">
         <span class="date-sep">සිට</span>
-        <input type="date" id="endDate">
+        <input type="date" id="endDate" placeholder="අවසානය">
         <button class="time-btn-apply" onclick="applyCustomDateRange()"><i class="fas fa-check"></i> යොදන්න</button>
         <span class="divider">|</span>
         <span class="label"><i class="fas fa-bolt"></i> වේගවත්</span>
@@ -574,6 +632,20 @@
 
     <!-- ===== TAB 1: SEARCH ===== -->
     <div class="tab-content active" id="tab-search">
+        <!-- ===== COLOR PICKER ===== -->
+        <div class="color-picker">
+            <span class="label"><i class="fas fa-palette"></i> පාට තෝරන්න (අනෙකුත් අංග සඳහා):</span>
+            <div class="color-options">
+                <button class="color-swatch active" data-color="#7ec8e3" style="background: #7ec8e3;" title="ලා නිල්"></button>
+                <button class="color-swatch" data-color="#7ddfb3" style="background: #7ddfb3;" title="ලා කොළ"></button>
+                <button class="color-swatch" data-color="#fbbf24" style="background: #fbbf24;" title="ලා කහ"></button>
+                <button class="color-swatch" data-color="#f9a8d4" style="background: #f9a8d4;" title="ලා රෝස"></button>
+                <button class="color-swatch" data-color="#c4b5fd" style="background: #c4b5fd;" title="ලා දම්"></button>
+                <button class="color-swatch" data-color="#fdba74" style="background: #fdba74;" title="ලා තැඹිලි"></button>
+            </div>
+            <span class="selected-label" id="selectedColorLabel">(වත්මන්: ලා නිල්)</span>
+        </div>
+
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="අග අංක මෙහි ටයිප් කරන්න" autocomplete="off">
@@ -708,43 +780,54 @@
         document.getElementById('ratingLabel').textContent = labels[value] || 'තරුවක් තෝරන්න';
     }
 
+    // ============================================================
+    // COLOR PICKER
+    // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        const msgInput = document.getElementById('feedbackMessage');
-        if (msgInput) {
-            msgInput.addEventListener('input', function() {
-                document.getElementById('charCount').textContent = this.value.length;
-            });
+        // Load saved color from localStorage for the picker
+        var savedColor = localStorage.getItem('drawDateColor');
+        if (savedColor) {
+            document.documentElement.style.setProperty('--draw-date-color', savedColor);
+            updateColorLabel(savedColor);
+            updateActiveSwatch(savedColor);
+        } else {
+            // Default to #7ec8e3 as requested
+            document.documentElement.style.setProperty('--draw-date-color', '#7ec8e3');
+            updateColorLabel('#7ec8e3');
+            updateActiveSwatch('#7ec8e3');
         }
+        
+        document.querySelectorAll('.color-swatch').forEach(function(swatch) {
+            swatch.addEventListener('click', function() {
+                var color = this.getAttribute('data-color');
+                document.documentElement.style.setProperty('--draw-date-color', color);
+                localStorage.setItem('drawDateColor', color);
+                updateColorLabel(color);
+                updateActiveSwatch(color);
+            });
+        });
     });
 
-    // ============================================================
-    // TAB SWITCHING FUNCTION
-    // ============================================================
-    function switchTab(tabId) {
-        // Hide all tab contents
-        document.querySelectorAll('.tab-content').forEach(function(el) {
-            el.classList.remove('active');
-        });
-        // Show selected tab
-        var target = document.getElementById('tab-' + tabId);
-        if (target) {
-            target.classList.add('active');
-        }
-        // Update tab buttons
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-tab') === tabId) {
-                btn.classList.add('active');
+    function updateColorLabel(color) {
+        var labels = {
+            '#7ec8e3': 'ලා නිල්',
+            '#7ddfb3': 'ලා කොළ',
+            '#fbbf24': 'ලා කහ',
+            '#f9a8d4': 'ලා රෝස',
+            '#c4b5fd': 'ලා දම්',
+            '#fdba74': 'ලා තැඹිලි'
+        };
+        var label = labels[color] || 'තෝරාගත් පාට';
+        document.getElementById('selectedColorLabel').textContent = '(වත්මන්: ' + label + ')';
+    }
+
+    function updateActiveSwatch(color) {
+        document.querySelectorAll('.color-swatch').forEach(function(swatch) {
+            swatch.classList.remove('active');
+            if (swatch.getAttribute('data-color') === color) {
+                swatch.classList.add('active');
             }
         });
-        // If switching to analytics, render analytics data
-        if (tabId === 'analytics') {
-            var data = getFilteredByRange();
-            renderHeatmap(data);
-            renderAdvancedStats(data);
-            renderBasicAnalytics(data);
-            renderMatchDays(data);
-        }
     }
 
     // ============================================================
@@ -910,11 +993,10 @@
         }
         var html = '';
         filtered.forEach(function(d) {
-            var isDateId = d.id.indexOf('-') !== -1;
-            var idClass = isDateId ? 'draw-id' : 'draw-id yellow';
+            // සියලුම ID සඳහා Bold + #c4b5fd (යෙදී ඇත)
             html += '<div class="result-item">' +
                 '<span class="number">' +
-                '<span class="' + idClass + '">📅 ' + d.id + '</span>' +
+                '<span class="draw-id">📅 ' + d.id + '</span>' +
                 '<span class="seq-id">(' + (d.numberId || '-') + ')</span>' +
                 '<span class="full-num"># ' + d.fullNumber + '</span>' +
                 '</span>' +
@@ -995,7 +1077,7 @@
     }
 
     // ============================================================
-    // ADVANCED STATS
+    // ADVANCED STATS (සංක්ෂිප්ත - ක්‍රියාකාරීත්වය නොවෙනස්ව)
     // ============================================================
     function renderAdvancedStats(docs) {
         var container = advancedContainer;
@@ -1009,13 +1091,8 @@
             container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>';
             return;
         }
-        // Moving averages logic here (kept as before)
         var dateMap = {};
-        data.forEach(function(d) {
-            if (!d.date) return;
-            var dateStr = d.date.toISOString().slice(0,10);
-            dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
-        });
+        data.forEach(function(d) { if (!d.date) return; var dateStr = d.date.toISOString().slice(0,10); dateMap[dateStr] = (dateMap[dateStr] || 0) + 1; });
         var sortedDates = Object.keys(dateMap).sort();
         var counts = sortedDates.map(function(d) { return dateMap[d]; });
         var ma7 = [], ma14 = [], ma30 = [];
@@ -1035,64 +1112,18 @@
         if (labels.length > 60) { labels = labels.slice(-60); d7 = ma7.slice(-60); d14 = ma14.slice(-60); d30 = ma30.slice(-60); }
         movingAvgChart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                    { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                    { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
-                ]
-            },
-            options: {
-                responsive: true, plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12 } } }
-            }
+            data: { labels: labels, datasets: [ { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }, { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }, { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 } ] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12 } } } }
         });
-        // Prediction logic
-        var freq1 = {};
-        for (var i=0; i<=9; i++) freq1[i] = 0;
-        var freq2 = {};
-        for (var i=0; i<=99; i++) freq2[i] = 0;
-        numbers.forEach(function(n) {
-            var last1 = parseInt(n.slice(-1));
-            if (!isNaN(last1)) freq1[last1] = (freq1[last1] || 0) + 1;
-            var last2 = n.slice(-2);
-            var val = parseInt(last2);
-            if (!isNaN(val)) {
-                if (last2.length === 2) freq2[val] = (freq2[val] || 0) + 1;
-                else if (last2.length === 1) freq2[val] = (freq2[val] || 0) + 1;
-            }
-        });
+        var freq1 = {}; for (var i=0; i<=9; i++) freq1[i] = 0;
+        var freq2 = {}; for (var i=0; i<=99; i++) freq2[i] = 0;
+        numbers.forEach(function(n) { var last1 = parseInt(n.slice(-1)); if (!isNaN(last1)) freq1[last1] = (freq1[last1] || 0) + 1; var last2 = n.slice(-2); var val = parseInt(last2); if (!isNaN(val)) { if (last2.length === 2) freq2[val] = (freq2[val] || 0) + 1; else if (last2.length === 1) freq2[val] = (freq2[val] || 0) + 1; } });
         var totalDraws = numbers.length;
         var lastSeen1 = {}, lastSeen2 = {};
-        data.forEach(function(d) {
-            if (!d.date) return;
-            var num = d.fullNumber;
-            if (!num) return;
-            var dayStr = d.date.toISOString().slice(0,10);
-            var l1 = parseInt(num.slice(-1));
-            if (!isNaN(l1)) { if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr; }
-            var l2 = parseInt(num.slice(-2));
-            if (!isNaN(l2)) { if (!lastSeen2[l2] || dayStr > lastSeen2[l2]) lastSeen2[l2] = dayStr; }
-        });
+        data.forEach(function(d) { if (!d.date) return; var num = d.fullNumber; if (!num) return; var dayStr = d.date.toISOString().slice(0,10); var l1 = parseInt(num.slice(-1)); if (!isNaN(l1)) { if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr; } var l2 = parseInt(num.slice(-2)); if (!isNaN(l2)) { if (!lastSeen2[l2] || dayStr > lastSeen2[l2]) lastSeen2[l2] = dayStr; } });
         var today = new Date().toISOString().slice(0,10);
-        function getRecencyScore(lastSeenMap, key) {
-            var last = lastSeenMap[key];
-            if (!last) return 0;
-            var daysAgo = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24);
-            return 1 / (daysAgo + 1);
-        }
-        function getPredictionScores(freqMap, lastSeenMap, total) {
-            var scores = {};
-            var maxFreq = Math.max.apply(null, Object.values(freqMap));
-            Object.keys(freqMap).forEach(function(key) {
-                var freq = freqMap[key] || 0;
-                var freqWeight = maxFreq > 0 ? freq / maxFreq : 0;
-                var recWeight = getRecencyScore(lastSeenMap, key);
-                scores[key] = (freqWeight * 0.6) + (recWeight * 0.4);
-            });
-            return scores;
-        }
+        function getRecencyScore(lastSeenMap, key) { var last = lastSeenMap[key]; if (!last) return 0; var daysAgo = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24); return 1 / (daysAgo + 1); }
+        function getPredictionScores(freqMap, lastSeenMap, total) { var scores = {}; var maxFreq = Math.max.apply(null, Object.values(freqMap)); Object.keys(freqMap).forEach(function(key) { var freq = freqMap[key] || 0; var freqWeight = maxFreq > 0 ? freq / maxFreq : 0; var recWeight = getRecencyScore(lastSeenMap, key); scores[key] = (freqWeight * 0.6) + (recWeight * 0.4); }); return scores; }
         var scores1 = getPredictionScores(freq1, lastSeen1, totalDraws);
         var scores2 = getPredictionScores(freq2, lastSeen2, totalDraws);
         var top5_1 = Object.entries(scores1).sort(function(a,b) { return b[1] - a[1]; }).slice(0,5).map(function(x) { return x[0]; });
@@ -1113,22 +1144,13 @@
         var expectedData = labelsEA.map(function() { return expected; });
         expectedActualChart = new Chart(ctx2, {
             type: 'bar',
-            data: {
-                labels: labelsEA,
-                datasets: [
-                    { label: 'Actual', data: actualData, backgroundColor: '#2b6cb0', borderRadius: 4 },
-                    { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false }
-                ]
-            },
-            options: {
-                responsive: true, plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)' } } }
-            }
+            data: { labels: labelsEA, datasets: [ { label: 'Actual', data: actualData, backgroundColor: '#2b6cb0', borderRadius: 4 }, { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false } ] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)' } } } }
         });
     }
 
     // ============================================================
-    // BASIC ANALYTICS
+    // BASIC ANALYTICS (සංක්ෂිප්ත)
     // ============================================================
     function renderBasicAnalytics(docs) {
         var container = analyticsContent;
@@ -1140,26 +1162,19 @@
             emptyHtml += '<div class="analytics-card"><h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3><div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;"><span style="background:rgba(231,76,60,0.12); padding:2px 14px; border-radius:30px; color:#f1948a;">🔥 Hot: -</span><span style="background:rgba(52,152,219,0.12); padding:2px 14px; border-radius:30px; color:#85c1e9;">❄️ Cold: 0,1,2,3,4,5,6,7,8,9</span></div>' + Object.entries(emptyFreq1).map(function(item) { return '<div class="digit-bar"><span class="label">' + item[0] + '</span><div class="bar-track"><div class="bar-fill cold" style="width:0%;"></div></div><span class="count">0</span></div>'; }).join('') + '</div>';
             var allNever = Object.keys(emptyFreq2);
             emptyHtml += '<div class="analytics-card"><h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;"><div style="background:rgba(231,76,60,0.05); border-radius:14px; padding:8px 12px;"><div style="font-weight:700; color:#f1948a;">🔥 Hot Top 10</div><div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div></div><div style="background:rgba(52,152,219,0.05); border-radius:14px; padding:8px 12px;"><div style="font-weight:700; color:#85c1e9;">❄️ Cold Bottom 10</div><div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div></div></div><div style="margin-top:8px; font-size:14px; background:rgba(255,255,255,0.02); border-radius:14px; padding:8px 12px;"><strong style="color:rgba(255,255,255,0.5);">🚫 කාල සීමාව තුල නොඇදුණු අංක (' + allNever.length + '):</strong><div class="missing-numbers">' + allNever.map(function(n) { return '<span class="miss">' + String(n).padStart(2,'0') + '</span>'; }).join('') + '</div></div></div>';
-            var emptyRanges = {};
-            for (var start=0; start<100; start+=10) { var key2 = String(start).padStart(2,'0') + '-' + String(start+9).padStart(2,'0'); emptyRanges[key2] = { start: start, end: start+9, count: 0, numbers: [] }; }
+            var emptyRanges = {}; for (var start=0; start<100; start+=10) { var key2 = String(start).padStart(2,'0') + '-' + String(start+9).padStart(2,'0'); emptyRanges[key2] = { start: start, end: start+9, count: 0, numbers: [] }; }
             emptyHtml += '<div class="analytics-card" style="grid-column:1/-1;"><h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය</h3><div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;"><span style="background:rgba(231,76,60,0.08); padding:4px 16px; border-radius:30px; color:#f1948a;">🔥 වැඩිම: - (0 වාර)</span><span style="background:rgba(52,152,219,0.08); padding:4px 16px; border-radius:30px; color:#85c1e9;">❄️ අඩුම: - (0 වාර)</span></div><div class="range-grid">' + Object.entries(emptyRanges).map(function(item) { var allNums = []; for (var i=item[1].start; i<=item[1].end; i++) allNums.push(i); return '<div class="range-box cold"><div class="range-label">' + item[0] + '</div><div class="range-count">0</div><div class="range-status">වාර</div><div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:4px;">නැති: ' + allNums.map(function(n) { return String(n).padStart(2,'0'); }).join(', ') + '</div></div>'; }).join('') + '</div></div>';
             emptyHtml += '</div>';
             container.innerHTML = emptyHtml;
             return;
         }
         var numbers = data.map(function(d) { return d.fullNumber; }).filter(function(n) { return n && n.length > 0; });
-        if (numbers.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>';
-            return;
-        }
-        var freq1 = {};
-        for (var i=0; i<=9; i++) freq1[i] = 0;
+        if (numbers.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>'; return; }
+        var freq1 = {}; for (var i=0; i<=9; i++) freq1[i] = 0;
         numbers.forEach(function(n) { var last = n.slice(-1); var digit = parseInt(last); if (!isNaN(digit)) freq1[digit] = (freq1[digit] || 0) + 1; });
-        var freq2 = {};
-        for (var i=0; i<=99; i++) freq2[i] = 0;
+        var freq2 = {}; for (var i=0; i<=99; i++) freq2[i] = 0;
         numbers.forEach(function(n) { var last2 = n.slice(-2); var val = parseInt(last2); if (!isNaN(val) && last2.length === 2) freq2[val] = (freq2[val] || 0) + 1; else if (!isNaN(val) && last2.length === 1) freq2[val] = (freq2[val] || 0) + 1; });
-        var ranges = {};
-        for (var start=0; start<100; start+=10) { var key = String(start).padStart(2,'0') + '-' + String(start+9).padStart(2,'0'); ranges[key] = { start: start, end: start+9, count: 0, numbers: [] }; }
+        var ranges = {}; for (var start=0; start<100; start+=10) { var key = String(start).padStart(2,'0') + '-' + String(start+9).padStart(2,'0'); ranges[key] = { start: start, end: start+9, count: 0, numbers: [] }; }
         Object.keys(freq2).forEach(function(val) { var num = parseInt(val); if (!isNaN(num) && num >=0 && num <=99) { var start2 = Math.floor(num / 10) * 10; var key2 = String(start2).padStart(2,'0') + '-' + String(start2+9).padStart(2,'0'); if (ranges[key2]) { ranges[key2].count += freq2[num]; ranges[key2].numbers.push({ num: num, freq: freq2[num] }); } } });
         var html = '<div class="analytics-grid">';
         var sorted1 = Object.entries(freq1).sort(function(a,b) { return b[1] - a[1]; });
@@ -1201,22 +1216,39 @@
         if (matchDays1.length === 0) {
             html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> වාරයේ අග අංක ජය අංක වුණ දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
         } else {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> වාරයේ අග අංක ජය අංක වුණ දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays1.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 වාරයේ අග අංක 2 = ජය අංකයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays1.map(function(d) { var idLast2 = d.id.slice(-2); var numLast2 = d.fullNumber.slice(-2); var isDateId = d.id.indexOf('-') !== -1; var dateClass = isDateId ? 'date' : 'date yellow'; return '<div class="match-day-item"><span class="' + dateClass + '">📅 ' + d.id + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + idLast2 + ' = ' + numLast2 + '</span></div>'; }).join('') + '</div>';
+            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i> වාරයේ අග අංක ජය අංක වුණ දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays1.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 වාරයේ අග අංක 2 = ජය අංකයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays1.map(function(d) { var idLast2 = d.id.slice(-2); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + d.id + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + idLast2 + ' = ' + numLast2 + '</span></div>'; }).join('') + '</div>';
         }
         html += '</div>';
         html += '<div class="analytics-card">';
         if (matchDays2.length === 0) {
             html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
         } else {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays2.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 ජය අංකයේ අග අංක 2 = දිනයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays2.map(function(d) { var day = d.date.getDate(); var dayStr = String(day).padStart(2, '0'); var numLast2 = d.fullNumber.slice(-2); var isDateId = d.id.indexOf('-') !== -1; var dateClass = isDateId ? 'date' : 'date yellow'; return '<div class="match-day-item"><span class="' + dateClass + '">📅 ' + (isDateId ? formatDate(d.date) : d.id) + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + numLast2 + ' = ' + dayStr + '</span></div>'; }).join('') + '</div>';
+            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays2.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 ජය අංකයේ අග අංක 2 = දිනයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays2.map(function(d) { var day = d.date.getDate(); var dayStr = String(day).padStart(2, '0'); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + formatDate(d.date) + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + numLast2 + ' = ' + dayStr + '</span></div>'; }).join('') + '</div>';
         }
         html += '</div>';
         container.innerHTML = html;
     }
 
     // ============================================================
-    // EVENT LISTENERS
+    // TAB SWITCHING & EVENT LISTENERS
     // ============================================================
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+        var target = document.getElementById('tab-' + tabId);
+        if (target) target.classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
+        });
+        if (tabId === 'analytics') {
+            var data = getFilteredByRange();
+            renderHeatmap(data);
+            renderAdvancedStats(data);
+            renderBasicAnalytics(data);
+            renderMatchDays(data);
+        }
+    }
+
     document.querySelectorAll('.time-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.time-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1228,7 +1260,6 @@
         });
     });
 
-    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var tabId = this.getAttribute('data-tab');
