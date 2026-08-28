@@ -9,11 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-    
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
@@ -38,7 +35,6 @@
             box-shadow: 0 25px 60px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.08);
         }
-        /* ===== HEADER ===== */
         .header {
             display: flex;
             align-items: center;
@@ -92,7 +88,6 @@
         }
         .firebase-badge i { color:#1a1a1a; }
 
-        /* ===== TIME FILTER ===== */
         .time-filter {
             display: flex;
             flex-wrap: wrap;
@@ -182,7 +177,6 @@
             border: 1px solid rgba(102,126,234,0.2);
         }
 
-        /* ===== TABS ===== */
         .tabs {
             display: flex; gap:6px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.06);
             padding-bottom:4px; flex-wrap:wrap;
@@ -202,7 +196,6 @@
         .tab-content { display:none; }
         .tab-content.active { display:block; }
 
-        /* ===== SEARCH BOX ===== */
         .search-box {
             display:flex; flex-wrap:wrap; align-items:center; gap:14px;
             background:rgba(255,255,255,0.04);
@@ -250,7 +243,6 @@
             color:#ffffff;
         }
 
-        /* ===== RESULTS ===== */
         .result-header {
             display:flex; justify-content:space-between; align-items:center;
             margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.06);
@@ -295,13 +287,11 @@
             align-items:center;
             gap:8px;
         }
-        /* 📅 දිනුම් වාරය - ලා නිල්, Bold */
         .result-item .number .draw-id {
             font-weight:700;
             font-size:16px;
             color: #7ec8e3;
         }
-        /* (6290) - අභ්‍යන්තර අංකය - ලා අළු */
         .result-item .number .seq-id {
             font-weight:400;
             font-size:14px;
@@ -311,7 +301,6 @@
             border-radius:30px;
             margin-left:2px;
         }
-        /* # U772236 - ජය අංකය - ලා කොළ */
         .result-item .number .full-num {
             font-weight:700;
             font-size:18px;
@@ -322,7 +311,6 @@
             border:1px solid rgba(125,223,179,0.1);
         }
 
-        /* ===== HEATMAP ===== */
         .heatmap-section {
             background: rgba(255,255,255,0.03);
             border-radius: 24px;
@@ -401,7 +389,6 @@
             background: linear-gradient(to right, #2193b0, #6dd5ed, #f7971e, #e74c3c);
         }
 
-        /* ===== ADVANCED STATS ===== */
         .advanced-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -424,7 +411,6 @@
             box-shadow: 0 4px 15px rgba(102,126,234,0.3);
         }
 
-        /* ===== ANALYTICS CARDS ===== */
         .analytics-card {
             background: rgba(255,255,255,0.03);
             border-radius: 24px;
@@ -515,6 +501,47 @@
             border:1px solid rgba(255,255,255,0.04);
         }
 
+        /* ===== MATCH DAYS CARD ===== */
+        .match-days-list {
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+            gap:10px;
+            margin-top:8px;
+        }
+        .match-day-item {
+            background:rgba(255,255,255,0.04);
+            border-radius:14px;
+            padding:12px 16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border:1px solid rgba(255,255,255,0.04);
+            transition:0.15s;
+        }
+        .match-day-item:hover {
+            border-color:rgba(102,126,234,0.2);
+            background:rgba(255,255,255,0.06);
+            transform:translateY(-2px);
+        }
+        .match-day-item .date {
+            font-weight:600;
+            color:#7ec8e3;
+            font-size:14px;
+        }
+        .match-day-item .number {
+            font-weight:700;
+            color:#7ddfb3;
+            font-size:14px;
+        }
+        .match-day-item .badge-match {
+            background:rgba(125,223,179,0.15);
+            color:#7ddfb3;
+            padding:2px 12px;
+            border-radius:30px;
+            font-size:12px;
+            font-weight:600;
+        }
+
         .empty-state {
             text-align:center;
             padding:40px 20px;
@@ -554,6 +581,7 @@
             .heatmap-grid { min-width: 320px; }
             .heatmap-grid .cell { font-size: 10px; }
             .advanced-stats-grid { grid-template-columns: 1fr; }
+            .match-days-list { grid-template-columns:1fr; }
         }
     </style>
 </head>
@@ -629,6 +657,11 @@
         <div id="analyticsContent">
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p>මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
+
+        <!-- ===== NEW: Match Days Card ===== -->
+        <div id="matchDaysContainer" style="margin-top:24px;">
+            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>ජය අංක-දින ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>
+        </div>
     </div>
 </div>
 
@@ -660,6 +693,7 @@
     const analyticsContent = document.getElementById('analyticsContent');
     const heatmapGrid = document.getElementById('heatmapGrid');
     const advancedContainer = document.getElementById('advancedStatsContainer');
+    const matchDaysContainer = document.getElementById('matchDaysContainer');
 
     function formatDate(ts) {
         if (!ts) return 'N/A';
@@ -733,6 +767,7 @@
         analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>විශ්ලේෂණය සිදු කරමින්...</p></div>`;
         advancedContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>උසස් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
         heatmapGrid.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>Heatmap පූරණය වෙමින්...</p></div>`;
+        matchDaysContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>ජය අංක-දින ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
 
         customStart = null;
         customEnd = null;
@@ -761,6 +796,7 @@
             analyticsContent.innerHTML = errMsg;
             advancedContainer.innerHTML = errMsg;
             heatmapGrid.innerHTML = errMsg;
+            matchDaysContainer.innerHTML = errMsg;
         }
     }
 
@@ -770,6 +806,7 @@
         renderHeatmap(data);
         renderAdvancedStats(data);
         renderBasicAnalytics(data);
+        renderMatchDays(data);
     }
 
     function filterBySuffix(docs, term) {
@@ -1301,6 +1338,84 @@
     }
 
     // ============================================================
+    // 🆕 CORRECTED: MATCH DAYS ANALYSIS
+    // "ජය අංකයේ අග අංක දෙක, එදින දිනයේ අග අංක දෙකට සමාන වන අවස්ථා"
+    // ============================================================
+    function renderMatchDays(docs) {
+        const container = matchDaysContainer;
+        const data = docs || getFilteredByRange();
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-check"></i><h3>ගැළපුම් විශ්ලේෂණයට ප්‍රමාණවත් දත්ත නැත</h3></div>`;
+            return;
+        }
+
+        // Filter: last 2 digits of fullNumber === last 2 digits of date (from date object)
+        const matchDays = data.filter(d => {
+            if (!d.fullNumber || !d.date) return false;
+            
+            // Get last 2 digits of fullNumber
+            const numLast2 = d.fullNumber.slice(-2);
+            
+            // Get day of month from date (e.g., 25 from 2026-08-25)
+            const day = d.date.getDate();
+            const dayStr = String(day).padStart(2, '0');
+            
+            return numLast2 === dayStr;
+        });
+
+        if (matchDays.length === 0) {
+            container.innerHTML = `
+                <div class="analytics-card">
+                    <h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්</h3>
+                    <div class="empty-state" style="padding:20px;">
+                        <i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i>
+                        <h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Sort by date (most recent first)
+        matchDays.sort((a, b) => {
+            if (a.date && b.date) return b.date - a.date;
+            return 0;
+        });
+
+        let html = `
+            <div class="analytics-card">
+                <h3>
+                    <i class="fas fa-calendar-check" style="color:#7ddfb3;"></i> 
+                    ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්
+                    <span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);">
+                        <i class="fas fa-hashtag"></i> ${matchDays.length} ගැළපීම්
+                    </span>
+                </h3>
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);">
+                    <span>📌 ජය අංකයේ අග අංක 2 = දිනයේ අග අංක 2</span>
+                </div>
+                <div class="match-days-list">
+                    ${matchDays.map(d => {
+                        const day = d.date.getDate();
+                        const dayStr = String(day).padStart(2, '0');
+                        const numLast2 = d.fullNumber.slice(-2);
+                        return `
+                            <div class="match-day-item">
+                                <span class="date">📅 ${formatDate(d.date)}</span>
+                                <span class="number"># ${d.fullNumber}</span>
+                                <span class="badge-match">🎯 ${numLast2} = ${dayStr}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    // ============================================================
     // EVENT LISTENERS
     // ============================================================
     document.querySelectorAll('.time-btn').forEach(btn => {
@@ -1326,20 +1441,15 @@
                 renderHeatmap(data);
                 renderAdvancedStats(data);
                 renderBasicAnalytics(data);
+                renderMatchDays(data);
             }
         });
     });
 
-    // ============================================================
-    // EXPOSE FUNCTIONS
-    // ============================================================
     window.applySearch = applySearch;
     window.resetSearch = resetSearch;
     window.applyCustomDateRange = applyCustomDateRange;
 
-    // ============================================================
-    // INIT
-    // ============================================================
     fetchData('all');
 </script>
 </body>
