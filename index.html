@@ -20,7 +20,7 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            background: linear-gradient(145deg, #eef2f7 0%, #f8faff 100%);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
             padding: 25px 20px;
             display: flex;
@@ -30,72 +30,109 @@
         .container {
             max-width: 1200px;
             width: 100%;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 40px;
             padding: 28px 30px 35px;
-            box-shadow: 0 25px 60px rgba(0,20,40,0.12);
-            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
         }
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             align-items: center;
             gap: 18px;
             flex-wrap: wrap;
             margin-bottom: 22px;
+            background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2));
+            padding: 18px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
         .header-icon {
-            background: linear-gradient(135deg, #0b2a4a, #1d4a7a);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             width: 60px; height: 60px;
             border-radius: 22px;
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-size: 28px;
-            box-shadow: 0 10px 25px rgba(20,60,120,0.3);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
         }
-        .header h1 { font-size: 26px; font-weight: 700; color: #0a1e32; line-height:1.2; }
-        .header h1 small { font-size: 15px; font-weight:400; color:#4d667e; display:block; margin-top:2px; }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #c8d6e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height:1.2;
+        }
+        .header h1 small {
+            font-size: 15px;
+            font-weight:400;
+            background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display:block;
+            margin-top:2px;
+        }
         .firebase-badge {
-            margin-left: auto; background:#ffca28; padding:6px 18px; border-radius:60px;
-            font-size:13px; font-weight:700; color:#1a1a1a;
-            display:flex; align-items:center; gap:8px;
-            box-shadow:0 4px 10px rgba(255,202,40,0.3);
+            margin-left: auto;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            padding:6px 18px;
+            border-radius:60px;
+            font-size:13px;
+            font-weight:700;
+            color:#1a1a1a;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            box-shadow:0 4px 20px rgba(255,210,0,0.3);
         }
+        .firebase-badge i { color:#1a1a1a; }
 
+        /* ===== TIME FILTER ===== */
         .time-filter {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 22px;
-            background: #f2f7fe;
+            background: rgba(255,255,255,0.04);
             padding: 12px 18px;
             border-radius: 50px;
-            border: 1px solid #dce5f0;
+            border: 1px solid rgba(255,255,255,0.06);
             align-items: center;
+            backdrop-filter: blur(10px);
         }
         .time-filter .label {
             font-weight: 600;
-            color: #1f3b5c;
+            color: rgba(255,255,255,0.7);
             display: flex;
             align-items: center;
             gap: 6px;
         }
         .time-filter input[type="date"] {
             padding: 6px 12px;
-            border: 2px solid #dce5f0;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 30px;
             font-size: 14px;
             font-family: 'Noto Sans Sinhala', sans-serif;
-            background: white;
+            background: rgba(255,255,255,0.05);
             outline: none;
             transition: 0.2s;
-            color: #1f3b5c;
+            color: rgba(255,255,255,0.8);
         }
         .time-filter input[type="date"]:focus {
-            border-color: #1a3e66;
-            box-shadow: 0 0 0 3px rgba(26,62,102,0.1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+            background: rgba(255,255,255,0.08);
+        }
+        .time-filter input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
         }
         .time-filter .date-sep {
-            color: #6f8aa8;
+            color: rgba(255,255,255,0.4);
             font-weight: 600;
             font-size: 14px;
         }
@@ -103,17 +140,21 @@
             padding: 6px 20px;
             border: none;
             border-radius: 30px;
-            background: #10b981;
+            background: linear-gradient(135deg, #00b894, #00cec9);
             color: white;
             font-weight: 600;
             font-size: 14px;
             font-family: 'Noto Sans Sinhala', sans-serif;
             cursor: pointer;
             transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,206,201,0.3);
         }
-        .time-btn-apply:hover { background: #059669; }
+        .time-btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,206,201,0.4);
+        }
         .time-filter .divider {
-            color: #d1d5db;
+            color: rgba(255,255,255,0.15);
             font-size: 18px;
             margin: 0 4px;
         }
@@ -125,72 +166,128 @@
             font-family: 'Noto Sans Sinhala', sans-serif;
             font-weight: 600;
             font-size: 14px;
-            color: #3e5a77;
+            color: rgba(255,255,255,0.5);
             cursor: pointer;
             transition: 0.2s;
         }
-        .time-btn:hover { background: #d5e2f2; }
-        .time-btn.active { background: #1a3e66; color: #fff; box-shadow: 0 6px 16px rgba(26,62,102,0.25); }
+        .time-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+        }
+        .time-btn.active {
+            background: linear-gradient(135deg, rgba(102,126,234,0.3), rgba(118,75,162,0.3));
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(102,126,234,0.2);
+            border: 1px solid rgba(102,126,234,0.2);
+        }
 
+        /* ===== TABS ===== */
         .tabs {
-            display: flex; gap:6px; margin-bottom:25px; border-bottom:2px solid #e3eaf2;
+            display: flex; gap:6px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.06);
             padding-bottom:4px; flex-wrap:wrap;
         }
         .tab-btn {
             padding:12px 28px; border:none; background:transparent;
             font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:16px;
-            color:#5a738b; cursor:pointer; border-radius:30px 30px 0 0;
+            color:rgba(255,255,255,0.4); cursor:pointer; border-radius:30px 30px 0 0;
             transition:0.2s; display:flex; align-items:center; gap:8px;
         }
-        .tab-btn:hover { background:#eaf0f8; }
-        .tab-btn.active { background:#1a3e66; color:#fff; box-shadow:0 -4px 12px rgba(26,62,102,0.1); }
+        .tab-btn:hover { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.7); }
+        .tab-btn.active {
+            background:linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15));
+            color:#fff;
+            border-bottom:2px solid #667eea;
+        }
         .tab-content { display:none; }
         .tab-content.active { display:block; }
 
+        /* ===== SEARCH BOX ===== */
         .search-box {
             display:flex; flex-wrap:wrap; align-items:center; gap:14px;
-            background:white; padding:8px 8px 8px 24px; border-radius:60px;
-            border:2px solid #dce5f0; margin-bottom:28px; transition:0.25s;
+            background:rgba(255,255,255,0.04);
+            padding:8px 8px 8px 24px;
+            border-radius:60px;
+            border:1px solid rgba(255,255,255,0.06);
+            margin-bottom:28px;
+            transition:0.25s;
+            backdrop-filter: blur(10px);
         }
-        .search-box:focus-within { border-color:#1a3e66; box-shadow:0 0 0 5px rgba(26,62,102,0.08); }
-        .search-box i { color:#6f8aa8; font-size:18px; }
+        .search-box:focus-within {
+            border-color:#667eea;
+            box-shadow:0 0 0 5px rgba(102,126,234,0.08);
+            background:rgba(255,255,255,0.06);
+        }
+        .search-box i { color:rgba(255,255,255,0.3); font-size:18px; }
         .search-box input {
             flex:1; min-width:160px; padding:14px 6px; border:none; background:transparent;
-            font-size:18px; font-family:'Noto Sans Sinhala',sans-serif; color:#0b1e32; outline:none;
+            font-size:18px; font-family:'Noto Sans Sinhala',sans-serif;
+            color:rgba(255,255,255,0.9); outline:none;
         }
-        .search-box input::placeholder { color:#9aafc7; font-weight:400; }
+        .search-box input::placeholder { color:rgba(255,255,255,0.25); font-weight:400; }
         .search-box .btn-group { display:flex; gap:8px; flex-wrap:wrap; }
         .btn {
             padding:12px 28px; border:none; border-radius:60px;
             font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:15px;
             cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:8px;
         }
-        .btn-primary { background:linear-gradient(145deg,#1a3e66,#2a5a8a); color:#fff; box-shadow:0 6px 18px rgba(26,62,102,0.25); }
-        .btn-primary:hover { transform:scale(1.03); box-shadow:0 10px 25px rgba(26,62,102,0.35); }
-        .btn-secondary { background:#eef3f8; color:#1f3b5c; }
-        .btn-secondary:hover { background:#dde6f0; }
+        .btn-primary {
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            color:#fff;
+            box-shadow:0 6px 25px rgba(102,126,234,0.3);
+        }
+        .btn-primary:hover {
+            transform:scale(1.03);
+            box-shadow:0 10px 35px rgba(102,126,234,0.4);
+        }
+        .btn-secondary {
+            background:rgba(255,255,255,0.05);
+            color:rgba(255,255,255,0.6);
+            border:1px solid rgba(255,255,255,0.06);
+        }
+        .btn-secondary:hover {
+            background:rgba(255,255,255,0.08);
+            color:#fff;
+        }
 
+        /* ===== RESULTS ===== */
         .result-header {
             display:flex; justify-content:space-between; align-items:center;
-            margin-bottom:16px; border-bottom:2px solid #e3eaf2; padding-bottom:12px;
+            margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.06);
+            padding-bottom:12px;
         }
-        .result-header span { font-weight:600; color:#1f3b5c; font-size:16px; }
-        .result-header .badge { background:#1a3e66; color:#fff; padding:4px 18px; border-radius:40px; font-size:14px; }
+        .result-header span { font-weight:600; color:rgba(255,255,255,0.5); font-size:16px; }
+        .result-header .badge {
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            color:#fff;
+            padding:4px 18px;
+            border-radius:40px;
+            font-size:14px;
+            box-shadow:0 4px 15px rgba(102,126,234,0.2);
+        }
         .results-wrapper {
             max-height:460px; overflow-y:auto; padding-right:4px;
         }
         .results-wrapper::-webkit-scrollbar { width:5px; }
-        .results-wrapper::-webkit-scrollbar-track { background:#eef3f8; border-radius:10px; }
-        .results-wrapper::-webkit-scrollbar-thumb { background:#b3c8e0; border-radius:10px; }
+        .results-wrapper::-webkit-scrollbar-track { background:rgba(255,255,255,0.03); border-radius:10px; }
+        .results-wrapper::-webkit-scrollbar-thumb { background:rgba(102,126,234,0.3); border-radius:10px; }
         .result-item {
             display:flex; justify-content:space-between; align-items:center;
-            background:#fff; padding:16px 24px; margin-bottom:8px; border-radius:18px;
-            border:1px solid #eaeef5; transition:0.15s;
+            background:rgba(255,255,255,0.03);
+            padding:16px 24px;
+            margin-bottom:8px;
+            border-radius:18px;
+            border:1px solid rgba(255,255,255,0.04);
+            transition:0.15s;
+            backdrop-filter: blur(10px);
         }
-        .result-item:hover { border-color:#b8cee5; background:#fafdff; transform:translateX(4px); }
+        .result-item:hover {
+            border-color:rgba(102,126,234,0.2);
+            background:rgba(255,255,255,0.06);
+            transform:translateX(4px);
+        }
         .result-item .number {
             font-weight:700;
-            color:#0b1e32;
+            color:rgba(255,255,255,0.9);
             font-size:18px;
             letter-spacing:0.5px;
             display:flex;
@@ -201,38 +298,41 @@
         .result-item .number .draw-id {
             font-weight:400;
             font-size:14px;
-            color:#4d667e;
+            color:rgba(255,255,255,0.3);
         }
         .result-item .number .seq-id {
             font-weight:400;
             font-size:14px;
-            color:#6f8aa8;
-            background:#f0f5fc;
+            color:rgba(255,255,255,0.2);
+            background:rgba(255,255,255,0.04);
             padding:2px 10px;
             border-radius:30px;
             margin-left:4px;
         }
         .result-item .number .full-num {
             font-weight:700;
-            color:#1a3e66;
-            background:#eef3f8;
+            color:#a8c0ff;
+            background:rgba(102,126,234,0.1);
             padding:2px 14px;
             border-radius:30px;
+            border:1px solid rgba(102,126,234,0.1);
         }
 
+        /* ===== HEATMAP ===== */
         .heatmap-section {
-            background: #fff;
+            background: rgba(255,255,255,0.03);
             border-radius: 24px;
             padding: 20px 22px;
             margin-bottom: 24px;
-            border: 1px solid #eaeef5;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             overflow-x: auto;
+            backdrop-filter: blur(10px);
         }
         .heatmap-section h3 {
             font-size: 18px;
             font-weight: 700;
-            color: #1a3e66;
+            color: rgba(255,255,255,0.8);
             margin-bottom: 14px;
             display: flex;
             justify-content: space-between;
@@ -243,7 +343,7 @@
         .heatmap-section h3 .sub {
             font-size: 14px;
             font-weight: 400;
-            color: #4d667e;
+            color: rgba(255,255,255,0.3);
         }
         .heatmap-grid {
             display: grid;
@@ -253,12 +353,12 @@
         }
         .heatmap-grid .cell-header {
             font-weight: 700;
-            color: #4a5568;
+            color: rgba(255,255,255,0.3);
             font-size: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f7fafc;
+            background: rgba(255,255,255,0.03);
             border-radius: 6px;
             padding: 4px 0;
         }
@@ -270,15 +370,16 @@
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
-            color: #1f3b5c;
+            color: rgba(255,255,255,0.8);
             transition: 0.15s;
             cursor: default;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
         }
         .heatmap-grid .cell:hover {
             transform: scale(1.12);
             z-index: 10;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
         }
         .heatmap-legend {
             display: flex;
@@ -286,16 +387,17 @@
             gap: 16px;
             margin-top: 14px;
             font-size: 13px;
-            color: #4d667e;
+            color: rgba(255,255,255,0.4);
             flex-wrap: wrap;
         }
         .heatmap-legend .gradient {
             width: 160px;
             height: 16px;
-            background: linear-gradient(to right, #2b6cb0, #ecc94b, #e53e3e);
             border-radius: 20px;
+            background: linear-gradient(to right, #2193b0, #6dd5ed, #f7971e, #e74c3c);
         }
 
+        /* ===== ADVANCED STATS ===== */
         .advanced-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -315,78 +417,119 @@
             font-size: 14px;
             font-weight: 700;
             margin: 2px;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
         }
 
+        /* ===== ANALYTICS CARDS ===== */
         .analytics-card {
-            background:#fff; border-radius:24px; padding:20px 22px;
-            border:1px solid #eaeef5; box-shadow:0 4px 12px rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.03);
+            border-radius: 24px;
+            padding: 20px 22px;
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            backdrop-filter: blur(10px);
         }
         .analytics-card h3 {
-            font-size:18px; font-weight:700; color:#1a3e66;
-            margin-bottom:12px; display:flex; align-items:center; gap:10px;
-            border-bottom:2px solid #eef3f8; padding-bottom:10px;
+            font-size:18px; font-weight:700;
+            color: rgba(255,255,255,0.8);
+            margin-bottom:12px;
+            display:flex; align-items:center; gap:10px;
+            border-bottom:1px solid rgba(255,255,255,0.04);
+            padding-bottom:10px;
         }
-        .analytics-card h3 i { color:#2a5a8a; }
+        .analytics-card h3 i { color: #667eea; }
         .analytics-card canvas { max-height: 180px; width: 100%; }
 
         .digit-bar {
             display:flex; align-items:center; gap:10px; margin-bottom:5px;
         }
         .digit-bar .label {
-            min-width:40px; font-weight:600; color:#1f3b5c; font-size:14px;
+            min-width:40px; font-weight:600; color:rgba(255,255,255,0.5); font-size:14px;
         }
         .digit-bar .bar-track {
-            flex:1; height:22px; background:#eef3f8; border-radius:20px; overflow:hidden; position:relative;
+            flex:1; height:22px; background:rgba(255,255,255,0.04); border-radius:20px; overflow:hidden;
         }
         .digit-bar .bar-fill {
             height:100%; border-radius:20px; transition:0.3s;
-            background:linear-gradient(90deg,#2a5a8a,#4a8aba);
+            background:linear-gradient(90deg,#667eea,#764ba2);
         }
-        .digit-bar .bar-fill.hot { background:linear-gradient(90deg,#c0392b,#e74c3c); }
-        .digit-bar .bar-fill.cold { background:linear-gradient(90deg,#2980b9,#3498db); }
-        .digit-bar .count { min-width:36px; text-align:right; font-weight:600; color:#0b1e32; font-size:14px; }
+        .digit-bar .bar-fill.hot { background:linear-gradient(90deg,#e74c3c,#f39c12); }
+        .digit-bar .bar-fill.cold { background:linear-gradient(90deg,#2193b0,#6dd5ed); }
+        .digit-bar .count {
+            min-width:36px; text-align:right; font-weight:600;
+            color:rgba(255,255,255,0.6); font-size:14px;
+        }
 
         .two-digit-list {
             display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; max-height:200px; overflow-y:auto;
         }
         .two-digit-item {
             display:flex; justify-content:space-between; padding:4px 8px;
-            border-bottom:1px solid #f0f5fc; font-size:14px;
+            border-bottom:1px solid rgba(255,255,255,0.03); font-size:14px;
         }
-        .two-digit-item .num { font-weight:600; color:#1a3e66; }
-        .two-digit-item .freq { color:#4d667e; }
+        .two-digit-item .num { font-weight:600; color:rgba(255,255,255,0.7); }
+        .two-digit-item .freq { color:rgba(255,255,255,0.3); }
 
         .range-grid {
             display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;
         }
         .range-box {
-            background:#f8faff; border-radius:14px; padding:10px 8px; text-align:center;
-            border:1px solid #eaeef5; transition:0.2s;
+            background:rgba(255,255,255,0.02);
+            border-radius:14px;
+            padding:10px 8px;
+            text-align:center;
+            border:1px solid rgba(255,255,255,0.04);
+            transition:0.2s;
         }
-        .range-box:hover { transform:translateY(-2px); border-color:#b8cee5; }
-        .range-box .range-label { font-weight:700; color:#1a3e66; font-size:15px; }
-        .range-box .range-count { font-size:20px; font-weight:700; color:#2a5a8a; }
-        .range-box .range-status { font-size:12px; color:#4d667e; }
-        .range-box.hot { background:#ffeaea; border-color:#e74c3c; }
-        .range-box.cold { background:#eaf4ff; border-color:#3498db; }
+        .range-box:hover {
+            transform:translateY(-2px);
+            border-color:rgba(102,126,234,0.2);
+        }
+        .range-box .range-label { font-weight:700; color:rgba(255,255,255,0.6); font-size:15px; }
+        .range-box .range-count { font-size:20px; font-weight:700; color:#667eea; }
+        .range-box .range-status { font-size:12px; color:rgba(255,255,255,0.3); }
+        .range-box.hot {
+            background:rgba(231,76,60,0.1);
+            border-color:rgba(231,76,60,0.15);
+        }
+        .range-box.cold {
+            background:rgba(33,147,176,0.1);
+            border-color:rgba(33,147,176,0.15);
+        }
 
         .missing-numbers {
             display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
         }
         .missing-numbers .miss {
-            background:#f0f5fc; padding:2px 10px; border-radius:30px; font-size:13px;
-            color:#4d667e; border:1px solid #dce5f0;
+            background:rgba(255,255,255,0.04);
+            padding:2px 10px;
+            border-radius:30px;
+            font-size:13px;
+            color:rgba(255,255,255,0.3);
+            border:1px solid rgba(255,255,255,0.04);
         }
 
-        .empty-state { text-align:center; padding:40px 20px; color:#6f86a1; }
-        .empty-state i { font-size:40px; color:#c5d6ea; margin-bottom:15px; }
-        .loading-spinner { text-align:center; padding:40px; color:#2a5a8a; }
-        .loading-spinner i { font-size:40px; animation:spin 1s linear infinite; }
+        .empty-state {
+            text-align:center;
+            padding:40px 20px;
+            color:rgba(255,255,255,0.2);
+        }
+        .empty-state i { font-size:40px; color:rgba(255,255,255,0.05); margin-bottom:15px; }
+        .loading-spinner {
+            text-align:center;
+            padding:40px;
+            color:rgba(255,255,255,0.3);
+        }
+        .loading-spinner i {
+            font-size:40px;
+            animation:spin 1s linear infinite;
+            color:#667eea;
+        }
         @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
 
         @media (max-width:768px) {
             .container { padding:18px 15px; }
+            .header { padding:14px 18px; }
             .header h1 { font-size:20px; }
             .header h1 small { font-size:13px; }
             .firebase-badge { margin-left:0; width:100%; justify-content:center; }
@@ -410,8 +553,8 @@
 <div class="container">
     <div class="header">
         <div class="header-icon"><i class="fas fa-chart-line"></i></div>
-        <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම - 0777325563</small></h1>
-        <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
+        <h1>මහජන අගඅංක සෙවීම-විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත ආඩිඅම්බලම</small></h1>
+        <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY</div>
     </div>
 
     <div class="time-filter">
@@ -457,26 +600,26 @@
     <div class="tab-content" id="tab-analytics">
         <div class="heatmap-section" id="heatmapContainer">
             <h3>
-                <span><i class="fas fa-fire" style="color:#e74c3c;"></i> අග ඉලක්කම් 00-99 තාප සිතියම (Heatmap)</span>
+                <span><i class="fas fa-fire" style="color:#e74c3c;"></i> අග ඉලක්කම් 00-99 තාප සිතියම</span>
                 <span class="sub">(රතු=උණුසුම්, නිල්=සීතල)</span>
             </h3>
             <div id="heatmapGrid" style="min-height:100px;">
-                <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">Heatmap පූරණය වෙමින්...</p></div>
+                <div class="loading-spinner"><i class="fas fa-spinner"></i><p>Heatmap පූරණය වෙමින්...</p></div>
             </div>
             <div class="heatmap-legend">
                 <span>❄️ සීතල</span>
                 <div class="gradient"></div>
                 <span>🔥 උණුසුම්</span>
-                <span style="margin-left:auto; font-size:12px; color:#9aafc7;">වාර ගණන අනුව වර්ණ ගැන්වේ</span>
+                <span style="margin-left:auto; font-size:12px; opacity:0.3;">වාර ගණන අනුව</span>
             </div>
         </div>
 
         <div id="advancedStatsContainer">
-            <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">උසස් සංඛ්‍යාන විශ්ලේෂණය සිදු කරමින්...</p></div>
+            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>උසස් සංඛ්‍යාන විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
 
         <div id="analyticsContent">
-            <div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
+            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
     </div>
 </div>
@@ -510,9 +653,6 @@
     const heatmapGrid = document.getElementById('heatmapGrid');
     const advancedContainer = document.getElementById('advancedStatsContainer');
 
-    // ============================================================
-    // 🟢 HELPER FUNCTIONS
-    // ============================================================
     function formatDate(ts) {
         if (!ts) return 'N/A';
         const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -521,7 +661,7 @@
 
     function toDateObj(value) {
         if (!value) return null;
-        if (value.toDate) return value.toDate(); // Firestore Timestamp
+        if (value.toDate) return value.toDate();
         if (value instanceof Date) return value;
         const d = new Date(value);
         return isNaN(d.getTime()) ? null : d;
@@ -536,13 +676,8 @@
         return start;
     }
 
-    // ============================================================
-    // 🟢 FILTER FUNCTION (FIXED)
-    // ============================================================
     function getFilteredByRange() {
         let data = allDocs;
-
-        // 1. Custom Date Range (from date pickers)
         if (customStart && customEnd) {
             const start = new Date(customStart);
             const end = new Date(customEnd);
@@ -552,8 +687,6 @@
                 return d && d >= start && d <= end;
             });
         }
-
-        // 2. Quick buttons (මාස 1, 2, 3, 6, 12, සියල්ල)
         if (currentRange === 'all') {
             return data;
         } else {
@@ -568,9 +701,6 @@
         }
     }
 
-    // ============================================================
-    // 🟢 CUSTOM DATE RANGE
-    // ============================================================
     function applyCustomDateRange() {
         const startVal = document.getElementById('startDate').value;
         const endVal = document.getElementById('endDate').value;
@@ -590,14 +720,11 @@
         updateAllViews();
     }
 
-    // ============================================================
-    // 🟢 FETCH DATA FROM FIRESTORE
-    // ============================================================
     async function fetchData(range) {
-        wrapper.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">දත්ත ලබා ගනිමින්...</p></div>`;
-        analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">විශ්ලේෂණය සිදු කරමින්...</p></div>`;
-        advancedContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">උසස් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
-        heatmapGrid.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p style="margin-top:12px;">Heatmap පූරණය වෙමින්...</p></div>`;
+        wrapper.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>දත්ත ලබා ගනිමින්...</p></div>`;
+        analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>විශ්ලේෂණය සිදු කරමින්...</p></div>`;
+        advancedContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>උසස් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
+        heatmapGrid.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>Heatmap පූරණය වෙමින්...</p></div>`;
 
         customStart = null;
         customEnd = null;
@@ -605,7 +732,6 @@
         document.getElementById('endDate').value = '';
 
         try {
-            // Fetch ALL documents (no date filter in Firestore)
             const snapshot = await db.collection('mahajana_results').orderBy('date', 'desc').get();
             const docs = [];
             snapshot.forEach(doc => {
@@ -614,7 +740,6 @@
                     id: doc.id,
                     fullNumber: data.fullNumber || '',
                     numberId: data.id || '',
-                    // Convert Firestore Timestamp to Date object
                     date: data.date ? data.date.toDate() : null
                 });
             });
@@ -631,9 +756,6 @@
         }
     }
 
-    // ============================================================
-    // 🟢 UPDATE ALL VIEWS
-    // ============================================================
     function updateAllViews() {
         const data = getFilteredByRange();
         updateSearchResults();
@@ -642,9 +764,6 @@
         renderBasicAnalytics(data);
     }
 
-    // ============================================================
-    // 🟢 SEARCH TAB
-    // ============================================================
     function filterBySuffix(docs, term) {
         if (!term || term.trim() === '') return docs;
         const clean = term.trim();
@@ -691,7 +810,7 @@
     searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
 
     // ============================================================
-    // 🟢 HEATMAP
+    // HEATMAP
     // ============================================================
     function renderHeatmap(docs) {
         const container = heatmapGrid;
@@ -722,11 +841,11 @@
         const range = maxVal - minVal;
 
         function getColor(count) {
-            if (range === 0) return '#e2e8f0';
+            if (range === 0) return 'rgba(255,255,255,0.05)';
             const ratio = (count - minVal) / range;
-            const r = Math.round(43 + (236 - 43) * ratio * 0.7 + (229 - 236) * ratio * 0.3 * ratio);
-            const g = Math.round(108 + (201 - 108) * ratio * 0.8 + (62 - 201) * ratio * 0.2);
-            const b = Math.round(176 - (176 - 75) * ratio * 0.9 + (62 - 75) * ratio * 0.1);
+            const r = Math.round(33 + (147 - 33) * ratio * 0.5 + (231 - 147) * ratio * 0.5 * ratio);
+            const g = Math.round(147 + (213 - 147) * ratio * 0.6 + (76 - 213) * ratio * 0.4);
+            const b = Math.round(176 + (237 - 176) * ratio * 0.7 + (60 - 237) * ratio * 0.3);
             return `rgb(${Math.min(255, Math.max(0, r))}, ${Math.min(255, Math.max(0, g))}, ${Math.min(255, Math.max(0, b))})`;
         }
 
@@ -747,14 +866,14 @@
     }
 
     // ============================================================
-    // 🟢 ADVANCED STATS
+    // ADVANCED STATS
     // ============================================================
     function renderAdvancedStats(docs) {
         const container = advancedContainer;
         const data = docs || getFilteredByRange();
         
         if (!data || data.length < 2) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-chart-line"></i><h3>උසස් විශ්ලේෂණය සඳහා ප්‍රමාණවත් දත්ත නැත (අවම දිනුම් 2ක් අවශ්‍යයි)</h3></div>`;
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-chart-line"></i><h3>උසස් විශ්ලේෂණය සඳහා ප්‍රමාණවත් දත්ත නැත</h3></div>`;
             return;
         }
 
@@ -786,12 +905,12 @@
         const maHtml = `
             <div class="advanced-stats-grid" style="margin-bottom:0;">
                 <div class="analytics-card" style="grid-column:1/-1;">
-                    <h3><i class="fas fa-chart-line"></i> සංචලන සාමාන්‍ය (Moving Averages)</h3>
+                    <h3><i class="fas fa-chart-line"></i> සංචලන සාමාන්‍ය</h3>
                     <canvas id="movingAvgChart" style="max-height:180px; width:100%;"></canvas>
-                    <div style="display:flex; gap:16px; justify-content:center; margin-top:8px; font-size:13px; flex-wrap:wrap;">
-                        <span><span style="display:inline-block; width:20px; height:3px; background:#e53e3e; margin-right:6px;"></span> දින 7</span>
-                        <span><span style="display:inline-block; width:20px; height:3px; background:#ed8936; margin-right:6px;"></span> දින 14</span>
-                        <span><span style="display:inline-block; width:20px; height:3px; background:#3182ce; margin-right:6px;"></span> දින 30</span>
+                    <div style="display:flex; gap:16px; justify-content:center; margin-top:8px; font-size:13px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">
+                        <span><span style="display:inline-block; width:20px; height:3px; background:#e74c3c; margin-right:6px;"></span> දින 7</span>
+                        <span><span style="display:inline-block; width:20px; height:3px; background:#f39c12; margin-right:6px;"></span> දින 14</span>
+                        <span><span style="display:inline-block; width:20px; height:3px; background:#3498db; margin-right:6px;"></span> දින 30</span>
                     </div>
                 </div>
             </div>
@@ -813,15 +932,18 @@
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'MA 7', data: d7, borderColor: '#e53e3e', backgroundColor: 'rgba(229,62,62,0.1)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                    { label: 'MA 14', data: d14, borderColor: '#ed8936', backgroundColor: 'rgba(237,137,54,0.1)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                    { label: 'MA 30', data: d30, borderColor: '#3182ce', backgroundColor: 'rgba(49,130,206,0.1)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
+                    { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+                    { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+                    { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
                 ]
             },
             options: {
                 responsive: true,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, grid: { color: '#edf2f7' } }, x: { grid: { display: false } } }
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12 } }
+                }
             }
         });
 
@@ -900,24 +1022,24 @@
                 <div class="analytics-card">
                     <h3><i class="fas fa-brain"></i> ස්මාට් පුරෝකථනය</h3>
                     <div style="margin-bottom:12px;">
-                        <div style="font-weight:600; color:#1a3e66; font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 1 (Top 5)</div>
+                        <div style="font-weight:600; color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 1 (Top 5)</div>
                         <div>${top5_1.map(d => `<span class="prediction-badge">${d}</span>`).join(' ')}</div>
                     </div>
                     <div>
-                        <div style="font-weight:600; color:#1a3e66; font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 2 (Top 5)</div>
+                        <div style="font-weight:600; color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 2 (Top 5)</div>
                         <div>${top5_2.map(d => `<span class="prediction-badge">${String(d).padStart(2,'0')}</span>`).join(' ')}</div>
                     </div>
-                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid #eef3f8; font-size:14px; color:#4d667e;">
-                        <i class="fas fa-calculator"></i> දෛනික ප්‍රතිඵල සම්මත අපගමනය (Std Dev): <strong>${stdDev.toFixed(2)}</strong>
+                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); font-size:14px; color:rgba(255,255,255,0.3);">
+                        <i class="fas fa-calculator"></i> සම්මත අපගමනය: <strong style="color:rgba(255,255,255,0.6);">${stdDev.toFixed(2)}</strong>
                         <span style="display:block; font-size:12px; margin-top:4px;">(සාමාන්‍ය දෛනික ප්‍රතිඵල: ${mean.toFixed(1)})</span>
                     </div>
                 </div>
                 <div class="analytics-card">
-                    <h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ (අග ඉලක්කම්)</h3>
+                    <h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ</h3>
                     <canvas id="expectedActualChart" style="max-height:180px; width:100%;"></canvas>
-                    <div style="display:flex; gap:12px; justify-content:center; margin-top:6px; font-size:12px; flex-wrap:wrap;">
+                    <div style="display:flex; gap:12px; justify-content:center; margin-top:6px; font-size:12px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">
                         <span><span style="display:inline-block; width:16px; height:3px; background:#667eea; margin-right:4px;"></span> සැබෑ</span>
-                        <span><span style="display:inline-block; width:16px; height:3px; background:#e53e3e; margin-right:4px; border-top:2px dashed #e53e3e;"></span> අපේක්ෂිත (${expected.toFixed(1)})</span>
+                        <span><span style="display:inline-block; width:16px; height:3px; background:#e74c3c; margin-right:4px; border-top:2px dashed #e74c3c;"></span> අපේක්ෂිත (${expected.toFixed(1)})</span>
                     </div>
                 </div>
             </div>
@@ -935,25 +1057,27 @@
                 labels: labelsEA,
                 datasets: [
                     { label: 'Actual', data: actualData, backgroundColor: '#667eea', borderRadius: 4 },
-                    { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e53e3e', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false }
+                    { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false }
                 ]
             },
             options: {
                 responsive: true,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, grid: { color: '#edf2f7' } }, x: { grid: { display: false } } }
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)' } }
+                }
             }
         });
     }
 
     // ============================================================
-    // 🟢 BASIC ANALYTICS (FIXED)
+    // BASIC ANALYTICS
     // ============================================================
     function renderBasicAnalytics(docs) {
         const container = analyticsContent;
         const data = docs || getFilteredByRange();
 
-        // Case 1: No data at all
         if (!data || data.length === 0) {
             const emptyFreq1 = {};
             for (let i=0; i<=9; i++) emptyFreq1[i] = 0;
@@ -965,8 +1089,8 @@
             emptyHtml += `<div class="analytics-card">
                 <h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3>
                 <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;">
-                    <span style="background:#ffebe6; padding:2px 14px; border-radius:30px; color:#c0392b;">🔥 Hot: -</span>
-                    <span style="background:#e6f0ff; padding:2px 14px; border-radius:30px; color:#2980b9;">❄️ Cold: 0,1,2,3,4,5,6,7,8,9</span>
+                    <span style="background:rgba(231,76,60,0.15); padding:2px 14px; border-radius:30px; color:#e74c3c;">🔥 Hot: -</span>
+                    <span style="background:rgba(52,152,219,0.15); padding:2px 14px; border-radius:30px; color:#3498db;">❄️ Cold: 0,1,2,3,4,5,6,7,8,9</span>
                 </div>
                 ${Object.entries(emptyFreq1).map(([digit, count]) => `
                     <div class="digit-bar">
@@ -981,17 +1105,17 @@
             emptyHtml += `<div class="analytics-card">
                 <h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;">
-                    <div style="background:#ffebe6; border-radius:14px; padding:8px 12px;">
-                        <div style="font-weight:700; color:#c0392b;">🔥 Hot Top 10</div>
-                        <div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>
+                    <div style="background:rgba(231,76,60,0.05); border-radius:14px; padding:8px 12px;">
+                        <div style="font-weight:700; color:#e74c3c;">🔥 Hot Top 10</div>
+                        <div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div>
                     </div>
-                    <div style="background:#e6f0ff; border-radius:14px; padding:8px 12px;">
-                        <div style="font-weight:700; color:#2980b9;">❄️ Cold Bottom 10</div>
-                        <div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>
+                    <div style="background:rgba(52,152,219,0.05); border-radius:14px; padding:8px 12px;">
+                        <div style="font-weight:700; color:#3498db;">❄️ Cold Bottom 10</div>
+                        <div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div>
                     </div>
                 </div>
-                <div style="margin-top:8px; font-size:14px; background:#f0f5fc; border-radius:14px; padding:8px 12px;">
-                    <strong>🚫 කාල සීමාව තුල නොඇදුණු අංක (${allNever.length}):</strong>
+                <div style="margin-top:8px; font-size:14px; background:rgba(255,255,255,0.02); border-radius:14px; padding:8px 12px;">
+                    <strong style="color:rgba(255,255,255,0.6);">🚫 කාල සීමාව තුල නොඇදුණු අංක (${allNever.length}):</strong>
                     <div class="missing-numbers">
                         ${allNever.map(n => `<span class="miss">${String(n).padStart(2,'0')}</span>`).join('')}
                     </div>
@@ -1004,10 +1128,10 @@
                 emptyRanges[key] = { start, end: start+9, count: 0, numbers: [] };
             }
             emptyHtml += `<div class="analytics-card" style="grid-column:1/-1;">
-                <h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය (00-09, 10-19 ... 90-99)</h3>
+                <h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය</h3>
                 <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;">
-                    <span style="background:#ffebe6; padding:4px 16px; border-radius:30px; color:#c0392b;">🔥 වැඩිම: - (0 වාර)</span>
-                    <span style="background:#e6f0ff; padding:4px 16px; border-radius:30px; color:#2980b9;">❄️ අඩුම: - (0 වාර)</span>
+                    <span style="background:rgba(231,76,60,0.1); padding:4px 16px; border-radius:30px; color:#e74c3c;">🔥 වැඩිම: - (0 වාර)</span>
+                    <span style="background:rgba(52,152,219,0.1); padding:4px 16px; border-radius:30px; color:#3498db;">❄️ අඩුම: - (0 වාර)</span>
                 </div>
                 <div class="range-grid">
                     ${Object.entries(emptyRanges).map(([key, data]) => {
@@ -1017,7 +1141,7 @@
                             <div class="range-label">${key}</div>
                             <div class="range-count">0</div>
                             <div class="range-status">වාර</div>
-                            <div style="font-size:11px; color:#4d667e; margin-top:4px;">
+                            <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:4px;">
                                 නැති: ${allNums.map(n => String(n).padStart(2,'0')).join(', ')}
                             </div>
                         </div>`;
@@ -1030,16 +1154,13 @@
             return;
         }
 
-        // Case 2: Data exists, extract numbers
         const numbers = data.map(d => d.fullNumber).filter(n => n && n.length > 0);
 
-        // Case 3: Data exists but no valid numbers (fullNumber empty)
         if (numbers.length === 0) {
             container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>`;
             return;
         }
 
-        // ---- Build frequencies ----
         const freq1 = {};
         for (let i=0; i<=9; i++) freq1[i] = 0;
         numbers.forEach(n => {
@@ -1074,10 +1195,8 @@
             }
         });
 
-        // ---- Build HTML ----
         let html = `<div class="analytics-grid">`;
 
-        // Card 1: Last 1 Digit
         const sorted1 = Object.entries(freq1).sort((a,b) => b[1] - a[1]);
         const maxFreq1 = sorted1.length > 0 ? sorted1[0][1] : 1;
         const hot1 = sorted1.slice(0, 3).map(x => x[0]);
@@ -1086,8 +1205,8 @@
         html += `<div class="analytics-card">
             <h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3>
             <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;">
-                <span style="background:#ffebe6; padding:2px 14px; border-radius:30px; color:#c0392b;">🔥 Hot: ${hot1.join(', ') || '-'}</span>
-                <span style="background:#e6f0ff; padding:2px 14px; border-radius:30px; color:#2980b9;">❄️ Cold: ${cold1.join(', ') || 'නැත'}</span>
+                <span style="background:rgba(231,76,60,0.15); padding:2px 14px; border-radius:30px; color:#e74c3c;">🔥 Hot: ${hot1.join(', ') || '-'}</span>
+                <span style="background:rgba(52,152,219,0.15); padding:2px 14px; border-radius:30px; color:#3498db;">❄️ Cold: ${cold1.join(', ') || 'නැත'}</span>
             </div>
             ${Object.entries(freq1).map(([digit, count]) => {
                 const pct = maxFreq1 > 0 ? (count / maxFreq1 * 100) : 0;
@@ -1104,7 +1223,6 @@
             }).join('')}
         </div>`;
 
-        // Card 2: Last 2 Digits
         const sorted2 = Object.entries(freq2).sort((a,b) => b[1] - a[1]);
         const top10 = sorted2.slice(0, 10);
         const bottom10 = sorted2.filter(x => x[1] > 0).sort((a,b) => a[1] - b[1]).slice(0, 10);
@@ -1113,27 +1231,26 @@
         html += `<div class="analytics-card">
             <h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;">
-                <div style="background:#ffebe6; border-radius:14px; padding:8px 12px;">
-                    <div style="font-weight:700; color:#c0392b;">🔥 Hot Top 10</div>
+                <div style="background:rgba(231,76,60,0.05); border-radius:14px; padding:8px 12px;">
+                    <div style="font-weight:700; color:#e74c3c;">🔥 Hot Top 10</div>
                     ${top10.map(([n,c]) => `<div class="two-digit-item"><span class="num">${String(n).padStart(2,'0')}</span><span class="freq">${c} වාර</span></div>`).join('')}
-                    ${top10.length === 0 ? '<div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>' : ''}
+                    ${top10.length === 0 ? '<div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div>' : ''}
                 </div>
-                <div style="background:#e6f0ff; border-radius:14px; padding:8px 12px;">
-                    <div style="font-weight:700; color:#2980b9;">❄️ Cold Bottom 10</div>
+                <div style="background:rgba(52,152,219,0.05); border-radius:14px; padding:8px 12px;">
+                    <div style="font-weight:700; color:#3498db;">❄️ Cold Bottom 10</div>
                     ${bottom10.map(([n,c]) => `<div class="two-digit-item"><span class="num">${String(n).padStart(2,'0')}</span><span class="freq">${c} වාර</span></div>`).join('')}
-                    ${bottom10.length === 0 ? '<div style="color:#9ca3af; font-size:13px;">දත්ත නැත</div>' : ''}
+                    ${bottom10.length === 0 ? '<div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div>' : ''}
                 </div>
             </div>
-            <div style="margin-top:8px; font-size:14px; background:#f0f5fc; border-radius:14px; padding:8px 12px;">
-                <strong>🚫 කාල සීමාව තුල නොඇදුණු අංක (${never.length}):</strong>
+            <div style="margin-top:8px; font-size:14px; background:rgba(255,255,255,0.02); border-radius:14px; padding:8px 12px;">
+                <strong style="color:rgba(255,255,255,0.6);">🚫 කාල සීමාව තුල නොඇදුණු අංක (${never.length}):</strong>
                 <div class="missing-numbers">
                     ${never.map(n => `<span class="miss">${String(n).padStart(2,'0')}</span>`).join('')}
-                    ${never.length === 0 ? '<span>✅ සියලුම අංක ඇදී ඇත!</span>' : ''}
+                    ${never.length === 0 ? '<span style="color:rgba(255,255,255,0.3);">✅ සියලුම අංක ඇදී ඇත!</span>' : ''}
                 </div>
             </div>
         </div>`;
 
-        // Card 3: Range Analysis
         const rangeEntries = Object.entries(ranges);
         const sortedRanges = rangeEntries.sort((a,b) => b[1].count - a[1].count);
         const maxRangeCount = sortedRanges.length > 0 ? sortedRanges[0][1].count : 1;
@@ -1141,10 +1258,10 @@
         const coldRange = sortedRanges.length > 0 ? sortedRanges[sortedRanges.length-1][0] : null;
 
         html += `<div class="analytics-card" style="grid-column:1/-1;">
-            <h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය (00-09, 10-19 ... 90-99)</h3>
+            <h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය</h3>
             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;">
-                <span style="background:#ffebe6; padding:4px 16px; border-radius:30px; color:#c0392b;">🔥 වැඩිම: ${hotRange} (${sortedRanges[0]?.[1]?.count || 0} වාර)</span>
-                <span style="background:#e6f0ff; padding:4px 16px; border-radius:30px; color:#2980b9;">❄️ අඩුම: ${coldRange} (${sortedRanges[sortedRanges.length-1]?.[1]?.count || 0} වාර)</span>
+                <span style="background:rgba(231,76,60,0.1); padding:4px 16px; border-radius:30px; color:#e74c3c;">🔥 වැඩිම: ${hotRange} (${sortedRanges[0]?.[1]?.count || 0} වාර)</span>
+                <span style="background:rgba(52,152,219,0.1); padding:4px 16px; border-radius:30px; color:#3498db;">❄️ අඩුම: ${coldRange} (${sortedRanges[sortedRanges.length-1]?.[1]?.count || 0} වාර)</span>
             </div>
             <div class="range-grid">
                 ${rangeEntries.map(([key, data]) => {
@@ -1162,7 +1279,7 @@
                         <div class="range-label">${key}</div>
                         <div class="range-count">${data.count}</div>
                         <div class="range-status">වාර</div>
-                        <div style="font-size:11px; color:#4d667e; margin-top:4px;">
+                        <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:4px;">
                             නැති: ${missing.slice(0,5).map(n => String(n).padStart(2,'0')).join(', ')}${missing.length > 5 ? '...' : ''}
                             ${missing.length === 0 ? '✅ සියල්ලම' : ''}
                         </div>
@@ -1176,7 +1293,7 @@
     }
 
     // ============================================================
-    // 🟢 EVENT LISTENERS
+    // EVENT LISTENERS
     // ============================================================
     document.querySelectorAll('.time-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -1206,14 +1323,14 @@
     });
 
     // ============================================================
-    // 🟢 EXPOSE FUNCTIONS
+    // EXPOSE FUNCTIONS
     // ============================================================
     window.applySearch = applySearch;
     window.resetSearch = resetSearch;
     window.applyCustomDateRange = applyCustomDateRange;
 
     // ============================================================
-    // 🟢 INIT
+    // INIT
     // ============================================================
     fetchData('all');
 </script>
