@@ -178,20 +178,42 @@
         }
 
         .tabs {
-            display: flex; gap:6px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.06);
-            padding-bottom:4px; flex-wrap:wrap;
+            display: flex;
+            gap: 6px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 4px;
+            flex-wrap: wrap;
         }
         .tab-btn {
-            padding:12px 28px; border:none; background:transparent;
-            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:16px;
-            color:rgba(255,255,255,0.3); cursor:pointer; border-radius:30px 30px 0 0;
-            transition:0.2s; display:flex; align-items:center; gap:8px;
+            padding: 12px 28px;
+            border: none;
+            background: transparent;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            color: rgba(255,255,255,0.3);
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .tab-btn:hover { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.6);
+        }
         .tab-btn.active {
-            background:linear-gradient(135deg, rgba(43,108,176,0.15), rgba(26,54,93,0.15));
-            color:#ffffff;
-            border-bottom:2px solid #2b6cb0;
+            background: linear-gradient(135deg, rgba(43,108,176,0.15), rgba(26,54,93,0.15));
+            color: #ffffff;
+            border-bottom: 2px solid #2b6cb0;
+        }
+        .tab-content {
+            display: none !important;
+        }
+        .tab-content.active {
+            display: block !important;
         }
 
         .search-box {
@@ -544,6 +566,7 @@
         <button class="tab-btn" data-tab="analytics"><i class="fas fa-chart-pie"></i> විශ්ලේෂණය</button>
     </div>
 
+    <!-- ===== TAB 1: SEARCH ===== -->
     <div class="tab-content active" id="tab-search">
         <div class="search-box">
             <i class="fas fa-search"></i>
@@ -562,6 +585,7 @@
         </div>
     </div>
 
+    <!-- ===== TAB 2: ANALYTICS ===== -->
     <div class="tab-content" id="tab-analytics">
         <div class="heatmap-section" id="heatmapContainer">
             <h3>
@@ -685,7 +709,28 @@
                 document.getElementById('charCount').textContent = this.value.length;
             });
         }
+        // Set default tab
+        showTab('search');
     });
+
+    function showTab(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.remove('active');
+        });
+        // Show selected tab
+        const target = document.getElementById('tab-' + tabId);
+        if (target) {
+            target.classList.add('active');
+        }
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tabId) {
+                btn.classList.add('active');
+            }
+        });
+    }
 
     async function submitFeedback(event) {
         event.preventDefault();
@@ -1365,14 +1410,13 @@
         });
     });
 
+    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const tab = this.dataset.tab;
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            if (tab === 'analytics') {
+            const tabId = this.dataset.tab;
+            showTab(tabId);
+            // Update analytics content if switching to analytics tab
+            if (tabId === 'analytics') {
                 const data = getFilteredByRange();
                 renderHeatmap(data);
                 renderAdvancedStats(data);
