@@ -287,11 +287,13 @@
             align-items:center;
             gap:8px;
         }
+        /* 📅 වාරය/දිනය - ලා නිල්, Bold */
         .result-item .number .draw-id {
             font-weight:700;
             font-size:16px;
             color: #7ec8e3;
         }
+        /* (6290) - අභ්‍යන්තර අංකය */
         .result-item .number .seq-id {
             font-weight:400;
             font-size:14px;
@@ -301,6 +303,7 @@
             border-radius:30px;
             margin-left:2px;
         }
+        /* # U772236 - ජය අංකය - ලා කොළ */
         .result-item .number .full-num {
             font-weight:700;
             font-size:18px;
@@ -501,10 +504,10 @@
             border:1px solid rgba(255,255,255,0.04);
         }
 
-        /* ===== MATCH DAYS CARD ===== */
+        /* ===== MATCH DAYS CARDS ===== */
         .match-days-list {
             display:grid;
-            grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
             gap:10px;
             margin-top:8px;
         }
@@ -517,21 +520,25 @@
             align-items:center;
             border:1px solid rgba(255,255,255,0.04);
             transition:0.15s;
+            flex-wrap:wrap;
+            gap:6px;
         }
         .match-day-item:hover {
             border-color:rgba(102,126,234,0.2);
             background:rgba(255,255,255,0.06);
             transform:translateY(-2px);
         }
+        /* 📅 වාරය/දිනය - ලා නිල්, Bold (Match Days) */
         .match-day-item .date {
-            font-weight:600;
+            font-weight:700;
             color:#7ec8e3;
-            font-size:14px;
+            font-size:15px;
         }
+        /* # ජය අංකය - ලා කොළ (Match Days) */
         .match-day-item .number {
             font-weight:700;
             color:#7ddfb3;
-            font-size:14px;
+            font-size:15px;
         }
         .match-day-item .badge-match {
             background:rgba(125,223,179,0.15);
@@ -540,6 +547,127 @@
             border-radius:30px;
             font-size:12px;
             font-weight:600;
+        }
+
+        /* ===== FEEDBACK FORM ===== */
+        .feedback-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 24px;
+            padding: 24px 28px;
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            backdrop-filter: blur(10px);
+            margin-top: 24px;
+        }
+        .feedback-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #c8d6e5;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .feedback-card .subtitle {
+            color: rgba(255,255,255,0.3);
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+        .feedback-card .form-group {
+            margin-bottom: 16px;
+        }
+        .feedback-card .form-group label {
+            display: block;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .feedback-card .form-group input,
+        .feedback-card .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.04);
+            color: #e8ecf5;
+            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .feedback-card .form-group input:focus,
+        .feedback-card .form-group textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            background: rgba(255,255,255,0.06);
+        }
+        .feedback-card .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .feedback-card .form-group .char-count {
+            text-align: right;
+            color: rgba(255,255,255,0.2);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        .feedback-card .rating-group {
+            display: flex;
+            gap: 8px;
+            margin: 4px 0 8px 0;
+        }
+        .feedback-card .rating-group .star {
+            font-size: 32px;
+            cursor: pointer;
+            transition: 0.15s;
+            color: rgba(255,255,255,0.1);
+            user-select: none;
+        }
+        .feedback-card .rating-group .star:hover,
+        .feedback-card .rating-group .star.active {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+        .feedback-card .rating-group .star.active {
+            text-shadow: 0 0 20px rgba(251,191,36,0.3);
+        }
+        .feedback-card .btn-submit {
+            padding: 12px 36px;
+            border: none;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 25px rgba(102,126,234,0.3);
+        }
+        .feedback-card .btn-submit:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 35px rgba(102,126,234,0.4);
+        }
+        .feedback-card .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .feedback-card .feedback-success {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255,255,255,0.6);
+        }
+        .feedback-card .feedback-success i {
+            font-size: 48px;
+            color: #7ddfb3;
+            margin-bottom: 12px;
+        }
+        .feedback-card .feedback-success h4 {
+            color: #c8d6e5;
+            font-size: 20px;
+            margin-bottom: 4px;
         }
 
         .empty-state {
@@ -658,9 +786,57 @@
             <div class="loading-spinner"><i class="fas fa-spinner"></i><p>මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
         </div>
 
-        <!-- ===== NEW: Match Days Card ===== -->
         <div id="matchDaysContainer" style="margin-top:24px;">
-            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>ජය අංක-දින ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>
+            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>
+        </div>
+
+        <div id="feedbackContainer">
+            <div class="feedback-card">
+                <h3><i class="fas fa-comment-dots" style="color:#fbbf24;"></i> අදහස් හා යෝජනා</h3>
+                <div class="subtitle">ඔබගේ අදහස් අපට වැදගත්! මෙම පැනලය වැඩිදියුණු කිරීමට උදව් කරන්න.</div>
+                
+                <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                    <div class="form-group">
+                        <label for="feedbackName"><i class="fas fa-user"></i> ඔබගේ නම (අනිවාර්ය නොවේ)</label>
+                        <input type="text" id="feedbackName" placeholder="උදා: ගාමිණී පෙරේරා" maxlength="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackPhone"><i class="fas fa-phone"></i> දුරකථන අංකය (අනිවාර්ය නොවේ)</label>
+                        <input type="tel" id="feedbackPhone" placeholder="071-2345678" maxlength="15">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackMessage"><i class="fas fa-pencil-alt"></i> ඔබගේ අදහස/යෝජනාව <span style="color:#e74c3c;">*</span></label>
+                        <textarea id="feedbackMessage" placeholder="මෙම පැනලය ගැන ඔබගේ අදහස්, යෝජනා, හෝ ගැටළු මෙහි ලියන්න..." maxlength="1000" required></textarea>
+                        <div class="char-count"><span id="charCount">0</span>/1000</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-star"></i> ඔබගේ ඇගයීම</label>
+                        <div class="rating-group" id="ratingGroup">
+                            <span class="star" data-value="1" onclick="setRating(1)">★</span>
+                            <span class="star" data-value="2" onclick="setRating(2)">★</span>
+                            <span class="star" data-value="3" onclick="setRating(3)">★</span>
+                            <span class="star" data-value="4" onclick="setRating(4)">★</span>
+                            <span class="star" data-value="5" onclick="setRating(5)">★</span>
+                        </div>
+                        <div style="font-size:13px; color:rgba(255,255,255,0.2);" id="ratingLabel">තරුවක් තෝරන්න</div>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit" id="feedbackSubmitBtn">
+                        <i class="fas fa-paper-plane"></i> ඉදිරිපත් කරන්න
+                    </button>
+                </form>
+                
+                <div id="feedbackSuccess" style="display:none;">
+                    <div class="feedback-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>ස්තුතියි! 🎉</h4>
+                        <p>ඔබගේ අදහස සාර්ථකව ලැබුණි. අපි එය අගය කරමු!</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -695,6 +871,91 @@
     const advancedContainer = document.getElementById('advancedStatsContainer');
     const matchDaysContainer = document.getElementById('matchDaysContainer');
 
+    // ============================================================
+    // FEEDBACK FORM
+    // ============================================================
+    let selectedRating = 0;
+
+    function setRating(value) {
+        selectedRating = value;
+        const stars = document.querySelectorAll('#ratingGroup .star');
+        stars.forEach((star, index) => {
+            if (index < value) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+        const labels = ['', 'ඉතා අඩුයි', 'අඩුයි', 'හරි', 'හොඳයි', 'ඉතා හොඳයි'];
+        document.getElementById('ratingLabel').textContent = labels[value] || 'තරුවක් තෝරන්න';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const msgInput = document.getElementById('feedbackMessage');
+        if (msgInput) {
+            msgInput.addEventListener('input', function() {
+                const count = this.value.length;
+                document.getElementById('charCount').textContent = count;
+            });
+        }
+    });
+
+    async function submitFeedback(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('feedbackName').value.trim();
+        const phone = document.getElementById('feedbackPhone').value.trim();
+        const message = document.getElementById('feedbackMessage').value.trim();
+        
+        if (!message) {
+            alert('කරුණාකර ඔබගේ අදහස ලියන්න.');
+            return;
+        }
+        
+        if (message.length < 5) {
+            alert('අදහස අවම වශයෙන් අකුරු 5ක් වත් තිබිය යුතුයි.');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('feedbackSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> යවමින්...';
+        
+        try {
+            const feedbackData = {
+                name: name || 'නිර්නාමික',
+                userPhone: phone || '',
+                message: message,
+                rating: selectedRating || 0,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                userAgent: navigator.userAgent || '',
+                page: window.location.href || '',
+                source: 'web',
+                platform: 'Mahajana Web Panel'
+            };
+            
+            await db.collection('feedback').add(feedbackData);
+            
+            document.getElementById('feedbackForm').style.display = 'none';
+            document.getElementById('feedbackSuccess').style.display = 'block';
+            
+            document.getElementById('feedbackName').value = '';
+            document.getElementById('feedbackPhone').value = '';
+            document.getElementById('feedbackMessage').value = '';
+            setRating(0);
+            document.getElementById('charCount').textContent = '0';
+            
+        } catch (error) {
+            console.error('Feedback submission error:', error);
+            alert('අදහස යැවීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ඉදිරිපත් කරන්න';
+        }
+    }
+
+    // ============================================================
+    // CORE FUNCTIONS
+    // ============================================================
     function formatDate(ts) {
         if (!ts) return 'N/A';
         const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -767,7 +1028,7 @@
         analyticsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>විශ්ලේෂණය සිදු කරමින්...</p></div>`;
         advancedContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>උසස් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
         heatmapGrid.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>Heatmap පූරණය වෙමින්...</p></div>`;
-        matchDaysContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>ජය අංක-දින ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
+        matchDaysContainer.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i><p>ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>`;
 
         customStart = null;
         customEnd = null;
@@ -1338,8 +1599,7 @@
     }
 
     // ============================================================
-    // 🆕 CORRECTED: MATCH DAYS ANALYSIS
-    // "ජය අංකයේ අග අංක දෙක, එදින දිනයේ අග අංක දෙකට සමාන වන අවස්ථා"
+    // MATCH DAYS ANALYSIS - ජය අංකයේ අග අංක දෙක දිනයට සමාන වුණ දවස්
     // ============================================================
     function renderMatchDays(docs) {
         const container = matchDaysContainer;
@@ -1350,17 +1610,11 @@
             return;
         }
 
-        // Filter: last 2 digits of fullNumber === last 2 digits of date (from date object)
         const matchDays = data.filter(d => {
             if (!d.fullNumber || !d.date) return false;
-            
-            // Get last 2 digits of fullNumber
             const numLast2 = d.fullNumber.slice(-2);
-            
-            // Get day of month from date (e.g., 25 from 2026-08-25)
             const day = d.date.getDate();
             const dayStr = String(day).padStart(2, '0');
-            
             return numLast2 === dayStr;
         });
 
@@ -1377,7 +1631,6 @@
             return;
         }
 
-        // Sort by date (most recent first)
         matchDays.sort((a, b) => {
             if (a.date && b.date) return b.date - a.date;
             return 0;
