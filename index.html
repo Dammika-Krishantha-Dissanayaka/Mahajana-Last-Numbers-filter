@@ -40,7 +40,7 @@
             align-items: center;
             gap: 18px;
             flex-wrap: wrap;
-            margin-bottom: 22px;
+            margin-bottom: 12px;
             background: linear-gradient(135deg, rgba(43,108,176,0.2), rgba(26,54,93,0.3));
             padding: 18px 24px;
             border-radius: 30px;
@@ -87,6 +87,25 @@
             box-shadow:0 4px 20px rgba(255,210,0,0.3);
         }
         .firebase-badge i { color:#1a1a1a; }
+
+        /* ===== VIEW COUNTER ===== */
+        .view-counter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 8px 20px;
+            background: rgba(43,108,176,0.12);
+            border-radius: 40px;
+            border: 1px solid rgba(43,108,176,0.12);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .view-counter i { color: #7ec8e3; font-size: 18px; }
+        .view-counter .label { color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 600; }
+        .view-counter .count { color: #7ec8e3; font-size: 22px; font-weight: 700; min-width: 40px; text-align: center; }
+        .view-counter .sub { color: rgba(255,255,255,0.2); font-size: 12px; }
 
         .time-filter {
             display: flex;
@@ -404,7 +423,6 @@
             display:flex; justify-content:space-between; padding:4px 8px;
             border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px;
         }
-        /* 🟢 Hot Top 10 - ලා නිල් + Bold */
         .two-digit-item .num {
             font-weight: 700;
             color: #7ec8e3;
@@ -422,7 +440,6 @@
             text-align:center; border:1px solid rgba(255,255,255,0.04); transition:0.2s;
         }
         .range-box:hover { transform:translateY(-2px); border-color:rgba(43,108,176,0.2); }
-        /* 🟢 කලාප විශ්ලේෂණය - ලා නිල් + Bold */
         .range-box .range-label {
             font-weight: 700;
             color: rgba(255,255,255,0.6);
@@ -448,7 +465,6 @@
         }
         .range-box.cold .range-count { color: #6dd5ed; }
 
-        /* 🟢 කාල සීමාව තුළ නොඇදුණු අංක - ලා නිල් + Bold */
         .missing-numbers {
             display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
         }
@@ -597,6 +613,14 @@
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
+    <!-- ===== VIEW COUNTER ===== -->
+    <div class="view-counter">
+        <i class="fas fa-eye"></i>
+        <span class="label">අද නැරඹීම්:</span>
+        <span class="count" id="todayViews">...</span>
+        <span class="sub">(පිටු පූරණය වූ සැර)</span>
+    </div>
+
     <div class="time-filter">
         <span class="label"><i class="far fa-calendar-alt"></i> දින සීමාව :</span>
         <input type="date" id="startDate" placeholder="ආරම්භය">
@@ -741,10 +765,41 @@
 
     let selectedRating = 0;
 
+    // ============================================================
+    // VIEW COUNTER - අද දින නැරඹීම් ගණන
+    // ============================================================
+    function logPageView() {
+        const today = new Date().toISOString().split('T')[0];
+        db.collection("analytics").doc(today).set({
+            mahajana_view_web: firebase.firestore.FieldValue.increment(1)
+        }, { merge: true }).catch(function(error) {
+            console.warn("View counter error:", error);
+        });
+    }
+
+    function getTodayViews() {
+        const today = new Date().toISOString().split('T')[0];
+        db.collection("analytics").doc(today).get().then(function(doc) {
+            if (doc.exists) {
+                const data = doc.data();
+                const count = data.mahajana_view_web || 0;
+                document.getElementById('todayViews').textContent = count;
+            } else {
+                document.getElementById('todayViews').textContent = '0';
+            }
+        }).catch(function(error) {
+            console.warn("Error fetching views:", error);
+            document.getElementById('todayViews').textContent = '⚠️';
+        });
+    }
+
+    // ============================================================
+    // FEEDBACK FUNCTIONS
+    // ============================================================
     function setRating(value) {
         selectedRating = value;
         const stars = document.querySelectorAll('#ratingGroup .star');
-        stars.forEach((star, index) => {
+        stars.forEach(function(star, index) {
             if (index < value) star.classList.add('active');
             else star.classList.remove('active');
         });
@@ -1147,6 +1202,16 @@
             renderMatchDays(data);
         }
     }
+
+    // ============================================================
+    // DOMContentLoaded - පිටුව පූරණය වූ විට
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // View Counter - log page view
+        logPageView();
+        // Get today's views after 1 second (for Firestore write to complete)
+        setTimeout(getTodayViews, 1000);
+    });
 
     document.querySelectorAll('.time-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
