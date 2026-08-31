@@ -1,1427 +1,697 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>මහජන සම්පත - විශ්ලේෂණ පැනලය</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>මහජන සම්පත • Smart Analysis Panel</title>
 
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0a1628, #1a365d, #1e3a5f);
-            min-height: 100vh;
-            padding: 25px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 40px;
-            padding: 28px 30px 35px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, rgba(43,108,176,0.2), rgba(26,54,93,0.3));
-            padding: 18px 24px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .header-icon {
-            background: linear-gradient(135deg, #2b6cb0, #1a365d);
-            width: 60px; height: 60px;
-            border-radius: 22px;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 28px;
-            box-shadow: 0 10px 30px rgba(43,108,176,0.4);
-        }
-        .header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffffff, #90cdf4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height:1.2;
-        }
-        .header h1 small {
-            font-size: 15px;
-            font-weight:400;
-            background: linear-gradient(135deg, #90cdf4, #2b6cb0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display:block;
-            margin-top:2px;
-        }
-        .firebase-badge {
-            margin-left: auto;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            padding:6px 18px;
-            border-radius:60px;
-            font-size:13px;
-            font-weight:700;
-            color:#1a1a1a;
-            display:flex;
-            align-items:center;
-            gap:8px;
-            box-shadow:0 4px 20px rgba(255,210,0,0.3);
-        }
-        .firebase-badge i { color:#1a1a1a; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-        .view-counter {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding: 8px 20px;
-            background: rgba(43,108,176,0.12);
-            border-radius: 40px;
-            border: 1px solid rgba(43,108,176,0.12);
-            backdrop-filter: blur(10px);
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .view-counter i { color: #7ec8e3; font-size: 18px; }
-        .view-counter .label { color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 600; }
-        .view-counter .count { color: #7ec8e3; font-size: 22px; font-weight: 700; min-width: 40px; text-align: center; }
-        .view-counter .sub { color: rgba(255,255,255,0.2); font-size: 12px; }
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-        .time-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 22px;
-            background: rgba(255,255,255,0.04);
-            padding: 12px 18px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.06);
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        .time-filter .label {
-            font-weight: 600;
-            color: #90cdf4;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .time-filter input[type="date"] {
-            padding: 6px 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px;
-            font-size: 14px;
-            font-family: 'Noto Sans Sinhala', sans-serif;
-            background: rgba(255,255,255,0.05);
-            outline: none;
-            transition: 0.2s;
-            color: #bee3f8;
-            width: 150px;
-        }
-        .time-filter input[type="date"]:focus {
-            border-color: #2b6cb0;
-            box-shadow: 0 0 0 3px rgba(43,108,176,0.2);
-            background: rgba(255,255,255,0.08);
-            color: #ffffff;
-        }
-        .time-filter input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-        }
-        .time-filter input[type="date"]::placeholder {
-            color: rgba(255,255,255,0.2);
-            font-size: 13px;
-        }
-        .time-filter .date-sep {
-            color: rgba(255,255,255,0.3);
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .time-btn-apply {
-            padding: 6px 20px;
-            border: none;
-            border-radius: 30px;
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            font-family: 'Noto Sans Sinhala', sans-serif;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 4px 15px rgba(0,206,201,0.3);
-        }
-        .time-btn-apply:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,206,201,0.4);
-        }
-        .time-filter .divider {
-            color: rgba(255,255,255,0.1);
-            font-size: 18px;
-            margin: 0 4px;
-        }
-        .time-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 40px;
-            background: transparent;
-            font-family: 'Noto Sans Sinhala', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            color: rgba(255,255,255,0.4);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .time-btn:hover {
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.7);
-        }
-        .time-btn.active {
-            background: linear-gradient(135deg, rgba(43,108,176,0.3), rgba(26,54,93,0.3));
-            color: #ffffff;
-            box-shadow: 0 6px 20px rgba(43,108,176,0.2);
-            border: 1px solid rgba(43,108,176,0.2);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding-bottom: 4px;
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            padding: 12px 28px;
-            border: none;
-            background: transparent;
-            font-family: 'Noto Sans Sinhala', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            color: rgba(255,255,255,0.3);
-            cursor: pointer;
-            border-radius: 30px 30px 0 0;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .tab-btn:hover {
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.6);
-        }
-        .tab-btn.active {
-            background: linear-gradient(135deg, rgba(43,108,176,0.15), rgba(26,54,93,0.15));
-            color: #ffffff;
-            border-bottom: 2px solid #2b6cb0;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        .search-box {
-            display:flex;
-            flex-wrap:wrap;
-            align-items:center;
-            gap:14px;
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(12px);
-            padding:8px 8px 8px 24px;
-            border-radius:60px;
-            border:1px solid rgba(255,255,255,0.08);
-            margin-bottom:28px;
-            transition:0.3s;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        .search-box:focus-within {
-            border-color: rgba(43,108,176,0.3);
-            box-shadow: 0 8px 30px rgba(43,108,176,0.08);
-            background: rgba(255,255,255,0.1);
-        }
-        .search-box i { color: rgba(255,255,255,0.25); font-size:18px; }
-        .search-box input {
-            flex:1; min-width:160px; padding:14px 6px; border:none; background:transparent;
-            font-size:18px; font-family:'Noto Sans Sinhala',sans-serif;
-            color: #e8ecf5; outline:none;
-        }
-        .search-box input::placeholder { color: rgba(255,255,255,0.2); font-weight:400; }
-        .search-box .btn-group { display:flex; gap:8px; flex-wrap:wrap; }
-
-        .btn {
-            padding:12px 28px; border:none; border-radius:60px;
-            font-family:'Noto Sans Sinhala',sans-serif; font-weight:600; font-size:15px;
-            cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:8px;
-        }
-        .btn-primary {
-            background:linear-gradient(135deg,#2b6cb0,#1a365d);
-            color:#fff;
-            box-shadow:0 6px 25px rgba(43,108,176,0.3);
-        }
-        .btn-primary:hover { transform:scale(1.03); box-shadow:0 10px 35px rgba(43,108,176,0.4); }
-        .btn-secondary {
-            background:rgba(255,255,255,0.06);
-            color:rgba(255,255,255,0.5);
-            border:1px solid rgba(255,255,255,0.06);
-        }
-        .btn-secondary:hover { background:rgba(255,255,255,0.1); color:#ffffff; }
-
-        .result-header {
-            display:flex; justify-content:space-between; align-items:center;
-            margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.06);
-            padding-bottom:12px;
-        }
-        .result-header span { font-weight:600; color: rgba(255,255,255,0.4); font-size:16px; }
-        .result-header .badge {
-            background:linear-gradient(135deg,#2b6cb0,#1a365d);
-            color:#fff; padding:4px 18px; border-radius:40px;
-            font-size:14px; box-shadow:0 4px 15px rgba(43,108,176,0.2);
-        }
-        .results-wrapper {
-            max-height:460px; overflow-y:auto; padding-right:4px;
-        }
-        .results-wrapper::-webkit-scrollbar { width:5px; }
-        .results-wrapper::-webkit-scrollbar-track { background:rgba(255,255,255,0.03); border-radius:10px; }
-        .results-wrapper::-webkit-scrollbar-thumb { background:rgba(43,108,176,0.3); border-radius:10px; }
-        .result-item {
-            display:flex; justify-content:space-between; align-items:center;
-            background:rgba(255,255,255,0.03);
-            padding:16px 24px; margin-bottom:8px; border-radius:18px;
-            border:1px solid rgba(255,255,255,0.04);
-            transition:0.15s; backdrop-filter: blur(10px);
-        }
-        .result-item:hover {
-            border-color:rgba(43,108,176,0.2);
-            background:rgba(255,255,255,0.06);
-            transform:translateX(4px);
-        }
-        .result-item .number {
-            font-weight:700; font-size:18px; letter-spacing:0.5px;
-            display:flex; flex-wrap:wrap; align-items:center; gap:8px;
-        }
-        .result-item .number .draw-id {
-            font-weight: 700;
-            font-size: 16px;
-            color: #c4b5fd;
-        }
-        .result-item .number .seq-id {
-            font-weight:400; font-size:14px; color: rgba(255,255,255,0.3);
-            background:rgba(255,255,255,0.04); padding:2px 10px; border-radius:30px; margin-left:2px;
-        }
-        .result-item .number .full-num {
-            font-weight:700; font-size:18px; color: #7ddfb3;
-            background:rgba(125,223,179,0.08); padding:2px 14px; border-radius:30px;
-            border:1px solid rgba(125,223,179,0.1);
-        }
-
-        .heatmap-section {
-            background: rgba(255,255,255,0.95);
-            border-radius: 24px; padding: 20px 22px; margin-bottom: 24px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            overflow-x: auto;
-        }
-        .heatmap-section h3 {
-            font-size: 18px; font-weight: 700; color: #1a365d;
-            margin-bottom: 14px; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px;
-        }
-        .heatmap-section h3 .sub { font-size: 14px; font-weight: 400; color: #4a6fa5; }
-        .heatmap-grid {
-            display: grid; grid-template-columns: 40px repeat(10, 1fr);
-            gap: 3px; min-width: 420px;
-        }
-        .heatmap-grid .cell-header {
-            font-weight: 700; color: #2d3748; font-size: 13px;
-            display: flex; align-items: center; justify-content: center;
-            background: #f7fafc; border-radius: 6px; padding: 4px 0;
-        }
-        .heatmap-grid .cell {
-            aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; font-size: 12px; font-weight: 700; color: #1a202c;
-            transition: 0.15s; cursor: default; border: 1px solid rgba(0,0,0,0.05);
-            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
-        }
-        .heatmap-grid .cell:hover { transform: scale(1.12); z-index: 10; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-        .heatmap-legend {
-            display: flex; align-items: center; gap: 16px; margin-top: 14px;
-            font-size: 13px; color: #4a5568; flex-wrap: wrap;
-        }
-        .heatmap-legend .gradient {
-            width: 160px; height: 16px; border-radius: 20px;
-            background: linear-gradient(to right, #2b6cb0, #ecc94b, #e53e3e);
-        }
-
-        .advanced-stats-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;
-        }
-        @media (max-width: 768px) { .advanced-stats-grid { grid-template-columns: 1fr; } }
-
-        .prediction-badge {
-            display: inline-block; background: linear-gradient(135deg, #2b6cb0, #1a365d);
-            color: white; padding: 4px 14px; border-radius: 30px; font-size: 14px;
-            font-weight: 700; margin: 2px; box-shadow: 0 4px 15px rgba(43,108,176,0.3);
-        }
-
-        .analytics-card {
-            background: rgba(255,255,255,0.06); backdrop-filter: blur(12px);
-            border-radius: 24px; padding: 20px 22px;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            transition: 0.2s;
-        }
-        .analytics-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.08); }
-        .analytics-card h3 {
-            font-size:18px; font-weight:700; color: rgba(255,255,255,0.85);
-            margin-bottom:12px; display:flex; align-items:center; gap:10px;
-            border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:10px;
-        }
-        .analytics-card h3 i { color: #2b6cb0; }
-        .analytics-card canvas { max-height: 180px; width: 100%; }
-
-        .digit-bar { display:flex; align-items:center; gap:10px; margin-bottom:5px; }
-        .digit-bar .label {
-            min-width:40px; font-weight:700; color: rgba(255,255,255,0.7); font-size:14px;
-        }
-        .digit-bar .bar-track {
-            flex:1; height:22px; background:rgba(255,255,255,0.06); border-radius:20px; overflow:hidden;
-        }
-        .digit-bar .bar-fill {
-            height:100%; border-radius:20px; transition:0.3s;
-            background:linear-gradient(90deg,#2b6cb0,#1a365d);
-        }
-        .digit-bar .bar-fill.hot { background:linear-gradient(90deg,#e74c3c,#f39c12); }
-        .digit-bar .bar-fill.cold { background:linear-gradient(90deg,#2193b0,#6dd5ed); }
-        .digit-bar .count {
-            min-width:36px; text-align:right; font-weight:700; color: rgba(255,255,255,0.7); font-size:14px;
-        }
-
-        .two-digit-list {
-            display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; max-height:200px; overflow-y:auto;
-        }
-        .two-digit-item {
-            display:flex; justify-content:space-between; padding:4px 8px;
-            border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px;
-        }
-        .two-digit-item .num {
-            font-weight: 700;
-            color: #7ec8e3;
-        }
-        .two-digit-item .freq {
-            font-weight: 600;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .range-grid {
-            display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;
-        }
-        .range-box {
-            background:rgba(255,255,255,0.04); border-radius:14px; padding:10px 8px;
-            text-align:center; border:1px solid rgba(255,255,255,0.04); transition:0.2s;
-        }
-        .range-box:hover { transform:translateY(-2px); border-color:rgba(43,108,176,0.2); }
-        .range-box .range-label {
-            font-weight: 700;
-            color: rgba(255,255,255,0.6);
-            font-size: 15px;
-        }
-        .range-box .range-count {
-            font-size: 22px;
-            font-weight: 700;
-            color: #7ec8e3;
-        }
-        .range-box .range-status {
-            font-size: 12px;
-            color: rgba(255,255,255,0.3);
-        }
-        .range-box.hot {
-            background:rgba(231,76,60,0.08);
-            border-color:rgba(231,76,60,0.12);
-        }
-        .range-box.hot .range-count { color: #f39c12; }
-        .range-box.cold {
-            background:rgba(33,147,176,0.08);
-            border-color:rgba(33,147,176,0.12);
-        }
-        .range-box.cold .range-count { color: #6dd5ed; }
-
-        .missing-numbers {
-            display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
-        }
-        .missing-numbers .miss {
-            background: rgba(255,255,255,0.06);
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #7ec8e3;
-            border: 1px solid rgba(126,200,227,0.15);
-            transition: 0.15s;
-        }
-        .missing-numbers .miss:hover {
-            background: rgba(126,200,227,0.1);
-            transform: scale(1.05);
-            border-color: rgba(126,200,227,0.3);
-        }
-
-        .match-days-list {
-            display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
-            gap:10px; margin-top:8px;
-        }
-        .match-day-item {
-            background:rgba(255,255,255,0.04); border-radius:14px; padding:12px 16px;
-            display:flex; justify-content:space-between; align-items:center;
-            border:1px solid rgba(255,255,255,0.04); transition:0.15s; flex-wrap:wrap; gap:6px;
-        }
-        .match-day-item:hover {
-            border-color:rgba(43,108,176,0.2); background:rgba(255,255,255,0.06);
-            transform:translateY(-2px);
-        }
-        .match-day-item .date {
-            font-weight: 700;
-            color: #c4b5fd;
-            font-size: 15px;
-        }
-        .match-day-item .number {
-            font-weight: 700;
-            color: #7ddfb3;
-            font-size: 15px;
-        }
-        .match-day-item .badge-match {
-            background:rgba(125,223,179,0.15);
-            color: #7ddfb3;
-            padding:2px 12px;
-            border-radius:30px;
-            font-size:12px;
-            font-weight:600;
-        }
-
-        .feedback-card {
-            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px);
-            border-radius: 24px; padding: 24px 28px;
-            border: 1px solid rgba(255,255,255,0.04);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            margin-top: 24px; transition: 0.2s;
-        }
-        .feedback-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.06); }
-        .feedback-card h3 {
-            font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.85);
-            margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
-        }
-        .feedback-card .subtitle { color: rgba(255,255,255,0.3); font-size: 14px; margin-bottom: 18px; }
-        .feedback-card .form-group { margin-bottom: 16px; }
-        .feedback-card .form-group label {
-            display: block; font-weight: 600; color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 4px;
-        }
-        .feedback-card .form-group input,
-        .feedback-card .form-group textarea {
-            width: 100%; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 14px; background: rgba(255,255,255,0.04);
-            color: #e8ecf5; font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            font-size: 15px; outline: none; transition: 0.2s;
-        }
-        .feedback-card .form-group input:focus,
-        .feedback-card .form-group textarea:focus {
-            border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43,108,176,0.1);
-            background: rgba(255,255,255,0.06);
-        }
-        .feedback-card .form-group textarea { min-height: 80px; resize: vertical; }
-        .feedback-card .form-group .char-count {
-            text-align: right; color: rgba(255,255,255,0.2); font-size: 12px; margin-top: 2px;
-        }
-        .feedback-card .rating-group {
-            display: flex; gap: 8px; margin: 4px 0 8px 0;
-        }
-        .feedback-card .rating-group .star {
-            font-size: 32px; cursor: pointer; transition: 0.15s;
-            color: rgba(255,255,255,0.1); user-select: none;
-        }
-        .feedback-card .rating-group .star:hover,
-        .feedback-card .rating-group .star.active { color: #fbbf24; transform: scale(1.1); }
-        .feedback-card .rating-group .star.active { text-shadow: 0 0 20px rgba(251,191,36,0.3); }
-        .feedback-card .btn-submit {
-            padding: 12px 36px; border: none; border-radius: 60px;
-            background: linear-gradient(135deg, #2b6cb0, #1a365d);
-            color: white; font-weight: 700; font-size: 16px;
-            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
-            cursor: pointer; transition: 0.2s; box-shadow: 0 6px 25px rgba(43,108,176,0.3);
-        }
-        .feedback-card .btn-submit:hover { transform: scale(1.03); box-shadow: 0 10px 35px rgba(43,108,176,0.4); }
-        .feedback-card .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .feedback-card .feedback-success {
-            text-align: center; padding: 30px 20px; color: rgba(255,255,255,0.6);
-        }
-        .feedback-card .feedback-success i { font-size: 48px; color: #7ddfb3; margin-bottom: 12px; }
-        .feedback-card .feedback-success h4 { color: rgba(255,255,255,0.85); font-size: 20px; margin-bottom: 4px; }
-
-        .empty-state { text-align:center; padding:40px 20px; color:rgba(255,255,255,0.2); }
-        .empty-state i { font-size:40px; color:rgba(255,255,255,0.05); margin-bottom:15px; }
-        .empty-state h3 { color: rgba(255,255,255,0.3); }
-        .loading-spinner { text-align:center; padding:40px; color:rgba(255,255,255,0.2); }
-        .loading-spinner i { font-size:40px; animation:spin 1s linear infinite; color:#2b6cb0; }
-        .loading-spinner p { color: rgba(255,255,255,0.25); margin-top:12px; }
-        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
-
-        @media (max-width:768px) {
-            .container { padding:18px 15px; }
-            .header { padding:14px 18px; }
-            .header h1 { font-size:20px; }
-            .header h1 small { font-size:13px; }
-            .firebase-badge { margin-left:0; width:100%; justify-content:center; }
-            .time-filter { border-radius:28px; padding:12px 16px; }
-            .time-filter input[type="date"] { font-size:12px; padding:4px 10px; width:130px; }
-            .time-btn { padding:6px 14px; font-size:13px; }
-            .tab-btn { padding:10px 16px; font-size:14px; }
-            .search-box { border-radius:30px; padding:6px 6px 6px 18px; }
-            .search-box input { font-size:16px; min-width:120px; }
-            .btn { padding:10px 18px; font-size:14px; }
-            .result-item { flex-direction:column; align-items:flex-start; gap:8px; }
-            .result-item .number { flex-wrap:wrap; }
-            .two-digit-list { grid-template-columns:1fr; }
-            .heatmap-grid { min-width: 320px; }
-            .heatmap-grid .cell { font-size: 10px; }
-            .advanced-stats-grid { grid-template-columns: 1fr; }
-            .match-days-list { grid-template-columns:1fr; }
-        }
-    </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --bg1:#07111f;--bg2:#0c1e36;--card:rgba(255,255,255,.055);
+ --line:rgba(255,255,255,.08);--text:#edf5ff;--muted:rgba(237,245,255,.52);
+ --blue:#4da3ff;--cyan:#48d7e8;--green:#65e6ad;--gold:#ffd166;
+ --red:#ff6b6b;--purple:#b89cff;
+}
+body{
+ font-family:'Noto Sans Sinhala','Poppins',sans-serif;color:var(--text);
+ background:radial-gradient(circle at 10% 0%,#173b68 0,transparent 35%),
+            radial-gradient(circle at 90% 10%,#17304d 0,transparent 32%),
+            linear-gradient(135deg,var(--bg1),var(--bg2));
+ min-height:100vh;padding:20px;
+}
+.container{width:min(1280px,100%);margin:auto}
+.glass{
+ background:var(--card);border:1px solid var(--line);backdrop-filter:blur(18px);
+ -webkit-backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.22);
+}
+.header{display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:28px;margin-bottom:14px}
+.logo{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;font-size:27px;
+ background:linear-gradient(135deg,#2478c9,#16355d);box-shadow:0 10px 30px rgba(36,120,201,.3)}
+h1{font-size:25px;line-height:1.25}
+h1 small{display:block;color:#8ecbff;font-size:13px;font-weight:400;margin-top:4px}
+.status{margin-left:auto;display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:30px;
+ background:rgba(101,230,173,.1);border:1px solid rgba(101,230,173,.18);color:var(--green);font-size:12px;font-weight:700}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.counter{display:flex;justify-content:center;gap:10px;align-items:center;padding:9px 15px;border-radius:30px;margin-bottom:14px;color:var(--muted);font-size:13px}
+.counter strong{color:#8ed5ff;font-size:20px}
+.controls{padding:14px;border-radius:24px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.controls label{color:#9fd5ff;font-weight:700;font-size:13px;margin-right:4px}
+input[type=date],input[type=text]{
+ background:rgba(255,255,255,.055);border:1px solid var(--line);color:var(--text);
+ border-radius:14px;padding:10px 12px;font-family:inherit;outline:none
+}
+input[type=date]{color-scheme:dark}
+button{font-family:inherit;cursor:pointer}
+.range-btn,.btn{
+ border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--muted);
+ padding:9px 14px;border-radius:14px;font-weight:700;transition:.18s
+}
+.range-btn:hover,.btn:hover{background:rgba(255,255,255,.09);color:white;transform:translateY(-1px)}
+.range-btn.active{background:linear-gradient(135deg,rgba(77,163,255,.3),rgba(36,120,201,.18));color:white;border-color:rgba(77,163,255,.35)}
+.btn-primary{background:linear-gradient(135deg,#277ecb,#184a80);color:white;border:0}
+.btn-green{background:linear-gradient(135deg,#159c78,#116a65);color:white;border:0}
+.tabs{display:flex;gap:9px;border-bottom:0;margin-bottom:18px;flex-wrap:wrap}
+.tab{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);color:var(--muted);padding:11px 17px;font-size:14px;font-weight:700;border-radius:14px;box-shadow:0 7px 18px rgba(0,0,0,.14);transition:.18s;white-space:nowrap}.tab:hover{background:rgba(77,163,255,.10);color:#fff;border-color:rgba(77,163,255,.22);transform:translateY(-1px)}
+.tab.active{color:#fff;background:linear-gradient(135deg,#277ecb,#174b82);border-color:rgba(91,176,255,.42);box-shadow:0 8px 22px rgba(39,126,203,.24),inset 0 1px rgba(255,255,255,.12)}
+.tab-content{display:none}.tab-content.active{display:block}
+.searchbar{display:flex;gap:8px;padding:8px;border-radius:20px;margin-bottom:15px}
+.searchbar input{flex:1;font-size:16px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.stat{padding:15px;border-radius:20px}.stat .icon{font-size:15px;color:var(--blue)}.stat .value{font-size:25px;font-weight:800;margin-top:3px}.stat .label{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:15px}
+.card{padding:18px;border-radius:22px}.wide{grid-column:1/-1}
+.card h2{font-size:17px;margin-bottom:13px;display:flex;align-items:center;gap:9px}
+.card h2 i{color:var(--blue)}
+.mini{color:var(--muted);font-size:12px}
+.heatwrap{overflow:auto}
+.heat{display:grid;grid-template-columns:34px repeat(10,minmax(30px,1fr));gap:3px;min-width:430px}
+.heat .head,.heat .cell{min-height:32px;display:grid;place-items:center;border-radius:7px;font-size:11px;font-weight:800}
+.heat .head{background:rgba(255,255,255,.05);color:var(--muted)}
+.heat .cell{color:#07111f;text-shadow:0 1px 1px rgba(255,255,255,.3);transition:.15s;cursor:pointer}
+.heat .cell:hover{transform:scale(1.13);z-index:2}
+.legend{display:flex;align-items:center;gap:8px;margin-top:12px;color:var(--muted);font-size:11px}
+.gradient{width:150px;height:10px;border-radius:20px;background:linear-gradient(90deg,#244f83,#e4bd4b,#d94b4b)}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:48px 1fr 55px;align-items:center;gap:8px;font-size:13px}
+.track{height:20px;background:rgba(255,255,255,.055);border-radius:20px;overflow:hidden}
+.fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#2879c7,#5cc9e6)}
+.fill.hot{background:linear-gradient(90deg,#d94b4b,#ffb347)}
+.fill.cold{background:linear-gradient(90deg,#2879c7,#75d7ef)}
+.num{font-weight:800;color:#8ed5ff}.count{text-align:right;color:var(--muted);font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.list{max-height:310px;overflow:auto}
+.item{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}
+.item:last-child{border-bottom:0}
+.badge{padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--muted);font-size:11px}
+.hotbox{background:rgba(255,107,107,.07);border:1px solid rgba(255,107,107,.12);border-radius:16px;padding:12px}
+.coldbox{background:rgba(77,163,255,.07);border:1px solid rgba(77,163,255,.12);border-radius:16px;padding:12px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}.pill{padding:5px 10px;border-radius:20px;background:rgba(255,255,255,.06);font-weight:800;font-size:12px}
+.pill.red{background:rgba(255,107,107,.12);color:#ff9c9c}.pill.blue{background:rgba(77,163,255,.12);color:#9dd5ff}.pill.green{background:rgba(101,230,173,.1);color:#8af0c4}
+.compare{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.compare input{text-align:center;width:100%;font-size:20px;font-weight:800}
+.comparebox{padding:14px;border-radius:18px;background:rgba(255,255,255,.04)}
+.comparebox h3{text-align:center;margin-bottom:8px}
+.compareline{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}.compareline:last-child{border:0}
+.result-list{max-height:500px;overflow:auto}
+.result{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin-bottom:7px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.04)}
+.result .big{font-size:24px;font-weight:800;color:var(--green);letter-spacing:.5px}.last2{color:#ffd166;font-weight:900;text-shadow:0 0 12px rgba(255,209,102,.25)}.search-highlight{display:inline-block;padding:0 4px;border:1px solid #ffd166;border-radius:6px;line-height:1.05}.date-pink{color:#ffb6c9;font-size:16px;font-weight:800;letter-spacing:.2px}.letter-box{display:inline-grid;place-items:center;width:38px;height:38px;margin-right:9px;border-radius:9px;background:linear-gradient(135deg,#1769d2,#0d3e83);color:#fff;font-size:22px;font-weight:900;vertical-align:middle;box-shadow:0 6px 18px rgba(23,105,210,.25)}
+.empty{text-align:center;padding:35px 15px;color:var(--muted)}.empty i{font-size:35px;opacity:.25;margin-bottom:10px}
+.loading{text-align:center;padding:45px;color:var(--muted)}.loading i{font-size:30px;color:var(--blue)}
+canvas{max-height:300px}
+.note{padding:10px 12px;border-radius:14px;background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.13);color:#ffe29a;font-size:12px;line-height:1.6;margin-top:10px}
+.error{color:#ff9c9c;background:rgba(255,107,107,.07);padding:12px;border-radius:14px}
+.feedback{margin-top:15px}.feedback textarea{width:100%;min-height:90px;background:rgba(255,255,255,.045);border:1px solid var(--line);color:white;border-radius:15px;padding:12px;font-family:inherit;resize:vertical}
+.footer{text-align:center;color:rgba(255,255,255,.25);font-size:11px;padding:20px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.wide{grid-column:auto}}
+@media(max-width:600px){body{padding:10px}.header{padding:15px;flex-wrap:wrap}.header h1{font-size:19px}.logo{width:48px;height:48px}.header>div:last-child{width:100%;margin-left:0!important;text-align:left!important}.stats{grid-template-columns:repeat(2,1fr)}.controls{border-radius:18px}.compare{grid-template-columns:1fr}.compare>div:nth-child(2){display:none}.two{grid-template-columns:1fr}.tabs{overflow:auto}.tab{white-space:nowrap;padding:10px 14px}}
+</style>
 </head>
+
 <body>
 <div class="container">
-    <div class="header">
-        <div class="header-icon"><i class="fas fa-chart-line"></i></div>
-        <h1>මහජන අවසාන අංක ඇදුන දවස සෙවීම හා විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත දිසානායක - ආඩිඅම්බලම - 0777325563  </small></h1>
-        <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
+
+<header class="header glass">
+  <div class="logo"><i class="fas fa-chart-line"></i></div>
+  <div>
+    <h1>මහජන සම්පත — Smart Analysis Panel</h1>
+    <h1><small>Historical Search • Statistics • Patterns • Trends</small></h1>
+  </div>
+  <div style="margin-left:auto;text-align:right">
+    <div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:800;letter-spacing:.4px;color:#ffd166">KRISHAN LOTTERY SYSTEM</div>
+    <div style="font-size:12px;color:#8fa4bb;margin-top:4px">දම්මික ක්‍රිෂාන්ත දිසානායක - ආඩිඅම්බලම 0777325563</div>
+  </div>
+</header>
+
+<div class="counter glass">
+  <i class="fas fa-eye"></i> අද නැරඹීම්:
+  <strong id="todayViews">...</strong>
+  <span>•</span><span id="dataInfo">දත්ත පූරණය වෙමින්...</span>
+</div>
+
+<section class="controls glass">
+  <label><i class="far fa-calendar-alt"></i> කාල සීමාව</label>
+  <button class="range-btn" data-range="1">මාස 1</button>
+  <button class="range-btn" data-range="3">මාස 3</button>
+  <button class="range-btn" data-range="6">මාස 6</button>
+  <button class="range-btn" data-range="12">අවුරුදු 1</button>
+  <button class="range-btn" data-range="24">අවුරුදු 2</button>
+  <button class="range-btn active" data-range="all">සියල්ල</button>
+  <span style="color:var(--muted)">|</span>
+  <input type="date" id="startDate">
+  <span class="mini">සිට</span>
+  <input type="date" id="endDate">
+  <button class="btn btn-green" id="customBtn"><i class="fas fa-check"></i> යොදන්න</button>
+  <button class="btn" id="resetRange"><i class="fas fa-undo"></i></button>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="overview"><i class="fas fa-home"></i> Overview</button>
+  <button class="tab" data-tab="search"><i class="fas fa-search"></i> සෙවීම</button>
+  <button class="tab" data-tab="analytics"><i class="fas fa-chart-pie"></i> විශ්ලේෂණය</button>
+  <button class="tab" data-tab="numbers"><i class="fas fa-hashtag"></i> Number Explorer</button>
+  <button class="tab" data-tab="patterns"><i class="fas fa-project-diagram"></i> Patterns</button>
+</nav>
+
+<div id="loading" class="loading glass" style="border-radius:22px"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:10px">Firebase දත්ත ලබා ගනිමින්...</p></div>
+
+<main id="app" style="display:none">
+
+<section class="tab-content active" id="tab-overview">
+  <div class="stats">
+    <div class="stat glass"><div class="icon"><i class="fas fa-database"></i></div><div class="value" id="sDraws">0</div><div class="label">Draws</div></div>
+    <div class="stat glass"><div class="icon">🔥</div><div class="value" id="sHot">--</div><div class="label">Hot 2-digit</div></div>
+    <div class="stat glass"><div class="icon">❄️</div><div class="value" id="sCold">--</div><div class="label">Cold 2-digit</div></div>
+    <div class="stat glass"><div class="icon">⏳</div><div class="value" id="sOverdue">--</div><div class="label">Largest current gap</div></div>
+    <div class="stat glass"><div class="icon">📅</div><div class="value" id="sLatest">--</div><div class="label">Latest result</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card glass">
+      <h2><i class="fas fa-fire"></i> ඉහළම Hot අංක 10</h2>
+      <div id="overviewHot" class="two"></div>
     </div>
-
-    <div class="view-counter">
-        <i class="fas fa-eye"></i>
-        <span class="label">අද නැරඹීම්:</span>
-        <span class="count" id="todayViews">...</span>
-        <span class="sub">(මෙම පැනලය සංවර්ධනය කරමින් පවති - ඔබගේ අදහස් පහලින් ලියන්න)</span>
+    <div class="card glass">
+      <h2><i class="fas fa-snowflake"></i> අඩුම Frequency අංක</h2>
+      <div id="overviewCold"></div>
     </div>
-
-    <div class="time-filter">
-        <span class="label"><i class="far fa-calendar-alt"></i> දින සීමාව :</span>
-        <input type="date" id="startDate" placeholder="ආරම්භය">
-        <span class="date-sep">සිට</span>
-        <input type="date" id="endDate" placeholder="අවසානය">
-        <button class="time-btn-apply" onclick="applyCustomDateRange()"><i class="fas fa-check"></i> යොදන්න</button>
-        <span class="divider">|</span>
-        <span class="label"><i class="fas fa-bolt"></i> වේගවත්</span>
-        <button class="time-btn" data-range="1">මාස 1</button>
-        <button class="time-btn" data-range="2">මාස 2</button>
-        <button class="time-btn" data-range="3">මාස 3</button>
-        <button class="time-btn" data-range="6">මාස 6</button>
-        <button class="time-btn" data-range="12">අවුරුදු 1</button>
-        <button class="time-btn active" data-range="all">සියල්ල</button>
+    <div class="card glass wide">
+      <h2><i class="fas fa-info-circle"></i> මේ කාල සීමාවේ සාරාංශය</h2>
+      <div id="overviewText" class="mini"></div>
+      <div class="note">මෙහි පෙන්වන්නේ ඉතිහාසගත සංඛ්‍යාන පමණි. Frequency, gap හෝ pattern එකක් මත ඊළඟ lottery draw එක නිශ්චිතව පුරෝකථනය කළ නොහැක.</div>
     </div>
+  </div>
+</section>
 
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="search"><i class="fas fa-search"></i> සෙවීම</button>
-        <button class="tab-btn" data-tab="analytics"><i class="fas fa-chart-pie"></i> විශ්ලේෂණය</button>
+<section class="tab-content" id="tab-search">
+  <div class="searchbar glass">
+    <input id="searchInput" type="text" inputmode="numeric" maxlength="20" placeholder="අග අංක 1ක් හෝ 2ක් සොයන්න... උදා: 7 / 37">
+    <button class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> සොයන්න</button>
+    <button class="btn" id="clearSearch"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="card glass">
+    <h2><i class="fas fa-list"></i> ප්‍රතිඵල <span class="badge" id="resultCount">0</span></h2><div class="mini" style="margin-bottom:10px">Search නොකළ විට අග ඉලක්කම් 2 පාටින් පමණක් පෙන්වයි. Search කළ විට සෙවූ අග ඉලක්කම/අංක 2 කොටුවකින් highlight කරයි.</div>
+    <div id="searchResults" class="result-list"></div>
+  </div>
+</section>
+
+<section class="tab-content" id="tab-analytics">
+  <div class="card glass wide" style="margin-bottom:15px">
+    <h2><i class="fas fa-fire"></i> 00–99 Frequency Heatmap <span class="mini" style="margin-left:auto">තද වර්ණ = වැඩි frequency</span></h2>
+    <div class="heatwrap"><div id="heatmap" class="heat"></div></div>
+    <div class="legend"><span>අඩු</span><div class="gradient"></div><span>වැඩි</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="card glass"><h2><i class="fas fa-chart-bar"></i> අග ඉලක්කම් 0–9</h2><div id="digitBars" class="rows"></div></div>
+    <div class="card glass"><h2><i class="fas fa-layer-group"></i> 10-අංක කලාප</h2><div id="rangeBars" class="rows"></div></div>
+    <div class="card glass wide"><h2><i class="fas fa-chart-line"></i> 7 / 14 / 30 / 60 Draw Trend</h2><canvas id="trendChart"></canvas></div>
+    <div class="card glass"><h2><i class="fas fa-calendar-week"></i> Weekday Analysis</h2><div id="weekdayBars" class="rows"></div></div>
+    <div class="card glass"><h2><i class="fas fa-balance-scale"></i> Odd / Even & High / Low</h2><div id="balanceBars" class="rows"></div></div>
+  </div>
+</section>
+
+<section class="tab-content" id="tab-numbers">
+  <div class="card glass">
+    <h2><i class="fas fa-search-plus"></i> Number Explorer</h2>
+    <div class="searchbar" style="margin-bottom:12px">
+      <input id="numberExplorerInput" type="text" inputmode="numeric" maxlength="2" placeholder="00–99">
+      <button class="btn btn-primary" id="exploreBtn"><i class="fas fa-magnifying-glass"></i> බලන්න</button>
     </div>
-
-    <div class="tab-content active" id="tab-search">
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="අග අංක ටයිප් කරන්න" autocomplete="off">
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="applySearch()"><i class="fas fa-arrow-right"></i> සොයන්න</button>
-                <button class="btn btn-secondary" onclick="resetSearch()"><i class="fas fa-undo-alt"></i> යළි</button>
-            </div>
-        </div>
-        <div class="result-header">
-            <span><i class="fas fa-list-ul"></i> සෙවු දින - ප්‍රතිපල</span>
-            <span class="badge" id="resultCount">0</span>
-        </div>
-        <div class="results-wrapper" id="resultsWrapper">
-            <div class="empty-state"><i class="fas fa-database"></i><h3>දත්ත පූරණය වෙමින්...</h3></div>
-        </div>
+    <div id="numberExplorer"></div>
+  </div>
+  <div class="card glass feedback">
+    <h2><i class="fas fa-balance-scale"></i> Number Compare</h2>
+    <div class="compare">
+      <div class="comparebox"><input id="compareA" type="text" inputmode="numeric" maxlength="2" value="27"></div>
+      <div style="font-size:22px;color:var(--gold)">VS</div>
+      <div class="comparebox"><input id="compareB" type="text" inputmode="numeric" maxlength="2" value="72"></div>
     </div>
+    <button class="btn btn-primary" id="compareBtn" style="width:100%;margin-top:12px">සසඳන්න</button>
+    <div id="compareResult" style="margin-top:12px"></div>
+  </div>
+</section>
 
-    <div class="tab-content" id="tab-analytics">
-        <div class="heatmap-section" id="heatmapContainer">
-            <h3>
-                <span><i class="fas fa-fire" style="color:#e74c3c;"></i> අග ඉලක්කම් 00-99 තාප සිතියම (HEAT MAP)</span>
-                <span class="sub">(අඩුම වතාවක් ඇදුනු අංක තද නිල් පාට හා වාර ගණන වැඩි වන විට රතු දක්වා වර්ණ වෙනස් වේ)</span>
-            </h3>
-            <div id="heatmapGrid" style="min-height:100px;">
-                <div class="loading-spinner"><i class="fas fa-spinner"></i><p>Heatmap පූරණය වෙමින්...</p></div>
-            </div>
-            <div class="heatmap-legend">
-                <span>❄️ සීතල</span>
-                <div class="gradient"></div>
-                <span>🔥 උණුසුම්</span>
-                <span style="margin-left:auto; font-size:12px; opacity:0.5;">වාර ගණන අනුව</span>
-            </div>
-        </div>
+<section class="tab-content" id="tab-patterns">
+  <div class="grid">
+    <div class="card glass"><h2><i class="fas fa-clock"></i> Current Gap / Overdue View</h2><div id="gapList" class="list"></div></div>
+    <div class="card glass"><h2><i class="fas fa-retweet"></i> Reverse Pairs</h2><div id="reversePairs" class="list"></div></div>
+    <div class="card glass"><h2><i class="fas fa-link"></i> Consecutive / Repeat</h2><div id="patternSummary"></div></div>
+    <div class="card glass"><h2><i class="fas fa-calculator"></i> Digit Sum Distribution</h2><div id="sumBars" class="rows"></div></div>
+    <div class="card glass wide"><h2><i class="fas fa-calendar-check"></i> දිනයේ අග 2 = ජය අංකයේ අග 2</h2><div id="dateMatch"></div></div>
+    <div class="card glass wide"><h2><i class="fas fa-hashtag"></i> Draw ID අග 2 = ජය අංක අග 2</h2><div id="idMatch"></div></div>
+  </div>
+</section>
 
-        <div id="advancedStatsContainer">
-            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>උසස් සංඛ්‍යාන විශ්ලේෂණය සිදු කරමින්...</p></div>
-        </div>
+</main>
 
-        <div id="analyticsContent">
-            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>මූලික විශ්ලේෂණය සිදු කරමින්...</p></div>
-        </div>
-
-        <div id="matchDaysContainer" style="margin-top:24px;">
-            <div class="loading-spinner"><i class="fas fa-spinner"></i><p>ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>
-        </div>
-
-        <div id="feedbackContainer">
-            <div class="feedback-card">
-                <h3><i class="fas fa-comment-dots" style="color:#fbbf24;"></i> අදහස් හා යෝජනා</h3>
-                <div class="subtitle">ඔබගේ අදහස් අපට වැදගත්! මෙම පැනලය වැඩිදියුණු කිරීමට උදව් කරන්න.</div>
-                <form id="feedbackForm" onsubmit="submitFeedback(event)">
-                    <div class="form-group">
-                        <label for="feedbackName"><i class="fas fa-user"></i> ඔබගේ නම (අනිවාර්ය නොවේ)</label>
-                        <input type="text" id="feedbackName" placeholder="උදා: දම්මික ක්‍රිශන්ත දිසානායක" maxlength="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="feedbackPhone"><i class="fas fa-phone"></i> දුරකථන අංකය (අනිවාර්ය නොවේ)</label>
-                        <input type="tel" id="feedbackPhone" placeholder="0777325563" maxlength="15">
-                    </div>
-                    <div class="form-group">
-                        <label for="feedbackMessage"><i class="fas fa-pencil-alt"></i> ඔබගේ අදහස/යෝජනාව <span style="color:#e74c3c;">*</span></label>
-                        <textarea id="feedbackMessage" placeholder="මෙම පැනලය ගැන ඔබගේ අදහස්, යෝජනා, හෝ ගැටළු මෙහි ලියන්න..." maxlength="1000" required></textarea>
-                        <div class="char-count"><span id="charCount">0</span>/1000</div>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-star"></i> ඔබගේ ඇගයීම</label>
-                        <div class="rating-group" id="ratingGroup">
-                            <span class="star" data-value="1" onclick="setRating(1)">★</span>
-                            <span class="star" data-value="2" onclick="setRating(2)">★</span>
-                            <span class="star" data-value="3" onclick="setRating(3)">★</span>
-                            <span class="star" data-value="4" onclick="setRating(4)">★</span>
-                            <span class="star" data-value="5" onclick="setRating(5)">★</span>
-                        </div>
-                        <div style="font-size:13px; color:rgba(255,255,255,0.2);" id="ratingLabel">තරුවක් තෝරන්න</div>
-                    </div>
-                    <button type="submit" class="btn-submit" id="feedbackSubmitBtn">
-                        <i class="fas fa-paper-plane"></i> ඉදිරිපත් කරන්න
-                    </button>
-                </form>
-                <div id="feedbackSuccess" style="display:none;">
-                    <div class="feedback-success">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>ස්තුතියි! 🎉</h4>
-                        <p>ඔබගේ අදහස සාර්ථකව ලැබුණි. අපි එය අගය කරමු! දම්මික ක්‍රිෂාන්ත දිසානායක - ආඩිඅම්බලම</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="globalError" style="display:none;margin-top:15px"></div>
+<div class="footer">KRISHAN LOTTERY SYSTEM • Historical statistical analysis panel</div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDIvLPukOF4T1p0DOkXjXQ-y-9mWME5QXw",
-        authDomain: "krishanlotterysystem.firebaseapp.com",
-        databaseURL: "https://krishanlotterysystem-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "krishanlotterysystem",
-        storageBucket: "krishanlotterysystem.firebasestorage.app",
-        messagingSenderId: "114874050177",
-        appId: "1:114874050177:web:eebf9da014c8155a17cf80"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+/* =========================
+   FIREBASE CONFIG
+   ========================= */
+const firebaseConfig={
+ apiKey:"AIzaSyDIvLPukOF4T1p0DOkXjXQ-y-9mWME5QXw",
+ authDomain:"krishanlotterysystem.firebaseapp.com",
+ databaseURL:"https://krishanlotterysystem-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"krishanlotterysystem",
+ storageBucket:"krishanlotterysystem.firebasestorage.app",
+ messagingSenderId:"114874050177",
+ appId:"1:114874050177:web:eebf9da014c8155a17cf80"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
 
-    let allDocs = [];
-    let currentRange = 'all';
-    let searchTerm = '';
-    let customStart = null;
-    let customEnd = null;
-    let movingAvgChart = null;
-    let expectedActualChart = null;
+const COLLECTION="mahajana_results";
+let allDocs=[];
+let currentRange="all";
+let customStart=null,customEnd=null;
+let trendChart=null;
 
-    const wrapper = document.getElementById('resultsWrapper');
-    const searchInput = document.getElementById('searchInput');
-    const resultCountEl = document.getElementById('resultCount');
-    const analyticsContent = document.getElementById('analyticsContent');
-    const heatmapGrid = document.getElementById('heatmapGrid');
-    const advancedContainer = document.getElementById('advancedStatsContainer');
-    const matchDaysContainer = document.getElementById('matchDaysContainer');
+const $=id=>document.getElementById(id);
 
-    let selectedRating = 0;
+function esc(v){
+ return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function pad2(n){return String(n).padStart(2,"0")}
+function dateObj(v){
+ if(!v)return null;
+ if(v.toDate)return v.toDate();
+ if(v instanceof Date)return v;
+ const d=new Date(v);return isNaN(d.getTime())?null:d;
+}
+function dayKey(d){return d?`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`:""}
+function niceDate(d){return d?`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`:"—"}
+function cleanNumber(v){return String(v??"").trim().replace(/\s+/g,"")}
+function suffix2(n){return cleanNumber(n).slice(-2)}
+function suffix1(n){return cleanNumber(n).slice(-1)}
+function renderWinningNumber(n, digits=2, boxed=false){
+ const value=cleanNumber(n);
+ if(!value)return "—";
 
-    // ============================================================
-    // VIEW COUNTER
-    // ============================================================
-    function logPageView() {
-        const today = new Date().toISOString().split('T')[0];
-        db.collection("analytics").doc(today).set({
-            mahajana_view_web: firebase.firestore.FieldValue.increment(1)
-        }, { merge: true }).catch(function(error) {
-            console.warn("View counter error:", error);
-        });
-    }
+ // Separate the leading letter (E/U/B/D/S...) into its own box.
+ const first = /^[A-Za-z]/.test(value) ? value.charAt(0) : "";
+ const body = first ? value.slice(1) : value;
+ const count=Math.min(Math.max(Number(digits)||2,1),2);
 
-    function getTodayViews() {
-        const today = new Date().toISOString().split('T')[0];
-        db.collection("analytics").doc(today).get().then(function(doc) {
-            if (doc.exists) {
-                const data = doc.data();
-                const count = data.mahajana_view_web || 0;
-                document.getElementById('todayViews').textContent = count;
-            } else {
-                document.getElementById('todayViews').textContent = '0';
-            }
-        }).catch(function(error) {
-            console.warn("Error fetching views:", error);
-            document.getElementById('todayViews').textContent = '⚠️';
-        });
-    }
+ let numberHtml;
+ if(body.length<=count){
+   numberHtml=`<span class="${boxed?"search-highlight ":""}last2">${esc(body)}</span>`;
+ }else{
+   numberHtml=`${esc(body.slice(0,-count))}<span class="${boxed?"search-highlight ":""}last2">${esc(body.slice(-count))}</span>`;
+ }
+ return `${first?`<span class="letter-box">${esc(first)}</span>`:""}${numberHtml}`;
+}
+function highlightSuffix(n, digits=2, boxed=false){
+ return renderWinningNumber(n,digits,boxed);
+}
+function highlightLast2(n){
+ return renderWinningNumber(n,2,false);
+}
 
-    // ============================================================
-    // FEEDBACK FUNCTIONS
-    // ============================================================
-    function setRating(value) {
-        selectedRating = value;
-        const stars = document.querySelectorAll('#ratingGroup .star');
-        stars.forEach(function(star, index) {
-            if (index < value) star.classList.add('active');
-            else star.classList.remove('active');
-        });
-        const labels = ['', 'ඉතා අඩුයි', 'අඩුයි', 'හරි', 'හොඳයි', 'ඉතා හොඳයි'];
-        document.getElementById('ratingLabel').textContent = labels[value] || 'තරුවක් තෝරන්න';
-    }
+function getDateStart(months){
+ const d=new Date();d.setHours(0,0,0,0);d.setMonth(d.getMonth()-months);return d;
+}
+function activeData(){
+ let data=allDocs;
+ if(customStart&&customEnd){
+  const s=new Date(customStart+"T00:00:00");
+  const e=new Date(customEnd+"T23:59:59.999");
+  return data.filter(x=>x.date&&x.date>=s&&x.date<=e);
+ }
+ if(currentRange==="all")return data;
+ const s=getDateStart(Number(currentRange));
+ return data.filter(x=>x.date&&x.date>=s);
+}
 
-    async function submitFeedback(event) {
-        event.preventDefault();
-        const name = document.getElementById('feedbackName').value.trim();
-        const phone = document.getElementById('feedbackPhone').value.trim();
-        const message = document.getElementById('feedbackMessage').value.trim();
-        if (!message) { alert('කරුණාකර ඔබගේ අදහස ලියන්න.'); return; }
-        if (message.length < 5) { alert('අදහස අවම වශයෙන් අකුරු 5ක් වත් තිබිය යුතුයි.'); return; }
-        const submitBtn = document.getElementById('feedbackSubmitBtn');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> යවමින්...';
-        try {
-            await db.collection('feedback').add({
-                name: name || 'නිර්නාමික',
-                userPhone: phone || '',
-                message: message,
-                rating: selectedRating || 0,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                userAgent: navigator.userAgent || '',
-                page: window.location.href || '',
-                source: 'web',
-                platform: 'Mahajana Web Panel'
-            });
-            document.getElementById('feedbackForm').style.display = 'none';
-            document.getElementById('feedbackSuccess').style.display = 'block';
-            document.getElementById('feedbackName').value = '';
-            document.getElementById('feedbackPhone').value = '';
-            document.getElementById('feedbackMessage').value = '';
-            setRating(0);
-            document.getElementById('charCount').textContent = '0';
-        } catch (error) {
-            console.error('Feedback submission error:', error);
-            alert('අදහස යැවීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ඉදිරිපත් කරන්න';
-        }
-    }
+/* =========================
+   DATA LOADING
+   Important: range is pushed to Firestore when possible.
+   "All" intentionally loads all history because users need history.
+   ========================= */
+async function fetchData(mode="all"){
+ setLoading(true);
+ try{
+  let q=db.collection(COLLECTION).orderBy("date","desc");
+  if(mode!=="all"&&!customStart){
+   q=q.where("date",">=",getDateStart(Number(mode)));
+  }else if(customStart&&customEnd){
+   q=q.where("date",">=",new Date(customStart+"T00:00:00"))
+      .where("date","<=",new Date(customEnd+"T23:59:59.999"));
+  }
+  const snap=await q.get();
+  allDocs=[];
+  snap.forEach(doc=>{
+   const d=doc.data();
+   const date=dateObj(d.date);
+   allDocs.push({id:doc.id,fullNumber:cleanNumber(d.fullNumber),numberId:d.id??"",date});
+  });
+  allDocs.sort((a,b)=>(b.date?.getTime()||0)-(a.date?.getTime()||0));
+  $("dataInfo").textContent=`${allDocs.length.toLocaleString()} records loaded`;
+  renderAll();
+  $("loading").style.display="none";
+  $("app").style.display="block";
+ }catch(err){
+  console.error(err);
+  $("loading").style.display="none";
+  $("app").style.display="block";
+  showGlobalError("දත්ත ලබා ගැනීමේ දෝෂයකි: "+esc(err.message));
+ }
+}
+function setLoading(on){
+ if(on){
+  $("loading").style.display="block";
+  $("app").style.display="none";
+ }
+}
+function showGlobalError(msg){$("globalError").innerHTML=`<div class="error">${msg}</div>`;$("globalError").style.display="block"}
 
-    function formatDate(ts) {
-        if (!ts) return 'N/A';
-        var d = ts.toDate ? ts.toDate() : new Date(ts);
-        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    }
+/* =========================
+   STATISTICS ENGINE
+   ========================= */
+function stats(data){
+ const freq1=Array(10).fill(0),freq2=Array(100).fill(0),ranges=Array(10).fill(0);
+ const sums=Array(19).fill(0);
+ let odd=0,even=0,high=0,low=0;
+ const weekday=Array(7).fill(0);
+ const lastSeen=Array(100).fill(null);
+ const appearances=Array(100).fill(0);
+ const positions=Array(100).fill(null).map(()=>[]);
+ let valid=0;
 
-    function toDateObj(value) {
-        if (!value) return null;
-        if (value.toDate) return value.toDate();
-        if (value instanceof Date) return value;
-        var d = new Date(value);
-        return isNaN(d.getTime()) ? null : d;
-    }
+ data.forEach(r=>{
+  const n=cleanNumber(r.fullNumber);if(!n)return;
+  const a=suffix1(n),b=suffix2(n);
+  const d1=Number(a),d2=Number(b);
+  if(Number.isInteger(d1)&&d1>=0&&d1<=9)freq1[d1]++;
+  if(/^\d{1,2}$/.test(b)){
+   const v=d2;if(v>=0&&v<=99){freq2[v]++;ranges[Math.floor(v/10)]++;appearances[v]++;positions[v].push(r);}
+  }
+  const ds=n.replace(/\D/g,"").slice(-2);
+  if(ds.length===2)sums[Number(ds[0])+Number(ds[1])]++;
+  if(d2%2===0)even++;else odd++;
+  if(d2>=50)high++;else low++;
+  if(r.date)weekday[r.date.getDay()]++;
+  valid++;
+ });
+ for(let i=0;i<100;i++){
+  if(positions[i].length)lastSeen[i]=positions[i][0].date;
+ }
+ return {freq1,freq2,ranges,sums,odd,even,high,low,weekday,lastSeen,appearances,positions,valid};
+}
 
-    function getDateRange(range) {
-        if (range === 'all') return null;
-        var now = new Date();
-        var start = new Date(now);
-        start.setMonth(now.getMonth() - parseInt(range));
-        start.setHours(0, 0, 0, 0);
-        return start;
-    }
+/* =========================
+   OVERVIEW
+   ========================= */
+function renderOverview(data,s){
+ const sorted=Array.from({length:100},(_,i)=>i).sort((a,b)=>s.freq2[b]-s.freq2[a]);
+ const hot=sorted.slice(0,10), cold=Array.from({length:100},(_,i)=>i).sort((a,b)=>s.freq2[a]-s.freq2[b]).slice(0,10);
+ $("sDraws").textContent=s.valid.toLocaleString();
+ $("sHot").textContent=pad2(hot[0]??0);
+ $("sCold").textContent=pad2(cold[0]??0);
+ const gapInfo=currentGaps(data,s);
+ const maxGap=gapInfo[0];
+ $("sOverdue").textContent=maxGap?`${pad2(maxGap.num)} • ${maxGap.gap}`:"--";
+ $("sLatest").textContent=data[0]?.date?niceDate(data[0].date):"--";
 
-    function getFilteredByRange() {
-        var data = allDocs;
-        if (customStart && customEnd) {
-            var start = new Date(customStart);
-            var end = new Date(customEnd);
-            end.setHours(23, 59, 59, 999);
-            return data.filter(function(r) {
-                var d = toDateObj(r.date);
-                return d && d >= start && d <= end;
-            });
-        }
-        if (currentRange === 'all') return data;
-        var now = new Date();
-        var start = new Date(now);
-        start.setMonth(now.getMonth() - parseInt(currentRange));
-        start.setHours(0, 0, 0, 0);
-        return data.filter(function(r) {
-            var d = toDateObj(r.date);
-            return d && d >= start;
-        });
-    }
+ $("overviewHot").innerHTML=hot.map(n=>`<div class="hotbox"><span class="num">${pad2(n)}</span><span class="badge">${s.freq2[n]} වාර</span></div>`).join("");
+ $("overviewCold").innerHTML=`<div class="pills">${cold.map(n=>`<span class="pill blue">${pad2(n)} • ${s.freq2[n]}</span>`).join("")}</div>`;
+ const dates=data.filter(x=>x.date).map(x=>x.date).sort((a,b)=>a-b);
+ $("overviewText").innerHTML=`
+ <b>${s.valid.toLocaleString()}</b> valid results in selected period.
+ ${dates.length?`පැරණිතම: <b>${niceDate(dates[0])}</b> • අලුත්ම: <b>${niceDate(dates.at(-1))}</b> • 00–99 අතර නොඇදුණු අංක: <b>${s.freq2.filter(x=>x===0).length}</b>`:""}
+ `;
+}
 
-    function applyCustomDateRange() {
-        var startVal = document.getElementById('startDate').value;
-        var endVal = document.getElementById('endDate').value;
-        if (!startVal || !endVal) { alert('කරුණාකර ආරම්භක සහ අවසාන දිනයන් දෙකම තෝරන්න.'); return; }
-        if (new Date(startVal) > new Date(endVal)) { alert('ආරම්භක දිනය අවසාන දිනයට වඩා පැරණි විය යුතුයි.'); return; }
-        customStart = startVal;
-        customEnd = endVal;
-        document.querySelectorAll('.time-btn').forEach(function(b) { b.classList.remove('active'); });
-        searchInput.value = '';
-        searchTerm = '';
-        updateAllViews();
-    }
+/* =========================
+   HEATMAP
+   ========================= */
+function heatColor(v,max,min){
+ if(max===min)return "#d6e5f3";
+ const t=(v-min)/(max-min);
+ const r=Math.round(36+(220-36)*t);
+ const g=Math.round(92+(70-92)*t);
+ const b=Math.round(145+(70-145)*t);
+ return `rgb(${r},${g},${b})`;
+}
+function renderHeatmap(s){
+ const min=Math.min(...s.freq2),max=Math.max(...s.freq2);
+ let h=`<div class="head"></div>`;
+ for(let u=0;u<10;u++)h+=`<div class="head">${u}</div>`;
+ for(let t=0;t<10;t++){
+  h+=`<div class="head">${t}</div>`;
+  for(let u=0;u<10;u++){
+   const n=t*10+u,c=s.freq2[n];
+   h+=`<div class="cell" title="${pad2(n)} — ${c} වාර" style="background:${heatColor(c,max,min)}" data-num="${pad2(n)}">${pad2(n)}</div>`;
+  }
+ }
+ $("heatmap").innerHTML=h;
+ document.querySelectorAll(".heat .cell").forEach(c=>c.addEventListener("click",()=>explore(c.dataset.num)));
+}
 
-    async function fetchData(range) {
-        wrapper.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i><p>දත්ත ලබා ගනිමින්...</p></div>';
-        analyticsContent.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i><p>විශ්ලේෂණය සිදු කරමින්...</p></div>';
-        advancedContainer.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i><p>උසස් විශ්ලේෂණය සිදු කරමින්...</p></div>';
-        heatmapGrid.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i><p>Heatmap පූරණය වෙමින්...</p></div>';
-        matchDaysContainer.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i><p>ගැළපුම් විශ්ලේෂණය සිදු කරමින්...</p></div>';
-        customStart = null;
-        customEnd = null;
-        document.getElementById('startDate').value = '';
-        document.getElementById('endDate').value = '';
-        try {
-            var snapshot = await db.collection('mahajana_results').orderBy('date', 'desc').get();
-            var docs = [];
-            snapshot.forEach(function(doc) {
-                var data = doc.data();
-                docs.push({
-                    id: doc.id,
-                    fullNumber: data.fullNumber || '',
-                    numberId: data.id || '',
-                    date: data.date ? data.date.toDate() : null
-                });
-            });
-            allDocs = docs;
-            currentRange = range;
-            updateAllViews();
-        } catch (err) {
-            console.error(err);
-            var errMsg = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3>දත්ත ලබා ගැනීමේ දෝෂයකි</h3><p>' + err.message + '</p></div>';
-            wrapper.innerHTML = errMsg;
-            analyticsContent.innerHTML = errMsg;
-            advancedContainer.innerHTML = errMsg;
-            heatmapGrid.innerHTML = errMsg;
-            matchDaysContainer.innerHTML = errMsg;
-        }
-    }
+/* =========================
+   BASIC ANALYTICS
+   ========================= */
+function bars(items,max){
+ return items.map(x=>`<div class="row"><span class="num">${esc(x.label)}</span><div class="track"><div class="fill ${x.hot?"hot":""} ${x.cold?"cold":""}" style="width:${max?x.value/max*100:0}%"></div></div><span class="count">${x.value}</span></div>`).join("");
+}
+function renderAnalytics(data,s){
+ const ditems=s.freq1.map((v,i)=>({label:i,value:v}));
+ const dmax=Math.max(...s.freq1,1);
+ $("digitBars").innerHTML=bars(ditems.map(x=>({...x,hot:x.value===dmax,cold:x.value===Math.min(...s.freq1)})),dmax);
 
-    function updateAllViews() {
-        var data = getFilteredByRange();
-        updateSearchResults();
-        renderHeatmap(data);
-        renderAdvancedStats(data);
-        renderBasicAnalytics(data);
-        renderMatchDays(data);
-    }
+ const rmax=Math.max(...s.ranges,1);
+ $("rangeBars").innerHTML=bars(s.ranges.map((v,i)=>({label:`${pad2(i*10)}–${pad2(i*10+9)}`,value:v,hot:v===Math.max(...s.ranges),cold:v===Math.min(...s.ranges)})),rmax);
 
-    function filterBySuffix(docs, term) {
-        if (!term || term.trim() === '') return docs;
-        var clean = term.trim();
-        return docs.filter(function(d) { return (d.fullNumber || '').endsWith(clean); });
-    }
+ const names=["ඉරිදා","සඳුදා","අඟහරුවාදා","බදාදා","බ්‍රහස්පතින්දා","සිකුරාදා","සෙනසුරාදා"];
+ const wmax=Math.max(...s.weekday,1);
+ $("weekdayBars").innerHTML=bars(s.weekday.map((v,i)=>({label:names[i],value:v})),wmax);
 
-    function updateSearchResults() {
-        var data = getFilteredByRange();
-        var filtered = filterBySuffix(data, searchTerm);
-        resultCountEl.textContent = filtered.length;
-        if (filtered.length === 0) {
-            wrapper.innerHTML = '<div class="empty-state"><i class="fas fa-search-minus"></i><h3>ගැලපෙන ප්‍රතිඵල හමු නොවීය</h3></div>';
-            return;
-        }
-        var html = '';
-        filtered.forEach(function(d) {
-            html += '<div class="result-item">' +
-                '<span class="number">' +
-                '<span class="draw-id">📅 ' + d.id + '</span>' +
-                '<span class="seq-id">(' + (d.numberId || '-') + ')</span>' +
-                '<span class="full-num"># ' + d.fullNumber + '</span>' +
-                '</span>' +
-                '</div>';
-        });
-        wrapper.innerHTML = html;
-    }
+ $("balanceBars").innerHTML=bars([
+  {label:"Even 0–98",value:s.even},{label:"Odd 1–99",value:s.odd},
+  {label:"High 50–99",value:s.high},{label:"Low 00–49",value:s.low}
+ ],Math.max(s.even,s.odd,s.high,s.low,1));
 
-    function applySearch() {
-        searchTerm = searchInput.value;
-        updateSearchResults();
-    }
+ renderTrend(data);
+}
+function drawWindows(data,window){
+ const sorted=[...data].sort((a,b)=>(a.date?.getTime()||0)-(b.date?.getTime()||0));
+ const labels=[],vals=[];
+ for(let i=0;i<sorted.length;i++){
+  const start=Math.max(0,i-window+1),slice=sorted.slice(start,i+1);
+  labels.push(niceDate(sorted[i].date));vals.push(slice.length);
+ }
+ return {labels,vals};
+}
+function renderTrend(data){
+ const ctx=$("trendChart").getContext("2d");
+ if(trendChart)trendChart.destroy();
+ const w7=drawWindows(data,7),w14=drawWindows(data,14),w30=drawWindows(data,30),w60=drawWindows(data,60);
+ let labels=w60.labels.slice(-90),take=(a)=>a.vals.slice(-90);
+ trendChart=new Chart(ctx,{type:"line",data:{labels,datasets:[
+  {label:"7",data:take(w7),borderColor:"#65e6ad",pointRadius:0,tension:.25,borderWidth:2},
+  {label:"14",data:take(w14),borderColor:"#ffd166",pointRadius:0,tension:.25,borderWidth:2},
+  {label:"30",data:take(w30),borderColor:"#4da3ff",pointRadius:0,tension:.25,borderWidth:2},
+  {label:"60",data:take(w60),borderColor:"#b89cff",pointRadius:0,tension:.25,borderWidth:2}
+ ]},options:{responsive:true,plugins:{legend:{labels:{color:"#9fb3c8"}}},scales:{x:{ticks:{color:"#70849a",maxTicksLimit:10},grid:{display:false}},y:{beginAtZero:true,ticks:{color:"#70849a"},grid:{color:"rgba(255,255,255,.05)"}}}}});
+}
 
-    function resetSearch() {
-        searchInput.value = '';
-        searchTerm = '';
-        updateSearchResults();
-    }
+/* =========================
+   GAP / PATTERNS
+   ========================= */
+function currentGaps(data,s){
+ const latest=data.filter(x=>x.date).sort((a,b)=>b.date-a.date)[0]?.date||new Date();
+ return Array.from({length:100},(_,n)=>{
+  const arr=s.positions[n].filter(x=>x.date).sort((a,b)=>b.date-a.date);
+  let gap=null;
+  if(arr.length){
+   gap=Math.max(0,Math.round((latest-arr[0].date)/86400000));
+  }else gap=data.length;
+  return {num:n,gap,last:arr[0]?.date||null,count:arr.length};
+ }).sort((a,b)=>b.gap-a.gap);
+}
+function renderPatterns(data,s){
+ const gaps=currentGaps(data,s);
+ $("gapList").innerHTML=gaps.slice(0,20).map(x=>`<div class="item"><span class="num">${pad2(x.num)}</span><span>${x.count?`අවසාන වර: ${niceDate(x.last)}`:"මෙම range එකේ නැත"}</span><span class="badge">${x.gap} දින</span></div>`).join("");
 
-    var debounceTimer;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(function() { applySearch(); }, 350);
-    });
-    searchInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { clearTimeout(debounceTimer); applySearch(); } });
+ const rp=[];
+ for(let n=0;n<100;n++){const rev=Number(pad2(n).split("").reverse().join(""));if(n<rev&&s.freq2[n]&&s.freq2[rev])rp.push({n,rev,a:s.freq2[n],b:s.freq2[rev]})}
+ rp.sort((a,b)=>(b.a+b.b)-(a.a+a.b));
+ $("reversePairs").innerHTML=rp.slice(0,20).map(x=>`<div class="item"><span class="num">${pad2(x.n)} ↔ ${pad2(x.rev)}</span><span>${x.a} + ${x.b} වාර</span><span class="badge">pair</span></div>`).join("")||`<div class="empty">Reverse pair data නැත.</div>`;
 
-    function renderHeatmap(docs) {
-        var container = heatmapGrid;
-        var data = docs || getFilteredByRange();
-        if (!data || data.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-simple"></i><h3>Heatmap සඳහා ප්‍රමාණවත් දත්ත නැත</h3></div>';
-            return;
-        }
-        var numbers = data.map(function(d) { return d.fullNumber; }).filter(function(n) { return n && n.length > 0; });
-        if (numbers.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>';
-            return;
-        }
-        var freq = {};
-        for (var i=0; i<=99; i++) freq[i] = 0;
-        numbers.forEach(function(n) {
-            var last2 = n.slice(-2);
-            var val = parseInt(last2);
-            if (!isNaN(val)) {
-                if (last2.length === 2) freq[val] = (freq[val] || 0) + 1;
-                else if (last2.length === 1) freq[val] = (freq[val] || 0) + 1;
-            }
-        });
-        var values = Object.values(freq);
-        var maxVal = Math.max.apply(null, values);
-        var minVal = Math.min.apply(null, values);
-        var range = maxVal - minVal;
-        function getColor(count) {
-            if (range === 0) return '#e2e8f0';
-            var ratio = (count - minVal) / range;
-            var r = Math.round(43 + (236 - 43) * ratio * 0.6 + (229 - 236) * ratio * 0.4 * ratio);
-            var g = Math.round(108 + (201 - 108) * ratio * 0.7 + (62 - 201) * ratio * 0.3);
-            var b = Math.round(176 - (176 - 75) * ratio * 0.8 + (62 - 75) * ratio * 0.2);
-            return 'rgb(' + Math.min(255, Math.max(0, r)) + ', ' + Math.min(255, Math.max(0, g)) + ', ' + Math.min(255, Math.max(0, b)) + ')';
-        }
-        var html = '<div class="heatmap-grid">';
-        html += '<div class="cell-header"></div>';
-        for (var u=0; u<=9; u++) html += '<div class="cell-header">' + u + '</div>';
-        for (var t=0; t<=9; t++) {
-            html += '<div class="cell-header">' + t + '</div>';
-            for (var u2=0; u2<=9; u2++) {
-                var num = t * 10 + u2;
-                var count = freq[num] || 0;
-                var color = getColor(count);
-                html += '<div class="cell" style="background-color: ' + color + ';" title="' + String(num).padStart(2,'0') + ': ' + count + ' වාර">' + String(num).padStart(2,'0') + '</div>';
-            }
-        }
-        html += '</div>';
-        container.innerHTML = html;
-    }
+ let repeats=0,consecutive=0;
+ const sorted=[...data].filter(x=>x.date&&cleanNumber(x.fullNumber)).sort((a,b)=>a.date-b.date);
+ for(let i=1;i<sorted.length;i++){
+  const a=suffix2(sorted[i-1].fullNumber),b=suffix2(sorted[i].fullNumber);
+  if(a===b)repeats++;
+  if(/^\d+$/.test(a)&&/^\d+$/.test(b)&&Math.abs(Number(a)-Number(b))===1)consecutive++;
+ }
+ const topSums=Array.from({length:19},(_,i)=>({label:i,value:s.sums[i]}));
+ $("patternSummary").innerHTML=`
+ <div class="pills">
+  <span class="pill green">🔁 Same 2-digit repeat: ${repeats}</span>
+  <span class="pill blue">↔ Consecutive: ${consecutive}</span>
+ </div>
+ <div class="note">Repeat/Consecutive කියන්නේ පසුගිය results වල තිබූ සිදුවීම් ගණනයි; ඒවා future draw එකේ නියමයක් ලෙස භාවිතා නොකරන්න.</div>`;
+ $("sumBars").innerHTML=bars(topSums,Math.max(...s.sums,1));
 
-    // ============================================================
-    // 🟢 FIXED: renderAdvancedStats - Moving Averages with setTimeout
-    // ============================================================
-    function renderAdvancedStats(docs) {
-        var container = advancedContainer;
-        var data = docs || getFilteredByRange();
+ renderDateMatches(data);
+}
+function renderDateMatches(data){
+ const dayMatches=data.filter(x=>x.date&&/^\d{2}$/.test(suffix2(x.fullNumber))&&suffix2(x.fullNumber)===pad2(x.date.getDate()));
+ $("dateMatch").innerHTML=`<div class="pills" style="margin-bottom:10px"><span class="pill green">🎯 ${dayMatches.length} matches</span><span class="badge">දිනයේ අග 2 = result අග 2</span></div>`+
+ (dayMatches.slice(0,100).map(x=>`<div class="item"><span>${niceDate(x.date)}</span><span class="num"># ${esc(x.fullNumber)}</span><span class="badge">${suffix2(x.fullNumber)}</span></div>`).join("")||`<div class="empty">ගැළපීම් නැත.</div>`);
 
-        // Debug: Console එකට දත්ත ප්‍රමාණය පෙන්වන්න
-        console.log("Advanced Stats - Data length:", data ? data.length : 0);
-        console.log("Advanced Stats - Sample data (first 2):", data ? data.slice(0, 2) : []);
+ const idMatches=data.filter(x=>x.id&&suffix2(x.id)===suffix2(x.fullNumber));
+ $("idMatch").innerHTML=`<div class="pills" style="margin-bottom:10px"><span class="pill green">🎯 ${idMatches.length} matches</span><span class="badge">Draw ID අග 2 = result අග 2</span></div>`+
+ (idMatches.slice(0,100).map(x=>`<div class="item"><span>${esc(x.id)}</span><span class="num"># ${esc(x.fullNumber)}</span><span class="badge">${suffix2(x.fullNumber)}</span></div>`).join("")||`<div class="empty">ගැළපීම් නැත.</div>`);
+}
 
-        if (!data || data.length < 2) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><h3 style="color:rgba(255,255,255,0.4);">සංචලන සාමාන්‍ය ප්‍රස්ථාරය සඳහා අවම වශයෙන් දින 2ක දත්ත අවශ්‍යයි</h3><p style="color:rgba(255,255,255,0.2);">වැඩි දත්ත එකතු වූ පසු මෙම ප්‍රස්ථාරය ස්වයංක්‍රීයව පෙන්වනු ඇත</p></div>';
-            return;
-        }
+/* =========================
+   SEARCH
+   ========================= */
+function renderSearch(){
+ const rawTerm=cleanNumber($("searchInput").value);
+ const term=rawTerm.slice(-2);
+ const searchDigits=rawTerm.length===1?1:2;
+ const searchValue=searchDigits===1?suffix1(term):suffix2(term);
+ const data=activeData();
+ const filtered=rawTerm?data.filter(x=>(searchDigits===1?suffix1(x.fullNumber):suffix2(x.fullNumber))===searchValue):data;
+ $("resultCount").textContent=filtered.length.toLocaleString();
+ $("searchResults").innerHTML=filtered.length?filtered.slice(0,2000).map(x=>`
+ <div class="result">
+  <div>
+   <div class="big"># ${term ? highlightSuffix(x.fullNumber, searchDigits, true) : highlightLast2(x.fullNumber)}</div>
+   <div class="date-pink" style="margin-top:5px">📅 ${niceDate(x.date)}</div>
+   <div style="color:#ffd166;font-size:13px;font-weight:800;margin-top:2px">${esc(x.numberId || "—")}</div>
+  </div>
+ </div>`).join(""):`<div class="empty"><i class="fas fa-search-minus"></i><p>ගැළපෙන ප්‍රතිඵල හමු නොවීය.</p></div>`;
+ if(filtered.length>2000)$("searchResults").insertAdjacentHTML("afterbegin",`<div class="note">පළමු 2,000 results පමණක් පෙන්වයි.</div>`);
+}
 
-        var numbers = data.map(function(d) { return d.fullNumber; }).filter(function(n) { return n && n.length > 0; });
-        if (numbers.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3 style="color:rgba(255,255,255,0.4);">වලංගු අංක හමු නොවීය</h3></div>';
-            return;
-        }
+/* =========================
+   NUMBER EXPLORER
+   ========================= */
+function numberInfo(num,data,s){
+ num=Number(num);if(!Number.isInteger(num)||num<0||num>99)return null;
+ const arr=s.positions[num].filter(x=>x.date).sort((a,b)=>b.date-a.date);
+ const latest=data.filter(x=>x.date).sort((a,b)=>b.date-a.date)[0]?.date;
+ let avg=null,maxGap=0;
+ const dates=arr.map(x=>x.date).sort((a,b)=>a-b);
+ const gaps=[];
+ for(let i=1;i<dates.length;i++)gaps.push(Math.round((dates[i]-dates[i-1])/86400000));
+ if(gaps.length){avg=gaps.reduce((a,b)=>a+b,0)/gaps.length;maxGap=Math.max(...gaps)}
+ const current=arr.length&&latest?Math.max(0,Math.round((latest-arr[0].date)/86400000)):data.length;
+ return {num,freq:s.freq2[num],last:arr[0]?.date||null,current,avg,maxGap,dates,arr};
+}
+function explore(v){
+ const n=String(v).replace(/\D/g,"");if(n==="")return;
+ const info=numberInfo(n.slice(-2),activeData(),stats(activeData()));
+ if(!info){$("numberExplorer").innerHTML=`<div class="empty">00–99 අතර අංකයක් දෙන්න.</div>`;return}
+ $("numberExplorer").innerHTML=`
+ <div class="stats" style="margin-top:12px">
+  <div class="stat glass"><div class="label">Number</div><div class="value">${pad2(info.num)}</div></div>
+  <div class="stat glass"><div class="label">Frequency</div><div class="value">${info.freq}</div></div>
+  <div class="stat glass"><div class="label">Current gap</div><div class="value">${info.current}d</div></div>
+  <div class="stat glass"><div class="label">Average gap</div><div class="value">${info.avg?info.avg.toFixed(1):"—"}</div></div>
+  <div class="stat glass"><div class="label">Longest gap</div><div class="value">${info.maxGap||"—"}</div></div>
+ </div>
+ <div class="card glass">
+  <h2><i class="fas fa-timeline"></i> ${pad2(info.num)} — Appearance Timeline</h2>
+  <div class="result-list">${info.arr.slice(0,100).map(x=>`<div class="result">
+  <div>
+   <div class="big"># ${highlightLast2(x.fullNumber)}</div>
+   <div style="margin-top:5px"><span class="date-pink">📅 ${niceDate(x.date)}</span><span style="color:#ffd166;font-size:13px;font-weight:700"> • ${esc(x.numberId || "—")}</span></div>
+  </div>
+ </div>`).join("")||`<div class="empty">මෙම range එකේ මෙම අංකය හමු නොවීය.</div>`}</div>
+ </div>`;
+}
+function compareNumbers(){
+ const A=$("compareA").value.replace(/\D/g,"").slice(-2),B=$("compareB").value.replace(/\D/g,"").slice(-2);
+ const data=activeData(),s=stats(data),a=numberInfo(A,data,s),b=numberInfo(B,data,s);
+ if(!a||!b){$("compareResult").innerHTML=`<div class="error">අංක දෙකම 00–99 අතර විය යුතුයි.</div>`;return}
+ const line=(l,x,y)=>`<div class="compareline"><span>${l}</span><b>${x}</b><b>${y}</b></div>`;
+ $("compareResult").innerHTML=`
+ <div class="comparebox">
+  ${line("Frequency",a.freq,b.freq)}
+  ${line("Current gap (days)",a.current,b.current)}
+  ${line("Average gap",a.avg?a.avg.toFixed(1):"—",b.avg?b.avg.toFixed(1):"—")}
+  ${line("Longest gap",a.maxGap||"—",b.maxGap||"—")}
+  ${line("Last seen",a.last?niceDate(a.last):"—",b.last?niceDate(b.last):"—")}
+ </div>
+ <div class="note">මෙය historical comparison එකක් පමණි; අංකයක score එකක් හෝ future probability එකක් නොවේ.</div>`;
+}
 
-        // ===== dateMap ගොඩනැගීම (Timestamp + String සඳහා සහය) =====
-        var dateMap = {};
-        data.forEach(function(d) {
-            if (!d.date) return;
-            var dateObj = null;
-            // Firestore Timestamp
-            if (d.date.toDate) {
-                dateObj = d.date.toDate();
-            } 
-            // String ආකාරයෙන්
-            else if (typeof d.date === 'string') {
-                dateObj = new Date(d.date);
-            } 
-            // දැනටමත් Date Object
-            else if (d.date instanceof Date) {
-                dateObj = d.date;
-            }
-            
-            if (dateObj && !isNaN(dateObj.getTime())) {
-                var dateStr = dateObj.toISOString().slice(0,10);
-                dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
-            }
-        });
+/* =========================
+   RANGE / UI
+   ========================= */
+async function applyRange(mode){
+ currentRange=mode;customStart=null;customEnd=null;
+ document.querySelectorAll(".range-btn").forEach(b=>b.classList.toggle("active",b.dataset.range===mode));
+ $("startDate").value="";$("endDate").value="";
+ await fetchData(mode);
+}
+async function applyCustom(){
+ const s=$("startDate").value,e=$("endDate").value;
+ if(!s||!e){alert("ආරම්භක සහ අවසාන දිනය දෙකම තෝරන්න.");return}
+ if(s>e){alert("ආරම්භක දිනය අවසාන දිනයට පෙර විය යුතුයි.");return}
+ customStart=s;customEnd=e;currentRange="custom";
+ document.querySelectorAll(".range-btn").forEach(b=>b.classList.remove("active"));
+ await fetchData("custom");
+}
+function renderAll(){
+ const data=activeData(),s=stats(data);
+ renderOverview(data,s);renderHeatmap(s);renderAnalytics(data,s);renderPatterns(data,s);renderSearch();
+ const explorer=$("numberExplorerInput").value.trim();if(explorer)explore(explorer);
+ const a=$("compareA").value,b=$("compareB").value;if(a&&b)compareNumbers();
+}
 
-        var sortedDates = Object.keys(dateMap).sort();
-        var counts = sortedDates.map(function(d) { return dateMap[d]; });
+/* =========================
+   VIEW COUNTER
+   ========================= */
+async function logView(){
+ const today=dayKey(new Date());
+ try{
+  await db.collection("analytics").doc(today).set({mahajana_view_web:firebase.firestore.FieldValue.increment(1)},{merge:true});
+  const d=await db.collection("analytics").doc(today).get();
+  $("todayViews").textContent=d.exists?(d.data().mahajana_view_web||0):0;
+ }catch(e){$("todayViews").textContent="—";console.warn(e)}
+}
 
-        console.log("Sorted dates:", sortedDates);
-        console.log("Counts:", counts);
+/* =========================
+   EVENTS
+   ========================= */
+document.querySelectorAll(".range-btn").forEach(b=>b.addEventListener("click",()=>applyRange(b.dataset.range)));
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");$("tab-"+b.dataset.tab).classList.add("active");
+}));
+$("customBtn").addEventListener("click",applyCustom);
+$("resetRange").addEventListener("click",()=>applyRange("all"));
+$("searchBtn").addEventListener("click",renderSearch);
+$("clearSearch").addEventListener("click",()=>{$("searchInput").value="";renderSearch()});
+$("searchInput").addEventListener("input",()=>{clearTimeout(window.__searchTimer);window.__searchTimer=setTimeout(renderSearch,250)});
+$("exploreBtn").addEventListener("click",()=>explore($("numberExplorerInput").value));
+$("numberExplorerInput").addEventListener("keypress",e=>{if(e.key==="Enter")explore(e.target.value)});
+$("compareBtn").addEventListener("click",compareNumbers);
 
-        if (counts.length < 2) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><h3 style="color:rgba(255,255,255,0.4);">ප්‍රස්ථාරය සඳහා අවම වශයෙන් දින 2ක දත්ත අවශ්‍යයි</h3></div>';
-            return;
-        }
-
-        // ===== Moving Averages ගණනය කිරීම =====
-        var ma7 = [], ma14 = [], ma30 = [];
-        for (var i=0; i<counts.length; i++) {
-            var sum7 = counts.slice(Math.max(0, i-6), i+1).reduce(function(a,b) { return a+b; }, 0);
-            ma7.push(+(sum7 / Math.min(7, i+1)).toFixed(1));
-            var sum14 = counts.slice(Math.max(0, i-13), i+1).reduce(function(a,b) { return a+b; }, 0);
-            ma14.push(+(sum14 / Math.min(14, i+1)).toFixed(1));
-            var sum30 = counts.slice(Math.max(0, i-29), i+1).reduce(function(a,b) { return a+b; }, 0);
-            ma30.push(+(sum30 / Math.min(30, i+1)).toFixed(1));
-        }
-
-        // ===== HTML ගොඩනැගීම =====
-        var maHtml = '<div class="advanced-stats-grid" style="margin-bottom:0;">' +
-            '<div class="analytics-card" style="grid-column:1/-1;">' +
-            '<h3><i class="fas fa-chart-line"></i> සංචලන සාමාන්‍ය (Moving Averages)</h3>' +
-            '<canvas id="movingAvgChart" style="max-height:180px; width:100%;"></canvas>' +
-            '<div style="display:flex; gap:16px; justify-content:center; margin-top:8px; font-size:13px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">' +
-            '<span><span style="display:inline-block; width:20px; height:3px; background:#e74c3c; margin-right:6px;"></span> දින 7</span>' +
-            '<span><span style="display:inline-block; width:20px; height:3px; background:#f39c12; margin-right:6px;"></span> දින 14</span>' +
-            '<span><span style="display:inline-block; width:20px; height:3px; background:#3498db; margin-right:6px;"></span> දින 30</span>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
-
-        container.innerHTML = maHtml;
-
-        // ===== Chart.js ප්‍රස්ථාරය ඇඳීම (setTimeout සමඟ) =====
-        setTimeout(function() {
-            try {
-                var canvas = document.getElementById('movingAvgChart');
-                if (!canvas) {
-                    console.error("❌ Canvas element 'movingAvgChart' not found!");
-                    container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">Canvas element එක හමු නොවීය</h3></div>';
-                    return;
-                }
-
-                if (typeof Chart === 'undefined') {
-                    console.error("❌ Chart.js library not loaded!");
-                    container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">Chart.js පුස්තකාලය Load වී නැත</h3></div>';
-                    return;
-                }
-
-                if (movingAvgChart) {
-                    movingAvgChart.destroy();
-                    movingAvgChart = null;
-                }
-
-                var ctx = canvas.getContext('2d');
-
-                var labels = sortedDates;
-                var d7 = ma7, d14 = ma14, d30 = ma30;
-                if (labels.length > 60) {
-                    labels = labels.slice(-60);
-                    d7 = ma7.slice(-60);
-                    d14 = ma14.slice(-60);
-                    d30 = ma30.slice(-60);
-                }
-
-                movingAvgChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                            { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                            { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
-                            x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12, maxRotation: 45, font: { size: 10 } } }
-                        },
-                        maintainAspectRatio: true
-                    }
-                });
-                console.log("✅ Moving Averages chart created successfully!");
-            } catch (error) {
-                console.error("❌ Chart creation error:", error);
-                container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">ප්‍රස්ථාරය ඇඳීමේ දෝෂයකි</h3><p style="color:rgba(255,255,255,0.2);">' + error.message + '</p></div>';
-            }
-        }, 100); // 100ms ප්‍රමාදය
-
-        // ===== ඉතිරි විශ්ලේෂණ (Prediction, Expected vs Actual) =====
-        var freq1 = {}; for (var i=0; i<=9; i++) freq1[i] = 0;
-        var freq2 = {}; for (var i=0; i<=99; i++) freq2[i] = 0;
-        numbers.forEach(function(n) {
-            var last1 = parseInt(n.slice(-1));
-            if (!isNaN(last1)) freq1[last1] = (freq1[last1] || 0) + 1;
-            var last2 = n.slice(-2);
-            var val = parseInt(last2);
-            if (!isNaN(val)) {
-                if (last2.length === 2) freq2[val] = (freq2[val] || 0) + 1;
-                else if (last2.length === 1) freq2[val] = (freq2[val] || 0) + 1;
-            }
-        });
-
-        var totalDraws = numbers.length;
-        var lastSeen1 = {}, lastSeen2 = {};
-        data.forEach(function(d) {
-            if (!d.date) return;
-            var num = d.fullNumber;
-            if (!num) return;
-            var dateObj = null;
-            if (d.date.toDate) dateObj = d.date.toDate();
-            else if (typeof d.date === 'string') dateObj = new Date(d.date);
-            else if (d.date instanceof Date) dateObj = d.date;
-            if (!dateObj) return;
-            var dayStr = dateObj.toISOString().slice(0,10);
-            var l1 = parseInt(num.slice(-1));
-            if (!isNaN(l1)) { if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr; }
-            var l2 = parseInt(num.slice(-2));
-            if (!isNaN(l2)) { if (!lastSeen2[l2] || dayStr > lastSeen2[l2]) lastSeen2[l2] = dayStr; }
-        });
-
-        var today = new Date().toISOString().slice(0,10);
-        function getRecencyScore(lastSeenMap, key) {
-            var last = lastSeenMap[key];
-            if (!last) return 0;
-            var daysAgo = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24);
-            return 1 / (daysAgo + 1);
-        }
-
-        function getPredictionScores(freqMap, lastSeenMap, total) {
-            var scores = {};
-            var maxFreq = Math.max.apply(null, Object.values(freqMap));
-            Object.keys(freqMap).forEach(function(key) {
-                var freq = freqMap[key] || 0;
-                var freqWeight = maxFreq > 0 ? freq / maxFreq : 0;
-                var recWeight = getRecencyScore(lastSeenMap, key);
-                scores[key] = (freqWeight * 0.6) + (recWeight * 0.4);
-            });
-            return scores;
-        }
-
-        var scores1 = getPredictionScores(freq1, lastSeen1, totalDraws);
-        var scores2 = getPredictionScores(freq2, lastSeen2, totalDraws);
-        var top5_1 = Object.entries(scores1).sort(function(a,b) { return b[1] - a[1]; }).slice(0,5).map(function(x) { return x[0]; });
-        var top5_2 = Object.entries(scores2).sort(function(a,b) { return b[1] - a[1]; }).slice(0,5).map(function(x) { return x[0]; });
-
-        var dailyCounts = Object.values(dateMap);
-        var mean = dailyCounts.reduce(function(a,b) { return a+b; }, 0) / dailyCounts.length;
-        var squaredDiffs = dailyCounts.map(function(v) { return Math.pow(v - mean, 2); });
-        var variance = squaredDiffs.reduce(function(a,b) { return a+b; }, 0) / dailyCounts.length;
-        var stdDev = Math.sqrt(variance);
-        var expected = totalDraws / 10;
-        var actuals = freq1;
-
-        var statsHtml = '<div class="advanced-stats-grid" style="margin-top:24px;">' +
-            '<div class="analytics-card">' +
-            '<h3><i class="fas fa-brain"></i> ස්මාට් පුරෝකථනය</h3>' +
-            '<div style="margin-bottom:12px;">' +
-            '<div style="font-weight:600; color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 1 (Top 5)</div>' +
-            '<div>' + top5_1.map(function(d) { return '<span class="prediction-badge">' + d + '</span>'; }).join(' ') + '</div>' +
-            '</div>' +
-            '<div>' +
-            '<div style="font-weight:600; color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 2 (Top 5)</div>' +
-            '<div>' + top5_2.map(function(d) { return '<span class="prediction-badge">' + String(d).padStart(2,'0') + '</span>'; }).join(' ') + '</div>' +
-            '</div>' +
-            '<div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); font-size:14px; color:rgba(255,255,255,0.3);">' +
-            '<i class="fas fa-calculator"></i> සම්මත අපගමනය: <strong style="color:rgba(255,255,255,0.5);">' + stdDev.toFixed(2) + '</strong>' +
-            '<span style="display:block; font-size:12px; margin-top:4px;">(සාමාන්‍ය දෛනික ප්‍රතිඵල: ' + mean.toFixed(1) + ')</span>' +
-            '</div>' +
-            '</div>' +
-            '<div class="analytics-card">' +
-            '<h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ</h3>' +
-            '<canvas id="expectedActualChart" style="max-height:180px; width:100%;"></canvas>' +
-            '<div style="display:flex; gap:12px; justify-content:center; margin-top:6px; font-size:12px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">' +
-            '<span><span style="display:inline-block; width:16px; height:3px; background:#2b6cb0; margin-right:4px;"></span> සැබෑ</span>' +
-            '<span><span style="display:inline-block; width:16px; height:3px; background:#e74c3c; margin-right:4px; border-top:2px dashed #e74c3c;"></span> අපේක්ෂිත (' + expected.toFixed(1) + ')</span>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
-
-        container.innerHTML += statsHtml;
-
-        if (expectedActualChart) expectedActualChart.destroy();
-        var ctx2 = document.getElementById('expectedActualChart').getContext('2d');
-        var labelsEA = Object.keys(actuals).sort();
-        var actualData = labelsEA.map(function(k) { return actuals[k]; });
-        var expectedData = labelsEA.map(function() { return expected; });
-        expectedActualChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: labelsEA,
-                datasets: [
-                    { label: 'Actual', data: actualData, backgroundColor: '#2b6cb0', borderRadius: 4 },
-                    { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
-                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)' } }
-                }
-            }
-        });
-    }
-
-    function renderBasicAnalytics(docs) {
-        var container = analyticsContent;
-        var data = docs || getFilteredByRange();
-        if (!data || data.length === 0) {
-            var emptyFreq1 = {}; for (var i=0; i<=9; i++) emptyFreq1[i] = 0;
-            var emptyFreq2 = {}; for (var i=0; i<=99; i++) emptyFreq2[i] = 0;
-            var emptyHtml = '<div class="analytics-grid">';
-            emptyHtml += '<div class="analytics-card"><h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3><div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;"><span style="background:rgba(231,76,60,0.12); padding:2px 14px; border-radius:30px; color:#f1948a;">🔥 Hot: -</span><span style="background:rgba(52,152,219,0.12); padding:2px 14px; border-radius:30px; color:#85c1e9;">❄️ Cold: 0,1,2,3,4,5,6,7,8,9</span></div>' + Object.entries(emptyFreq1).map(function(item) { return '<div class="digit-bar"><span class="label">' + item[0] + '</span><div class="bar-track"><div class="bar-fill cold" style="width:0%;"></div></div><span class="count">0</span></div>'; }).join('') + '</div>';
-            var allNever = Object.keys(emptyFreq2);
-            emptyHtml += '<div class="analytics-card"><h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;"><div style="background:rgba(231,76,60,0.05); border-radius:14px; padding:8px 12px;"><div style="font-weight:700; color:#f1948a;">🔥 Hot Top 10</div><div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div></div><div style="background:rgba(52,152,219,0.05); border-radius:14px; padding:8px 12px;"><div style="font-weight:700; color:#85c1e9;">❄️ Cold Bottom 10</div><div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div></div></div><div style="margin-top:8px; font-size:14px; background:rgba(255,255,255,0.02); border-radius:14px; padding:8px 12px;"><strong style="color:rgba(255,255,255,0.5);">🚫 කාල සීමාව තුල නොඇදුණු අංක (' + allNever.length + '):</strong><div class="missing-numbers">' + allNever.map(function(n) { return '<span class="miss">' + String(n).padStart(2,'0') + '</span>'; }).join('') + '</div></div></div>';
-            var emptyRanges = {}; for (var start=0; start<100; start+=10) { var key2 = String(start).padStart(2,'0') + '-' + String(start+9).padStart(2,'0'); emptyRanges[key2] = { start: start, end: start+9, count: 0, numbers: [] }; }
-            emptyHtml += '<div class="analytics-card" style="grid-column:1/-1;"><h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය</h3><div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;"><span style="background:rgba(231,76,60,0.08); padding:4px 16px; border-radius:30px; color:#f1948a;">🔥 වැඩිම: - (0 වාර)</span><span style="background:rgba(52,152,219,0.08); padding:4px 16px; border-radius:30px; color:#85c1e9;">❄️ අඩුම: - (0 වාර)</span></div><div class="range-grid">' + Object.entries(emptyRanges).map(function(item) { var allNums = []; for (var i=item[1].start; i<=item[1].end; i++) allNums.push(i); return '<div class="range-box cold"><div class="range-label">' + item[0] + '</div><div class="range-count">0</div><div class="range-status">වාර</div><div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:4px;">නැති: ' + allNums.map(function(n) { return String(n).padStart(2,'0'); }).join(', ') + '</div></div>'; }).join('') + '</div></div>';
-            emptyHtml += '</div>';
-            container.innerHTML = emptyHtml;
-            return;
-        }
-        var numbers = data.map(function(d) { return d.fullNumber; }).filter(function(n) { return n && n.length > 0; });
-        if (numbers.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>'; return; }
-        var freq1 = {}; for (var i=0; i<=9; i++) freq1[i] = 0;
-        numbers.forEach(function(n) { var last = n.slice(-1); var digit = parseInt(last); if (!isNaN(digit)) freq1[digit] = (freq1[digit] || 0) + 1; });
-        var freq2 = {}; for (var i=0; i<=99; i++) freq2[i] = 0;
-        numbers.forEach(function(n) { var last2 = n.slice(-2); var val = parseInt(last2); if (!isNaN(val) && last2.length === 2) freq2[val] = (freq2[val] || 0) + 1; else if (!isNaN(val) && last2.length === 1) freq2[val] = (freq2[val] || 0) + 1; });
-        var ranges = {}; for (var start=0; start<100; start+=10) { var key = String(start).padStart(2,'0') + '-' + String(start+9).padStart(2,'0'); ranges[key] = { start: start, end: start+9, count: 0, numbers: [] }; }
-        Object.keys(freq2).forEach(function(val) { var num = parseInt(val); if (!isNaN(num) && num >=0 && num <=99) { var start2 = Math.floor(num / 10) * 10; var key2 = String(start2).padStart(2,'0') + '-' + String(start2+9).padStart(2,'0'); if (ranges[key2]) { ranges[key2].count += freq2[num]; ranges[key2].numbers.push({ num: num, freq: freq2[num] }); } } });
-        var html = '<div class="analytics-grid">';
-        var sorted1 = Object.entries(freq1).sort(function(a,b) { return b[1] - a[1]; });
-        var maxFreq1 = sorted1.length > 0 ? sorted1[0][1] : 1;
-        var hot1 = sorted1.slice(0, 3).map(function(x) { return x[0]; });
-        var cold1 = sorted1.filter(function(x) { return x[1] === 0; }).map(function(x) { return x[0]; });
-        html += '<div class="analytics-card"><h3><i class="fas fa-arrow-up"></i> අග ඉලක්කම් 1 (0-9)</h3><div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; font-size:14px;"><span style="background:rgba(231,76,60,0.12); padding:2px 14px; border-radius:30px; color:#f1948a;">🔥 Hot: ' + (hot1.join(', ') || '-') + '</span><span style="background:rgba(52,152,219,0.12); padding:2px 14px; border-radius:30px; color:#85c1e9;">❄️ Cold: ' + (cold1.join(', ') || 'නැත') + '</span></div>' + Object.entries(freq1).map(function(item) { var pct = maxFreq1 > 0 ? (item[1] / maxFreq1 * 100) : 0; var isHot = hot1.indexOf(item[0]) !== -1; var isCold = item[1] === 0; var cls = ''; if (isHot) cls = 'hot'; else if (isCold) cls = 'cold'; return '<div class="digit-bar"><span class="label">' + item[0] + '</span><div class="bar-track"><div class="bar-fill ' + cls + '" style="width:' + pct + '%;"></div></div><span class="count">' + item[1] + '</span></div>'; }).join('') + '</div>';
-        var sorted2 = Object.entries(freq2).sort(function(a,b) { return b[1] - a[1]; });
-        var top10 = sorted2.slice(0, 10);
-        var bottom10 = sorted2.filter(function(x) { return x[1] > 0; }).sort(function(a,b) { return a[1] - b[1]; }).slice(0, 10);
-        var never = sorted2.filter(function(x) { return x[1] === 0; }).map(function(x) { return x[0]; });
-        html += '<div class="analytics-card"><h3><i class="fas fa-hashtag"></i> අග ඉලක්කම් 2 (00-99)</h3><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;"><div style="background:rgba(231,76,60,0.05); border-radius:14px; padding:8px 12px;"><div style="font-weight:700; color:#f1948a;">🔥 Hot Top 10</div>' + top10.map(function(item) { return '<div class="two-digit-item"><span class="num">' + String(item[0]).padStart(2,'0') + '</span><span class="freq">' + item[1] + ' වාර</span></div>'; }).join('') + (top10.length === 0 ? '<div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div>' : '') + '</div><div style="background:rgba(52,152,219,0.05); border-radius:14px; padding:8px 12px;"><div style="font-weight:700; color:#85c1e9;">❄️ Cold Bottom 10</div>' + bottom10.map(function(item) { return '<div class="two-digit-item"><span class="num">' + String(item[0]).padStart(2,'0') + '</span><span class="freq">' + item[1] + ' වාර</span></div>'; }).join('') + (bottom10.length === 0 ? '<div style="color:rgba(255,255,255,0.2); font-size:13px;">දත්ත නැත</div>' : '') + '</div></div><div style="margin-top:8px; font-size:14px; background:rgba(255,255,255,0.02); border-radius:14px; padding:8px 12px;"><strong style="color:rgba(255,255,255,0.5);">🚫 කාල සීමාව තුල නොඇදුණු අංක (' + never.length + '):</strong><div class="missing-numbers">' + never.map(function(n) { return '<span class="miss">' + String(n).padStart(2,'0') + '</span>'; }).join('') + (never.length === 0 ? '<span style="color:rgba(255,255,255,0.3);">✅ සියලුම අංක ඇදී ඇත!</span>' : '') + '</div></div></div>';
-        var rangeEntries = Object.entries(ranges);
-        var sortedRanges = rangeEntries.sort(function(a,b) { return b[1].count - a[1].count; });
-        var maxRangeCount = sortedRanges.length > 0 ? sortedRanges[0][1].count : 1;
-        var hotRange = sortedRanges[0] ? sortedRanges[0][0] : null;
-        var coldRange = sortedRanges.length > 0 ? sortedRanges[sortedRanges.length-1][0] : null;
-        html += '<div class="analytics-card" style="grid-column:1/-1;"><h3><i class="fas fa-layer-group"></i> කලාප විශ්ලේෂණය</h3><div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;"><span style="background:rgba(231,76,60,0.08); padding:4px 16px; border-radius:30px; color:#f1948a;">🔥 වැඩිම: ' + hotRange + ' (' + (sortedRanges[0]?.[1]?.count || 0) + ' වාර)</span><span style="background:rgba(52,152,219,0.08); padding:4px 16px; border-radius:30px; color:#85c1e9;">❄️ අඩුම: ' + coldRange + ' (' + (sortedRanges[sortedRanges.length-1]?.[1]?.count || 0) + ' වාර)</span></div><div class="range-grid">' + rangeEntries.map(function(item) { var pct = maxRangeCount > 0 ? (item[1].count / maxRangeCount * 100) : 0; var isHot = item[0] === hotRange; var isCold = item[0] === coldRange && item[1].count > 0; var cls = ''; if (isHot) cls = 'hot'; else if (isCold) cls = 'cold'; var allNums = []; for (var i=item[1].start; i<=item[1].end; i++) allNums.push(i); var existing = item[1].numbers.map(function(n) { return n.num; }); var missing = allNums.filter(function(n) { return existing.indexOf(n) === -1; }); return '<div class="range-box ' + cls + '"><div class="range-label">' + item[0] + '</div><div class="range-count">' + item[1].count + '</div><div class="range-status">වාර</div><div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:4px;">නැති: ' + missing.slice(0,5).map(function(n) { return String(n).padStart(2,'0'); }).join(', ') + (missing.length > 5 ? '...' : '') + (missing.length === 0 ? '✅ සියල්ලම' : '') + '</div></div>'; }).join('') + '</div></div>';
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    function renderMatchDays(docs) {
-        var container = matchDaysContainer;
-        var data = docs || getFilteredByRange();
-        if (!data || data.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-check"></i><h3>ගැළපුම් විශ්ලේෂණයට ප්‍රමාණවත් දත්ත නැත</h3></div>';
-            return;
-        }
-        var matchDays1 = data.filter(function(d) { if (!d.id || !d.fullNumber) return false; var idLast2 = d.id.slice(-2); var numLast2 = d.fullNumber.slice(-2); return idLast2 === numLast2; });
-        var matchDays2 = data.filter(function(d) { if (!d.fullNumber || !d.date) return false; var numLast2 = d.fullNumber.slice(-2); var day = d.date.getDate(); var dayStr = String(day).padStart(2, '0'); return numLast2 === dayStr; });
-        matchDays1.sort(function(a, b) { if (a.date && b.date) return b.date - a.date; return 0; });
-        matchDays2.sort(function(a, b) { if (a.date && b.date) return b.date - a.date; return 0; });
-        var html = '';
-        html += '<div class="analytics-card" style="margin-bottom:24px;">';
-        if (matchDays1.length === 0) {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i>වාරයට ගැලපුන දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
-        } else {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#fbbf24;"></i>වාරයට ගැලපුන දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays1.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 වාරයේ අග අංක 2 = ජය අංකයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays1.map(function(d) { var idLast2 = d.id.slice(-2); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + d.id + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + idLast2 + ' = ' + numLast2 + '</span></div>'; }).join('') + '</div>';
-        }
-        html += '</div>';
-        html += '<div class="analytics-card">';
-        if (matchDays2.length === 0) {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i>දිනයට ගැලපුන දවස්</h3><div class="empty-state" style="padding:20px;"><i class="fas fa-smile-wink" style="color:rgba(255,255,255,0.05);"></i><h3 style="color:rgba(255,255,255,0.3);">තෝරාගත් කාල සීමාව තුළ ගැළපෙන දින හමු නොවීය</h3></div>';
-        } else {
-            html += '<h3><i class="fas fa-calendar-check" style="color:#7ddfb3;"></i>දිනයට ගැලපුන දවස්<span style="margin-left:auto; font-size:14px; font-weight:400; color:rgba(255,255,255,0.3);"><i class="fas fa-hashtag"></i> ' + matchDays2.length + ' ගැළපීම්</span></h3><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; font-size:13px; color:rgba(255,255,255,0.3);"><span>📌 ජය අංකයේ අග අංක 2 = දිනයේ අග අංක 2</span></div><div class="match-days-list">' + matchDays2.map(function(d) { var day = d.date.getDate(); var dayStr = String(day).padStart(2, '0'); var numLast2 = d.fullNumber.slice(-2); return '<div class="match-day-item"><span class="date">📅 ' + formatDate(d.date) + '</span><span class="number"># ' + d.fullNumber + '</span><span class="badge-match">🎯 ' + numLast2 + ' = ' + dayStr + '</span></div>'; }).join('') + '</div>';
-        }
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
-        var target = document.getElementById('tab-' + tabId);
-        if (target) target.classList.add('active');
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
-        });
-        if (tabId === 'analytics') {
-            var data = getFilteredByRange();
-            renderHeatmap(data);
-            renderAdvancedStats(data);
-            renderBasicAnalytics(data);
-            renderMatchDays(data);
-        }
-    }
-
-    // ============================================================
-    // DOMContentLoaded - පිටුව පූරණය වූ විට
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        logPageView();
-        setTimeout(getTodayViews, 1000);
-    });
-
-    document.querySelectorAll('.time-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.time-btn').forEach(function(b) { b.classList.remove('active'); });
-            this.classList.add('active');
-            var range = this.getAttribute('data-range');
-            searchInput.value = '';
-            searchTerm = '';
-            fetchData(range);
-        });
-    });
-
-    document.querySelectorAll('.tab-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var tabId = this.getAttribute('data-tab');
-            switchTab(tabId);
-        });
-    });
-
-    window.applySearch = applySearch;
-    window.resetSearch = resetSearch;
-    window.applyCustomDateRange = applyCustomDateRange;
-
-    fetchData('all');
+document.addEventListener("DOMContentLoaded",async()=>{
+ logView();
+ await fetchData("all");
+});
 </script>
 </body>
 </html>
