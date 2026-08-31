@@ -88,7 +88,6 @@
         }
         .firebase-badge i { color:#1a1a1a; }
 
-        /* ===== VIEW COUNTER ===== */
         .view-counter {
             display: flex;
             align-items: center;
@@ -613,7 +612,6 @@
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
-    <!-- ===== VIEW COUNTER ===== -->
     <div class="view-counter">
         <i class="fas fa-eye"></i>
         <span class="label">අද නැරඹීම්:</span>
@@ -766,7 +764,7 @@
     let selectedRating = 0;
 
     // ============================================================
-    // VIEW COUNTER - අද දින නැරඹීම් ගණන
+    // VIEW COUNTER
     // ============================================================
     function logPageView() {
         const today = new Date().toISOString().split('T')[0];
@@ -1042,22 +1040,64 @@
         container.innerHTML = html;
     }
 
+    // ============================================================
+    // 🟢 UPDATED: renderAdvancedStats - Moving Averages FIXED
+    // ============================================================
     function renderAdvancedStats(docs) {
         var container = advancedContainer;
         var data = docs || getFilteredByRange();
+
+        // Debug: Console එකට දත්ත ප්‍රමාණය පෙන්වන්න
+        console.log("Advanced Stats - Data length:", data ? data.length : 0);
+        console.log("Advanced Stats - Sample data (first 2):", data ? data.slice(0, 2) : []);
+
         if (!data || data.length < 2) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><h3>උසස් විශ්ලේෂණය සඳහා ප්‍රමාණවත් දත්ත නැත</h3></div>';
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><h3 style="color:rgba(255,255,255,0.4);">සංචලන සාමාන්‍ය ප්‍රස්ථාරය සඳහා අවම වශයෙන් දින 2ක දත්ත අවශ්‍යයි</h3><p style="color:rgba(255,255,255,0.2);">වැඩි දත්ත එකතු වූ පසු මෙම ප්‍රස්ථාරය ස්වයංක්‍රීයව පෙන්වනු ඇත</p></div>';
             return;
         }
+
         var numbers = data.map(function(d) { return d.fullNumber; }).filter(function(n) { return n && n.length > 0; });
         if (numbers.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>වලංගු අංක හමු නොවීය</h3></div>';
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3 style="color:rgba(255,255,255,0.4);">වලංගු අංක හමු නොවීය</h3></div>';
             return;
         }
+
+        // ===== dateMap ගොඩනැගීම (Timestamp + String සඳහා සහය) =====
         var dateMap = {};
-        data.forEach(function(d) { if (!d.date) return; var dateStr = d.date.toISOString().slice(0,10); dateMap[dateStr] = (dateMap[dateStr] || 0) + 1; });
+        data.forEach(function(d) {
+            if (!d.date) return;
+            var dateObj = null;
+            // Firestore Timestamp
+            if (d.date.toDate) {
+                dateObj = d.date.toDate();
+            } 
+            // String ආකාරයෙන්
+            else if (typeof d.date === 'string') {
+                dateObj = new Date(d.date);
+            } 
+            // දැනටමත් Date Object
+            else if (d.date instanceof Date) {
+                dateObj = d.date;
+            }
+            
+            if (dateObj && !isNaN(dateObj.getTime())) {
+                var dateStr = dateObj.toISOString().slice(0,10);
+                dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
+            }
+        });
+
         var sortedDates = Object.keys(dateMap).sort();
         var counts = sortedDates.map(function(d) { return dateMap[d]; });
+
+        console.log("Sorted dates:", sortedDates);
+        console.log("Counts:", counts);
+
+        if (counts.length < 2) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><h3 style="color:rgba(255,255,255,0.4);">ප්‍රස්ථාරය සඳහා අවම වශයෙන් දින 2ක දත්ත අවශ්‍යයි</h3></div>';
+            return;
+        }
+
+        // ===== Moving Averages ගණනය කිරීම =====
         var ma7 = [], ma14 = [], ma30 = [];
         for (var i=0; i<counts.length; i++) {
             var sum7 = counts.slice(Math.max(0, i-6), i+1).reduce(function(a,b) { return a+b; }, 0);
@@ -1067,30 +1107,119 @@
             var sum30 = counts.slice(Math.max(0, i-29), i+1).reduce(function(a,b) { return a+b; }, 0);
             ma30.push(+(sum30 / Math.min(30, i+1)).toFixed(1));
         }
-        var maHtml = '<div class="advanced-stats-grid" style="margin-bottom:0;"><div class="analytics-card" style="grid-column:1/-1;"><h3><i class="fas fa-chart-line"></i> සංචලන සාමාන්‍ය</h3><canvas id="movingAvgChart" style="max-height:180px; width:100%;"></canvas><div style="display:flex; gap:16px; justify-content:center; margin-top:8px; font-size:13px; flex-wrap:wrap; color:rgba(255,255,255,0.3);"><span><span style="display:inline-block; width:20px; height:3px; background:#e74c3c; margin-right:6px;"></span> දින 7</span><span><span style="display:inline-block; width:20px; height:3px; background:#f39c12; margin-right:6px;"></span> දින 14</span><span><span style="display:inline-block; width:20px; height:3px; background:#3498db; margin-right:6px;"></span> දින 30</span></div></div></div>';
+
+        // ===== HTML ගොඩනැගීම =====
+        var maHtml = '<div class="advanced-stats-grid" style="margin-bottom:0;">' +
+            '<div class="analytics-card" style="grid-column:1/-1;">' +
+            '<h3><i class="fas fa-chart-line"></i> සංචලන සාමාන්‍ය (Moving Averages)</h3>' +
+            '<canvas id="movingAvgChart" style="max-height:180px; width:100%;"></canvas>' +
+            '<div style="display:flex; gap:16px; justify-content:center; margin-top:8px; font-size:13px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">' +
+            '<span><span style="display:inline-block; width:20px; height:3px; background:#e74c3c; margin-right:6px;"></span> දින 7</span>' +
+            '<span><span style="display:inline-block; width:20px; height:3px; background:#f39c12; margin-right:6px;"></span> දින 14</span>' +
+            '<span><span style="display:inline-block; width:20px; height:3px; background:#3498db; margin-right:6px;"></span> දින 30</span>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+
         container.innerHTML = maHtml;
-        if (movingAvgChart) movingAvgChart.destroy();
-        var ctx = document.getElementById('movingAvgChart').getContext('2d');
-        var labels = sortedDates, d7 = ma7, d14 = ma14, d30 = ma30;
-        if (labels.length > 60) { labels = labels.slice(-60); d7 = ma7.slice(-60); d14 = ma14.slice(-60); d30 = ma30.slice(-60); }
-        movingAvgChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: labels, datasets: [ { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }, { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }, { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 } ] },
-            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12 } } } }
-        });
+
+        // ===== Chart.js ප්‍රස්ථාරය ඇඳීම =====
+        try {
+            if (movingAvgChart) movingAvgChart.destroy();
+            var ctx = document.getElementById('movingAvgChart').getContext('2d');
+
+            var labels = sortedDates;
+            var d7 = ma7, d14 = ma14, d30 = ma30;
+            if (labels.length > 60) {
+                labels = labels.slice(-60);
+                d7 = ma7.slice(-60);
+                d14 = ma14.slice(-60);
+                d30 = ma30.slice(-60);
+            }
+
+            movingAvgChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+                        { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+                        { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12, maxRotation: 45, font: { size: 10 } } }
+                    },
+                    maintainAspectRatio: true
+                }
+            });
+            console.log("✅ Moving Averages chart created successfully!");
+        } catch (error) {
+            console.error("❌ Chart creation error:", error);
+            container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">ප්‍රස්ථාරය ඇඳීමේ දෝෂයකි</h3><p style="color:rgba(255,255,255,0.2);">' + error.message + '</p></div>';
+        }
+
+        // ===== ඉතිරි විශ්ලේෂණ (Prediction, Expected vs Actual) =====
         var freq1 = {}; for (var i=0; i<=9; i++) freq1[i] = 0;
         var freq2 = {}; for (var i=0; i<=99; i++) freq2[i] = 0;
-        numbers.forEach(function(n) { var last1 = parseInt(n.slice(-1)); if (!isNaN(last1)) freq1[last1] = (freq1[last1] || 0) + 1; var last2 = n.slice(-2); var val = parseInt(last2); if (!isNaN(val)) { if (last2.length === 2) freq2[val] = (freq2[val] || 0) + 1; else if (last2.length === 1) freq2[val] = (freq2[val] || 0) + 1; } });
+        numbers.forEach(function(n) {
+            var last1 = parseInt(n.slice(-1));
+            if (!isNaN(last1)) freq1[last1] = (freq1[last1] || 0) + 1;
+            var last2 = n.slice(-2);
+            var val = parseInt(last2);
+            if (!isNaN(val)) {
+                if (last2.length === 2) freq2[val] = (freq2[val] || 0) + 1;
+                else if (last2.length === 1) freq2[val] = (freq2[val] || 0) + 1;
+            }
+        });
+
         var totalDraws = numbers.length;
         var lastSeen1 = {}, lastSeen2 = {};
-        data.forEach(function(d) { if (!d.date) return; var num = d.fullNumber; if (!num) return; var dayStr = d.date.toISOString().slice(0,10); var l1 = parseInt(num.slice(-1)); if (!isNaN(l1)) { if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr; } var l2 = parseInt(num.slice(-2)); if (!isNaN(l2)) { if (!lastSeen2[l2] || dayStr > lastSeen2[l2]) lastSeen2[l2] = dayStr; } });
+        data.forEach(function(d) {
+            if (!d.date) return;
+            var num = d.fullNumber;
+            if (!num) return;
+            var dateObj = null;
+            if (d.date.toDate) dateObj = d.date.toDate();
+            else if (typeof d.date === 'string') dateObj = new Date(d.date);
+            else if (d.date instanceof Date) dateObj = d.date;
+            if (!dateObj) return;
+            var dayStr = dateObj.toISOString().slice(0,10);
+            var l1 = parseInt(num.slice(-1));
+            if (!isNaN(l1)) { if (!lastSeen1[l1] || dayStr > lastSeen1[l1]) lastSeen1[l1] = dayStr; }
+            var l2 = parseInt(num.slice(-2));
+            if (!isNaN(l2)) { if (!lastSeen2[l2] || dayStr > lastSeen2[l2]) lastSeen2[l2] = dayStr; }
+        });
+
         var today = new Date().toISOString().slice(0,10);
-        function getRecencyScore(lastSeenMap, key) { var last = lastSeenMap[key]; if (!last) return 0; var daysAgo = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24); return 1 / (daysAgo + 1); }
-        function getPredictionScores(freqMap, lastSeenMap, total) { var scores = {}; var maxFreq = Math.max.apply(null, Object.values(freqMap)); Object.keys(freqMap).forEach(function(key) { var freq = freqMap[key] || 0; var freqWeight = maxFreq > 0 ? freq / maxFreq : 0; var recWeight = getRecencyScore(lastSeenMap, key); scores[key] = (freqWeight * 0.6) + (recWeight * 0.4); }); return scores; }
+        function getRecencyScore(lastSeenMap, key) {
+            var last = lastSeenMap[key];
+            if (!last) return 0;
+            var daysAgo = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24);
+            return 1 / (daysAgo + 1);
+        }
+
+        function getPredictionScores(freqMap, lastSeenMap, total) {
+            var scores = {};
+            var maxFreq = Math.max.apply(null, Object.values(freqMap));
+            Object.keys(freqMap).forEach(function(key) {
+                var freq = freqMap[key] || 0;
+                var freqWeight = maxFreq > 0 ? freq / maxFreq : 0;
+                var recWeight = getRecencyScore(lastSeenMap, key);
+                scores[key] = (freqWeight * 0.6) + (recWeight * 0.4);
+            });
+            return scores;
+        }
+
         var scores1 = getPredictionScores(freq1, lastSeen1, totalDraws);
         var scores2 = getPredictionScores(freq2, lastSeen2, totalDraws);
         var top5_1 = Object.entries(scores1).sort(function(a,b) { return b[1] - a[1]; }).slice(0,5).map(function(x) { return x[0]; });
         var top5_2 = Object.entries(scores2).sort(function(a,b) { return b[1] - a[1]; }).slice(0,5).map(function(x) { return x[0]; });
+
         var dailyCounts = Object.values(dateMap);
         var mean = dailyCounts.reduce(function(a,b) { return a+b; }, 0) / dailyCounts.length;
         var squaredDiffs = dailyCounts.map(function(v) { return Math.pow(v - mean, 2); });
@@ -1098,8 +1227,35 @@
         var stdDev = Math.sqrt(variance);
         var expected = totalDraws / 10;
         var actuals = freq1;
-        var statsHtml = '<div class="advanced-stats-grid" style="margin-top:24px;"><div class="analytics-card"><h3><i class="fas fa-brain"></i> ස්මාට් පුරෝකථනය</h3><div style="margin-bottom:12px;"><div style="font-weight:600; color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 1 (Top 5)</div><div>' + top5_1.map(function(d) { return '<span class="prediction-badge">' + d + '</span>'; }).join(' ') + '</div></div><div><div style="font-weight:600; color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 2 (Top 5)</div><div>' + top5_2.map(function(d) { return '<span class="prediction-badge">' + String(d).padStart(2,'0') + '</span>'; }).join(' ') + '</div></div><div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); font-size:14px; color:rgba(255,255,255,0.3);"><i class="fas fa-calculator"></i> සම්මත අපගමනය: <strong style="color:rgba(255,255,255,0.5);">' + stdDev.toFixed(2) + '</strong><span style="display:block; font-size:12px; margin-top:4px;">(සාමාන්‍ය දෛනික ප්‍රතිඵල: ' + mean.toFixed(1) + ')</span></div></div><div class="analytics-card"><h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ</h3><canvas id="expectedActualChart" style="max-height:180px; width:100%;"></canvas><div style="display:flex; gap:12px; justify-content:center; margin-top:6px; font-size:12px; flex-wrap:wrap; color:rgba(255,255,255,0.3);"><span><span style="display:inline-block; width:16px; height:3px; background:#2b6cb0; margin-right:4px;"></span> සැබෑ</span><span><span style="display:inline-block; width:16px; height:3px; background:#e74c3c; margin-right:4px; border-top:2px dashed #e74c3c;"></span> අපේක්ෂිත (' + expected.toFixed(1) + ')</span></div></div></div>';
+
+        var statsHtml = '<div class="advanced-stats-grid" style="margin-top:24px;">' +
+            '<div class="analytics-card">' +
+            '<h3><i class="fas fa-brain"></i> ස්මාට් පුරෝකථනය</h3>' +
+            '<div style="margin-bottom:12px;">' +
+            '<div style="font-weight:600; color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 1 (Top 5)</div>' +
+            '<div>' + top5_1.map(function(d) { return '<span class="prediction-badge">' + d + '</span>'; }).join(' ') + '</div>' +
+            '</div>' +
+            '<div>' +
+            '<div style="font-weight:600; color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:4px;">🎯 අග ඉලක්කම් 2 (Top 5)</div>' +
+            '<div>' + top5_2.map(function(d) { return '<span class="prediction-badge">' + String(d).padStart(2,'0') + '</span>'; }).join(' ') + '</div>' +
+            '</div>' +
+            '<div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); font-size:14px; color:rgba(255,255,255,0.3);">' +
+            '<i class="fas fa-calculator"></i> සම්මත අපගමනය: <strong style="color:rgba(255,255,255,0.5);">' + stdDev.toFixed(2) + '</strong>' +
+            '<span style="display:block; font-size:12px; margin-top:4px;">(සාමාන්‍ය දෛනික ප්‍රතිඵල: ' + mean.toFixed(1) + ')</span>' +
+            '</div>' +
+            '</div>' +
+            '<div class="analytics-card">' +
+            '<h3><i class="fas fa-balance-scale"></i> අපේක්ෂිත එදිරිව සැබෑ</h3>' +
+            '<canvas id="expectedActualChart" style="max-height:180px; width:100%;"></canvas>' +
+            '<div style="display:flex; gap:12px; justify-content:center; margin-top:6px; font-size:12px; flex-wrap:wrap; color:rgba(255,255,255,0.3);">' +
+            '<span><span style="display:inline-block; width:16px; height:3px; background:#2b6cb0; margin-right:4px;"></span> සැබෑ</span>' +
+            '<span><span style="display:inline-block; width:16px; height:3px; background:#e74c3c; margin-right:4px; border-top:2px dashed #e74c3c;"></span> අපේක්ෂිත (' + expected.toFixed(1) + ')</span>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+
         container.innerHTML += statsHtml;
+
         if (expectedActualChart) expectedActualChart.destroy();
         var ctx2 = document.getElementById('expectedActualChart').getContext('2d');
         var labelsEA = Object.keys(actuals).sort();
@@ -1107,8 +1263,21 @@
         var expectedData = labelsEA.map(function() { return expected; });
         expectedActualChart = new Chart(ctx2, {
             type: 'bar',
-            data: { labels: labelsEA, datasets: [ { label: 'Actual', data: actualData, backgroundColor: '#2b6cb0', borderRadius: 4 }, { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false } ] },
-            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)' } } } }
+            data: {
+                labels: labelsEA,
+                datasets: [
+                    { label: 'Actual', data: actualData, backgroundColor: '#2b6cb0', borderRadius: 4 },
+                    { label: 'Expected', data: expectedData, type: 'line', borderColor: '#e74c3c', borderDash: [4,4], pointRadius: 0, borderWidth: 2, fill: false }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)' } }
+                }
+            }
         });
     }
 
@@ -1207,9 +1376,7 @@
     // DOMContentLoaded - පිටුව පූරණය වූ විට
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        // View Counter - log page view
         logPageView();
-        // Get today's views after 1 second (for Firestore write to complete)
         setTimeout(getTodayViews, 1000);
     });
 
