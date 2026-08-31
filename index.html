@@ -608,7 +608,7 @@
 <div class="container">
     <div class="header">
         <div class="header-icon"><i class="fas fa-chart-line"></i></div>
-        <h1>මහජන අගඅංක ඇදුන දවස සෙවීම හා විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත දිසානායක - ආඩිඅම්බලම - 0777325563  </small></h1>
+        <h1>මහජන අවසාන අංක ඇදුන දවස සෙවීම හා විශ්ලේෂණය <small>දම්මික ක්‍රිෂාන්ත දිසානායක - ආඩිඅම්බලම - 0777325563  </small></h1>
         <div class="firebase-badge"><i class="fas fa-fire"></i> KRISHAN LOTTERY SYSTEM</div>
     </div>
 
@@ -643,7 +643,7 @@
     <div class="tab-content active" id="tab-search">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder=" සෙවිය යුතු අග අංක මෙහි ටයිප් කරන්න" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="අග අංක ටයිප් කරන්න" autocomplete="off">
             <div class="btn-group">
                 <button class="btn btn-primary" onclick="applySearch()"><i class="fas fa-arrow-right"></i> සොයන්න</button>
                 <button class="btn btn-secondary" onclick="resetSearch()"><i class="fas fa-undo-alt"></i> යළි</button>
@@ -1041,7 +1041,7 @@
     }
 
     // ============================================================
-    // 🟢 UPDATED: renderAdvancedStats - Moving Averages FIXED
+    // 🟢 FIXED: renderAdvancedStats - Moving Averages with setTimeout
     // ============================================================
     function renderAdvancedStats(docs) {
         var container = advancedContainer;
@@ -1123,45 +1123,64 @@
 
         container.innerHTML = maHtml;
 
-        // ===== Chart.js ප්‍රස්ථාරය ඇඳීම =====
-        try {
-            if (movingAvgChart) movingAvgChart.destroy();
-            var ctx = document.getElementById('movingAvgChart').getContext('2d');
-
-            var labels = sortedDates;
-            var d7 = ma7, d14 = ma14, d30 = ma30;
-            if (labels.length > 60) {
-                labels = labels.slice(-60);
-                d7 = ma7.slice(-60);
-                d14 = ma14.slice(-60);
-                d30 = ma30.slice(-60);
-            }
-
-            movingAvgChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                        { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
-                        { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
-                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12, maxRotation: 45, font: { size: 10 } } }
-                    },
-                    maintainAspectRatio: true
+        // ===== Chart.js ප්‍රස්ථාරය ඇඳීම (setTimeout සමඟ) =====
+        setTimeout(function() {
+            try {
+                var canvas = document.getElementById('movingAvgChart');
+                if (!canvas) {
+                    console.error("❌ Canvas element 'movingAvgChart' not found!");
+                    container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">Canvas element එක හමු නොවීය</h3></div>';
+                    return;
                 }
-            });
-            console.log("✅ Moving Averages chart created successfully!");
-        } catch (error) {
-            console.error("❌ Chart creation error:", error);
-            container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">ප්‍රස්ථාරය ඇඳීමේ දෝෂයකි</h3><p style="color:rgba(255,255,255,0.2);">' + error.message + '</p></div>';
-        }
+
+                if (typeof Chart === 'undefined') {
+                    console.error("❌ Chart.js library not loaded!");
+                    container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">Chart.js පුස්තකාලය Load වී නැත</h3></div>';
+                    return;
+                }
+
+                if (movingAvgChart) {
+                    movingAvgChart.destroy();
+                    movingAvgChart = null;
+                }
+
+                var ctx = canvas.getContext('2d');
+
+                var labels = sortedDates;
+                var d7 = ma7, d14 = ma14, d30 = ma30;
+                if (labels.length > 60) {
+                    labels = labels.slice(-60);
+                    d7 = ma7.slice(-60);
+                    d14 = ma14.slice(-60);
+                    d30 = ma30.slice(-60);
+                }
+
+                movingAvgChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'MA 7', data: d7, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+                            { label: 'MA 14', data: d14, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+                            { label: 'MA 30', data: d30, borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.05)', tension: 0.3, pointRadius: 0, borderWidth: 2 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                            x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', maxTicksLimit: 12, maxRotation: 45, font: { size: 10 } } }
+                        },
+                        maintainAspectRatio: true
+                    }
+                });
+                console.log("✅ Moving Averages chart created successfully!");
+            } catch (error) {
+                console.error("❌ Chart creation error:", error);
+                container.innerHTML += '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i><h3 style="color:rgba(255,255,255,0.4);">ප්‍රස්ථාරය ඇඳීමේ දෝෂයකි</h3><p style="color:rgba(255,255,255,0.2);">' + error.message + '</p></div>';
+            }
+        }, 100); // 100ms ප්‍රමාදය
 
         // ===== ඉතිරි විශ්ලේෂණ (Prediction, Expected vs Actual) =====
         var freq1 = {}; for (var i=0; i<=9; i++) freq1[i] = 0;
