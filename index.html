@@ -124,6 +124,14 @@ canvas{max-height:300px}
 .market-table{border-radius:20px;padding:14px}.market-table-title{font:800 13px Poppins,sans-serif;margin-bottom:9px}.market-table-title span{float:right;color:#71859b;font-size:10px;font-weight:500}.candle-row{display:grid;grid-template-columns:1.5fr repeat(5,1fr);gap:8px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.045);font-size:11px;align-items:center}.candle-row.header{color:#71859b;font:700 9px Poppins,sans-serif;letter-spacing:.8px}.candle-row:last-child{border-bottom:0}.candle-up{color:#65e6ad;font-weight:800}.candle-down{color:#ff6b6b;font-weight:800}
 @media(max-width:900px){.market-grid{grid-template-columns:1fr}.market-side{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.market-hero{align-items:flex-start;gap:10px}.market-stat strong{font-size:22px}.market-side{grid-template-columns:repeat(2,1fr)}.market-table{overflow:auto}.candle-row{min-width:600px}.market-table-title span{float:none;display:block;margin-top:3px}}
 
+
+.market-zoom{display:flex;align-items:center;gap:5px;margin-left:auto}
+.market-zoom .market-btn{min-width:36px;padding:7px 10px}
+#candleCanvasWrap{position:relative;cursor:grab;user-select:none}
+#candleCanvasWrap.dragging{cursor:grabbing}
+.chart-hint{position:absolute;right:12px;bottom:8px;padding:5px 9px;border-radius:9px;background:rgba(3,10,20,.72);border:1px solid rgba(255,255,255,.07);color:#71859b;font:500 9px Poppins,sans-serif;pointer-events:none}
+@media(max-width:600px){.chart-hint{display:none}.market-zoom{width:100%;margin-left:0}.market-zoom .market-btn{flex:1}}
+
 </style>
 </head>
 
@@ -283,11 +291,20 @@ canvas{max-height:300px}
       <button class="market-btn" id="candleViewRecent">Recent</button>
     </div>
     <div class="market-indicator"><span class="indicator-line"></span> Close <span class="indicator-ma"></span> MA7</div>
+    <div class="market-zoom">
+      <span class="market-label">ZOOM</span>
+      <button class="market-btn" id="candleZoomOut" title="Zoom out">−</button>
+      <button class="market-btn" id="candleZoomReset">100%</button>
+      <button class="market-btn" id="candleZoomIn" title="Zoom in">+</button>
+    </div>
   </div>
   <div class="market-grid">
     <div class="market-chart-card glass">
       <div class="market-chart-head"><div><h3>MAHAJANA / 00–99</h3><span id="candleMeta">Historical OHLC • grouped draws</span></div><div class="market-price" id="candlePrice">--</div></div>
-      <div class="candle-wrap"><canvas id="candleChart" height="420"></canvas></div>
+      <div class="candle-wrap" id="candleCanvasWrap">
+        <canvas id="candleChart" height="420"></canvas>
+        <div class="chart-hint">🖱️ Mouse wheel = Zoom • Drag = Move • Double-click = Reset</div>
+      </div>
     </div>
     <div class="market-side">
       <div class="market-mini glass"><span>OPEN</span><strong id="candleOpen">--</strong></div>
@@ -730,21 +747,85 @@ function candleGroups(data,size){
  for(let i=0;i<sorted.length;i+=size){const a=sorted.slice(i,i+size);if(!a.length)continue;const v=a.map(x=>Number(suffix2(x.fullNumber)));groups.push({start:a[0].date,end:a[a.length-1].date,open:v[0],high:Math.max(...v),low:Math.min(...v),close:v[v.length-1],count:a.length})}return groups;
 }
 function candleMA(groups,p=7){return groups.map((g,i)=>{const a=groups.slice(Math.max(0,i-p+1),i+1).map(x=>x.close);return a.reduce((s,v)=>s+v,0)/a.length})}
+let candleZoom=1,candlePan=0;
 function drawCandleMarket(){
- const c=$("candleChart");if(!c)return;const dpr=devicePixelRatio||1,w=Math.max(320,c.getBoundingClientRect().width),h=420;c.width=w*dpr;c.height=h*dpr;const ctx=c.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
- const groups=candleGroups(activeData(),candleWindow),vis=candleRecentOnly?groups.slice(-40):groups.slice(-70),ma=candleMA(groups,7),off=groups.length-vis.length;ctx.clearRect(0,0,w,h);if(!vis.length){ctx.fillStyle="#71859b";ctx.font="13px sans-serif";ctx.fillText("දත්ත නොමැත.",20,40);return}
- const pad={l:42,r:18,t:18,b:38},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b,vals=vis.flatMap(x=>[x.high,x.low]);let mn=Math.max(0,Math.floor(Math.min(...vals)/5)*5-5),mx=Math.min(99,Math.ceil(Math.max(...vals)/5)*5+5);if(mx<=mn)mx=mn+10;
- const y=v=>pad.t+(mx-v)/(mx-mn)*ch,x=i=>pad.l+(i+.5)*(cw/vis.length);ctx.font="10px Poppins,sans-serif";ctx.strokeStyle="rgba(255,255,255,.055)";ctx.lineWidth=1;ctx.fillStyle="#71859b";
+ const c=$("candleChart"),wrap=$("candleCanvasWrap");if(!c)return;
+ const dpr=devicePixelRatio||1,w=Math.max(320,wrap.getBoundingClientRect().width),h=420;
+ const groups=candleGroups(activeData(),candleWindow);
+ const maxVisible=Math.max(8,Math.floor(70/candleZoom));
+ const total=groups.length;
+ let visibleCount=Math.min(total,maxVisible);
+ let endIndex=Math.max(0,Math.min(total,total-1-candlePan));
+ let startIndex=Math.max(0,endIndex-visibleCount+1);
+ if(startIndex>endIndex){startIndex=0;endIndex=Math.min(total-1,visibleCount-1)}
+ const vis=groups.slice(startIndex,endIndex+1);
+ c.width=w*dpr;c.height=h*dpr;c.style.width=w+"px";c.style.height=h+"px";
+ const ctx=c.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ if(!vis.length){ctx.fillStyle="#71859b";ctx.font="13px sans-serif";ctx.fillText("දත්ත නොමැත.",20,40);return}
+ const pad={l:42,r:18,t:18,b:38},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+ const vals=vis.flatMap(x=>[x.high,x.low]);let mn=Math.max(0,Math.floor(Math.min(...vals)/5)*5-5),mx=Math.min(99,Math.ceil(Math.max(...vals)/5)*5+5);if(mx<=mn)mx=mn+10;
+ const y=v=>pad.t+(mx-v)/(mx-mn)*ch,x=i=>pad.l+(i+.5)*(cw/vis.length);
+ ctx.font="10px Poppins,sans-serif";ctx.strokeStyle="rgba(255,255,255,.055)";ctx.lineWidth=1;ctx.fillStyle="#71859b";
  for(let v=Math.ceil(mn/10)*10;v<=mx;v+=10){const yy=y(v);ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillText(String(v).padStart(2,"0"),7,yy+3)}
- const bw=Math.max(3,Math.min(16,(cw/vis.length)*.42));
- vis.forEach((g,i)=>{const xx=x(i),up=g.close>=g.open,top=y(Math.max(g.open,g.close)),bot=y(Math.min(g.open,g.close));ctx.strokeStyle=up?"#65e6ad":"#ff6b6b";ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(xx,y(g.high));ctx.lineTo(xx,y(g.low));ctx.stroke();ctx.fillStyle=up?"#65e6ad":"#ff6b6b";ctx.fillRect(xx-bw/2,top,bw,Math.max(2,bot-top));if(i%Math.max(1,Math.ceil(vis.length/8))===0){ctx.fillStyle="#71859b";ctx.fillText(niceDate(g.end).slice(5),xx-16,h-13)}});
- ctx.strokeStyle="#ffd166";ctx.lineWidth=1.8;ctx.beginPath();vis.forEach((g,i)=>{const yy=y(ma[off+i]),xx=x(i);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)});ctx.stroke();
- const last=vis[vis.length-1];$("candleLastClose").textContent=pad2(last.close);$("candlePrice").textContent=pad2(last.close);$("candleOpen").textContent=pad2(last.open);$("candleHigh").textContent=pad2(last.high);$("candleLow").textContent=pad2(last.low);$("candleClose").textContent=pad2(last.close);$("candleGroups").textContent=groups.length;$("candleAvg").textContent=(groups.reduce((s,g)=>s+g.close,0)/groups.length).toFixed(1);$("candleMeta").textContent=`${candleWindow} draws / candle • ${vis.length} visible candles`;renderCandleTable(vis.slice(-12).reverse());
+ const bw=Math.max(3,Math.min(18,(cw/vis.length)*.45));
+ vis.forEach((g,i)=>{
+   const xx=x(i),up=g.close>=g.open,top=y(Math.max(g.open,g.close)),bot=y(Math.min(g.open,g.close));
+   ctx.strokeStyle=up?"#65e6ad":"#ff6b6b";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(xx,y(g.high));ctx.lineTo(xx,y(g.low));ctx.stroke();
+   ctx.fillStyle=up?"#65e6ad":"#ff6b6b";ctx.fillRect(xx-bw/2,top,bw,Math.max(2,bot-top));
+   if(i%Math.max(1,Math.ceil(vis.length/8))===0){ctx.fillStyle="#71859b";ctx.fillText(niceDate(g.end).slice(5),xx-16,h-13)}
+ });
+ const ma=candleMA(groups,7);
+ ctx.strokeStyle="#ffd166";ctx.lineWidth=1.8;ctx.beginPath();
+ vis.forEach((g,i)=>{const idx=startIndex+i,yy=y(ma[idx]),xx=x(i);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)});ctx.stroke();
+
+ const last=vis[vis.length-1];
+ $("candleLastClose").textContent=pad2(last.close);$("candlePrice").textContent=pad2(last.close);
+ $("candleOpen").textContent=pad2(last.open);$("candleHigh").textContent=pad2(last.high);$("candleLow").textContent=pad2(last.low);
+ $("candleClose").textContent=pad2(last.close);$("candleGroups").textContent=groups.length;
+ $("candleAvg").textContent=(groups.reduce((s,g)=>s+g.close,0)/groups.length).toFixed(1);
+ $("candleMeta").textContent=`${candleWindow} draws / candle • ${vis.length} visible candles • ${Math.round(candleZoom*100)}% zoom`;
+ renderCandleTable(vis.slice(-12).reverse());
+}
+function setCandleZoom(z){
+ candleZoom=Math.max(.35,Math.min(4,z));
+ const groups=candleGroups(activeData(),candleWindow);
+ const maxVisible=Math.max(8,Math.floor(70/candleZoom));
+ candlePan=Math.max(0,Math.min(candlePan,Math.max(0,groups.length-maxVisible)));
+ const btn=$("candleZoomReset");if(btn)btn.textContent=Math.round(candleZoom*100)+"%";
+ drawCandleMarket();
 }
 function renderCandleTable(rows){$("candleTable").innerHTML='<div class="candle-row header"><span>PERIOD</span><span>OPEN</span><span>HIGH</span><span>LOW</span><span>CLOSE</span><span>MOVE</span></div>'+rows.map(g=>{const up=g.close>=g.open,m=g.close-g.open;return `<div class="candle-row"><span>${niceDate(g.start)} → ${niceDate(g.end)}</span><span>${pad2(g.open)}</span><span>${pad2(g.high)}</span><span>${pad2(g.low)}</span><span class="${up?"candle-up":"candle-down"}">${pad2(g.close)}</span><span class="${up?"candle-up":"candle-down"}">${m>0?"+":""}${m}</span></div>`}).join("")}
 document.querySelectorAll("[data-candle-window]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-candle-window]").forEach(x=>x.classList.remove("active"));b.classList.add("active");candleWindow=Number(b.dataset.candleWindow);drawCandleMarket()}));
 $("candleViewAll")?.addEventListener("click",()=>{candleRecentOnly=false;$("candleViewAll").classList.add("active");$("candleViewRecent").classList.remove("active");drawCandleMarket()});
 $("candleViewRecent")?.addEventListener("click",()=>{candleRecentOnly=true;$("candleViewRecent").classList.add("active");$("candleViewAll").classList.remove("active");drawCandleMarket()});
+
+$("candleZoomIn")?.addEventListener("click",()=>setCandleZoom(candleZoom*1.25));
+$("candleZoomOut")?.addEventListener("click",()=>setCandleZoom(candleZoom/1.25));
+$("candleZoomReset")?.addEventListener("click",()=>{candleZoom=1;candlePan=0;setCandleZoom(1)});
+
+(function(){
+ const wrap=$("candleCanvasWrap");if(!wrap)return;
+ let down=false,lastX=0;
+ wrap.addEventListener("wheel",e=>{
+   if(!$("tab-market")?.classList.contains("active"))return;
+   e.preventDefault();
+   setCandleZoom(candleZoom*(e.deltaY<0?1.12:.89));
+ },{passive:false});
+ wrap.addEventListener("mousedown",e=>{down=true;lastX=e.clientX;wrap.classList.add("dragging")});
+ window.addEventListener("mousemove",e=>{
+   if(!down)return;
+   const dx=e.clientX-lastX;lastX=e.clientX;
+   if(Math.abs(dx)<2)return;
+   const groups=candleGroups(activeData(),candleWindow);
+   const visible=Math.max(8,Math.floor(70/candleZoom));
+   const step=Math.max(1,Math.floor(visible/18));
+   candlePan=Math.max(0,Math.min(candlePan+(dx<0?step:-step),Math.max(0,groups.length-visible)));
+   drawCandleMarket();
+ });
+ window.addEventListener("mouseup",()=>{down=false;wrap.classList.remove("dragging")});
+ wrap.addEventListener("dblclick",()=>{candlePan=0;setCandleZoom(1)});
+})();
+
 window.addEventListener("resize",()=>{clearTimeout(window.__candleResize);window.__candleResize=setTimeout(drawCandleMarket,120)});
 
 /* =========================
