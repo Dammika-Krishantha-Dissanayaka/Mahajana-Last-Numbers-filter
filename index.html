@@ -114,6 +114,16 @@ canvas{max-height:300px}
 .footer{text-align:center;color:rgba(255,255,255,.25);font-size:11px;padding:20px}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.wide{grid-column:auto}}
 @media(max-width:600px){body{padding:10px}.header{padding:15px;flex-wrap:wrap}.header h1{font-size:19px}.logo{width:48px;height:48px}.header>div:last-child{width:100%;margin-left:0!important;text-align:left!important}.stats{grid-template-columns:repeat(2,1fr)}.controls{border-radius:18px}.compare{grid-template-columns:1fr}.compare>div:nth-child(2){display:none}.two{grid-template-columns:1fr}.tabs{overflow:auto}.tab{white-space:nowrap;padding:10px 14px}}
+
+.market-tab{background:linear-gradient(135deg,rgba(101,230,173,.10),rgba(77,163,255,.10))}
+.market-hero{border-radius:24px;padding:20px 22px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;background:radial-gradient(circle at 85% 20%,rgba(77,163,255,.18),transparent 35%),linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.025))}
+.market-kicker{font:700 10px Poppins,sans-serif;letter-spacing:1.5px;color:#65e6ad;margin-bottom:5px}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#65e6ad;box-shadow:0 0 12px #65e6ad;margin-right:6px}
+.market-hero h2{font-size:23px;margin:0}.market-hero p{color:var(--muted);font-size:12px;margin-top:5px}.market-stat{text-align:right}.market-stat span,.market-mini span{display:block;color:#71859b;font:700 10px Poppins,sans-serif;letter-spacing:1px}.market-stat strong{display:block;font:800 30px Poppins,sans-serif;color:#65e6ad;margin-top:2px}
+.market-toolbar{border-radius:20px;padding:11px 14px;margin-bottom:12px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}.market-group{display:flex;align-items:center;gap:6px}.market-label{font:700 10px Poppins,sans-serif;color:#71859b;letter-spacing:1px;margin-right:4px}.market-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#91a5ba;border-radius:10px;padding:7px 12px;font:700 12px Poppins,sans-serif}.market-btn.active{background:rgba(77,163,255,.18);border-color:rgba(77,163,255,.42);color:#fff}.market-indicator{margin-left:auto;color:#8fa4bb;font-size:11px;display:flex;gap:7px;align-items:center}.indicator-line{width:18px;height:2px;background:#4da3ff;display:inline-block}.indicator-ma{width:18px;height:2px;background:#ffd166;display:inline-block;margin-left:8px}
+.market-grid{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-bottom:12px}.market-chart-card{border-radius:24px;padding:15px;min-width:0}.market-chart-head{display:flex;justify-content:space-between;align-items:center;padding:2px 3px 10px}.market-chart-head h3{font:800 13px Poppins,sans-serif;letter-spacing:.5px}.market-chart-head span{font-size:10px;color:#71859b}.market-price{font:800 25px Poppins,sans-serif;color:#ffd166}.candle-wrap{border-radius:18px;background:linear-gradient(180deg,rgba(0,0,0,.16),rgba(0,0,0,.05));overflow:hidden}.market-side{display:grid;grid-template-columns:1fr 1fr;gap:9px}.market-mini{border-radius:18px;padding:14px;min-height:82px;display:flex;flex-direction:column;justify-content:center}.market-mini strong{font:800 21px Poppins,sans-serif;margin-top:4px;color:#edf5ff}
+.market-table{border-radius:20px;padding:14px}.market-table-title{font:800 13px Poppins,sans-serif;margin-bottom:9px}.market-table-title span{float:right;color:#71859b;font-size:10px;font-weight:500}.candle-row{display:grid;grid-template-columns:1.5fr repeat(5,1fr);gap:8px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.045);font-size:11px;align-items:center}.candle-row.header{color:#71859b;font:700 9px Poppins,sans-serif;letter-spacing:.8px}.candle-row:last-child{border-bottom:0}.candle-up{color:#65e6ad;font-weight:800}.candle-down{color:#ff6b6b;font-weight:800}
+@media(max-width:900px){.market-grid{grid-template-columns:1fr}.market-side{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.market-hero{align-items:flex-start;gap:10px}.market-stat strong{font-size:22px}.market-side{grid-template-columns:repeat(2,1fr)}.market-table{overflow:auto}.candle-row{min-width:600px}.market-table-title span{float:none;display:block;margin-top:3px}}
+
 </style>
 </head>
 
@@ -159,7 +169,7 @@ canvas{max-height:300px}
   <button class="tab" data-tab="search"><i class="fas fa-search"></i> සෙවීම</button>
   <button class="tab" data-tab="analytics"><i class="fas fa-chart-pie"></i> විශ්ලේෂණය</button>
   <button class="tab" data-tab="numbers"><i class="fas fa-hashtag"></i> Number Explorer</button>
-  <button class="tab" data-tab="patterns"><i class="fas fa-project-diagram"></i> Patterns</button>
+  <button class="tab" data-tab="patterns"><i class="fas fa-project-diagram"></i> Patterns</button><button class="tab market-tab" data-tab="market"><i class="fas fa-chart-line"></i> 📈 Candle Market</button>
 </nav>
 
 <div id="loading" class="loading glass" style="border-radius:22px"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:10px">Firebase දත්ත ලබා ගනිමින්...</p></div>
@@ -250,6 +260,49 @@ canvas{max-height:300px}
     <div class="card glass wide"><h2><i class="fas fa-calendar-check"></i> දිනයේ අග 2 = ජය අංකයේ අග 2</h2><div id="dateMatch"></div></div>
     <div class="card glass wide"><h2><i class="fas fa-hashtag"></i> Draw ID අග 2 = ජය අංක අග 2</h2><div id="idMatch"></div></div>
   </div>
+</section>
+
+
+<section class="tab-content" id="tab-market">
+  <div class="market-hero glass">
+    <div><div class="market-kicker"><span class="live-dot"></span> HISTORICAL MARKET VIEW</div>
+      <h2>📈 Lottery Candle Market</h2>
+      <p>Draw history එක crypto trading chart එකක් වගේ බලන්න — visualization එකක් පමණයි.</p>
+    </div>
+    <div class="market-stat"><span>LAST CLOSE</span><strong id="candleLastClose">--</strong></div>
+  </div>
+  <div class="market-toolbar glass">
+    <div class="market-group"><span class="market-label">CANDLE SIZE</span>
+      <button class="market-btn active" data-candle-window="7">7</button>
+      <button class="market-btn" data-candle-window="14">14</button>
+      <button class="market-btn" data-candle-window="30">30</button>
+      <button class="market-btn" data-candle-window="60">60</button>
+    </div>
+    <div class="market-group"><span class="market-label">VIEW</span>
+      <button class="market-btn active" id="candleViewAll">All</button>
+      <button class="market-btn" id="candleViewRecent">Recent</button>
+    </div>
+    <div class="market-indicator"><span class="indicator-line"></span> Close <span class="indicator-ma"></span> MA7</div>
+  </div>
+  <div class="market-grid">
+    <div class="market-chart-card glass">
+      <div class="market-chart-head"><div><h3>MAHAJANA / 00–99</h3><span id="candleMeta">Historical OHLC • grouped draws</span></div><div class="market-price" id="candlePrice">--</div></div>
+      <div class="candle-wrap"><canvas id="candleChart" height="420"></canvas></div>
+    </div>
+    <div class="market-side">
+      <div class="market-mini glass"><span>OPEN</span><strong id="candleOpen">--</strong></div>
+      <div class="market-mini glass"><span>HIGH</span><strong id="candleHigh">--</strong></div>
+      <div class="market-mini glass"><span>LOW</span><strong id="candleLow">--</strong></div>
+      <div class="market-mini glass"><span>CLOSE</span><strong id="candleClose">--</strong></div>
+      <div class="market-mini glass"><span>GROUPS</span><strong id="candleGroups">--</strong></div>
+      <div class="market-mini glass"><span>AVG CLOSE</span><strong id="candleAvg">--</strong></div>
+    </div>
+  </div>
+  <div class="market-table glass">
+    <div class="market-table-title">Recent Candle Data <span>OHLC • grouped historical results</span></div>
+    <div id="candleTable"></div>
+  </div>
+  <div class="note market-note"><b>⚠️ Important:</b> Candle, MA, Open/High/Low/Close values සහ indicators historical visualization සඳහා පමණි. ඒවා future lottery result එකක් predict කරන signal එකක් නොවේ.</div>
 </section>
 
 </main>
@@ -653,7 +706,7 @@ async function applyCustom(){
 }
 function renderAll(){
  const data=activeData(),s=stats(data);
- renderOverview(data,s);renderHeatmap(s);renderAnalytics(data,s);renderPatterns(data,s);renderSearch();
+ renderOverview(data,s);renderHeatmap(s);renderAnalytics(data,s);renderPatterns(data,s);renderSearch();if($("tab-market")?.classList.contains("active"))setTimeout(drawCandleMarket,40);
  const explorer=$("numberExplorerInput").value.trim();if(explorer)explore(explorer);
  const a=$("compareA").value,b=$("compareB").value;if(a&&b)compareNumbers();
 }
@@ -670,6 +723,30 @@ async function logView(){
  }catch(e){$("todayViews").textContent="—";console.warn(e)}
 }
 
+
+let candleWindow=7,candleRecentOnly=false;
+function candleGroups(data,size){
+ const sorted=[...data].filter(x=>x.date&&/^\d{1,2}$/.test(suffix2(x.fullNumber))).sort((a,b)=>a.date-b.date),groups=[];
+ for(let i=0;i<sorted.length;i+=size){const a=sorted.slice(i,i+size);if(!a.length)continue;const v=a.map(x=>Number(suffix2(x.fullNumber)));groups.push({start:a[0].date,end:a[a.length-1].date,open:v[0],high:Math.max(...v),low:Math.min(...v),close:v[v.length-1],count:a.length})}return groups;
+}
+function candleMA(groups,p=7){return groups.map((g,i)=>{const a=groups.slice(Math.max(0,i-p+1),i+1).map(x=>x.close);return a.reduce((s,v)=>s+v,0)/a.length})}
+function drawCandleMarket(){
+ const c=$("candleChart");if(!c)return;const dpr=devicePixelRatio||1,w=Math.max(320,c.getBoundingClientRect().width),h=420;c.width=w*dpr;c.height=h*dpr;const ctx=c.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
+ const groups=candleGroups(activeData(),candleWindow),vis=candleRecentOnly?groups.slice(-40):groups.slice(-70),ma=candleMA(groups,7),off=groups.length-vis.length;ctx.clearRect(0,0,w,h);if(!vis.length){ctx.fillStyle="#71859b";ctx.font="13px sans-serif";ctx.fillText("දත්ත නොමැත.",20,40);return}
+ const pad={l:42,r:18,t:18,b:38},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b,vals=vis.flatMap(x=>[x.high,x.low]);let mn=Math.max(0,Math.floor(Math.min(...vals)/5)*5-5),mx=Math.min(99,Math.ceil(Math.max(...vals)/5)*5+5);if(mx<=mn)mx=mn+10;
+ const y=v=>pad.t+(mx-v)/(mx-mn)*ch,x=i=>pad.l+(i+.5)*(cw/vis.length);ctx.font="10px Poppins,sans-serif";ctx.strokeStyle="rgba(255,255,255,.055)";ctx.lineWidth=1;ctx.fillStyle="#71859b";
+ for(let v=Math.ceil(mn/10)*10;v<=mx;v+=10){const yy=y(v);ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillText(String(v).padStart(2,"0"),7,yy+3)}
+ const bw=Math.max(3,Math.min(16,(cw/vis.length)*.42));
+ vis.forEach((g,i)=>{const xx=x(i),up=g.close>=g.open,top=y(Math.max(g.open,g.close)),bot=y(Math.min(g.open,g.close));ctx.strokeStyle=up?"#65e6ad":"#ff6b6b";ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(xx,y(g.high));ctx.lineTo(xx,y(g.low));ctx.stroke();ctx.fillStyle=up?"#65e6ad":"#ff6b6b";ctx.fillRect(xx-bw/2,top,bw,Math.max(2,bot-top));if(i%Math.max(1,Math.ceil(vis.length/8))===0){ctx.fillStyle="#71859b";ctx.fillText(niceDate(g.end).slice(5),xx-16,h-13)}});
+ ctx.strokeStyle="#ffd166";ctx.lineWidth=1.8;ctx.beginPath();vis.forEach((g,i)=>{const yy=y(ma[off+i]),xx=x(i);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)});ctx.stroke();
+ const last=vis[vis.length-1];$("candleLastClose").textContent=pad2(last.close);$("candlePrice").textContent=pad2(last.close);$("candleOpen").textContent=pad2(last.open);$("candleHigh").textContent=pad2(last.high);$("candleLow").textContent=pad2(last.low);$("candleClose").textContent=pad2(last.close);$("candleGroups").textContent=groups.length;$("candleAvg").textContent=(groups.reduce((s,g)=>s+g.close,0)/groups.length).toFixed(1);$("candleMeta").textContent=`${candleWindow} draws / candle • ${vis.length} visible candles`;renderCandleTable(vis.slice(-12).reverse());
+}
+function renderCandleTable(rows){$("candleTable").innerHTML='<div class="candle-row header"><span>PERIOD</span><span>OPEN</span><span>HIGH</span><span>LOW</span><span>CLOSE</span><span>MOVE</span></div>'+rows.map(g=>{const up=g.close>=g.open,m=g.close-g.open;return `<div class="candle-row"><span>${niceDate(g.start)} → ${niceDate(g.end)}</span><span>${pad2(g.open)}</span><span>${pad2(g.high)}</span><span>${pad2(g.low)}</span><span class="${up?"candle-up":"candle-down"}">${pad2(g.close)}</span><span class="${up?"candle-up":"candle-down"}">${m>0?"+":""}${m}</span></div>`}).join("")}
+document.querySelectorAll("[data-candle-window]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-candle-window]").forEach(x=>x.classList.remove("active"));b.classList.add("active");candleWindow=Number(b.dataset.candleWindow);drawCandleMarket()}));
+$("candleViewAll")?.addEventListener("click",()=>{candleRecentOnly=false;$("candleViewAll").classList.add("active");$("candleViewRecent").classList.remove("active");drawCandleMarket()});
+$("candleViewRecent")?.addEventListener("click",()=>{candleRecentOnly=true;$("candleViewRecent").classList.add("active");$("candleViewAll").classList.remove("active");drawCandleMarket()});
+window.addEventListener("resize",()=>{clearTimeout(window.__candleResize);window.__candleResize=setTimeout(drawCandleMarket,120)});
+
 /* =========================
    EVENTS
    ========================= */
@@ -677,7 +754,7 @@ document.querySelectorAll(".range-btn").forEach(b=>b.addEventListener("click",()
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
  document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
- b.classList.add("active");$("tab-"+b.dataset.tab).classList.add("active");
+ b.classList.add("active");$("tab-"+b.dataset.tab).classList.add("active");if(b.dataset.tab==="market")setTimeout(drawCandleMarket,40);
 }));
 $("customBtn").addEventListener("click",applyCustom);
 $("resetRange").addEventListener("click",()=>applyRange("all"));
