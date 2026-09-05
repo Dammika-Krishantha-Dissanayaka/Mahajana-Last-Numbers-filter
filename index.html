@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>මහජන සම්පත • Smart Analysis Panel</title>
+<title>මහජන සම්පත පසුගිය අංක බැලීම • Smart Analysis Panel</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -141,7 +141,7 @@ canvas{max-height:300px}
 <header class="header glass">
   <div class="logo"><i class="fas fa-chart-line"></i></div>
   <div>
-    <h1>මහජන සම්පත — Smart Analysis Panel</h1>
+    <h1>මහජන සම්පත පසුගිය අංක බැලීම හා විශ්ලේෂණ පසු විපරම</h1>
     <h1><small>Historical Search • Statistics • Patterns • Trends</small></h1>
   </div>
   <div style="margin-left:auto;text-align:right">
@@ -180,7 +180,7 @@ canvas{max-height:300px}
   <button class="tab" data-tab="patterns"><i class="fas fa-project-diagram"></i> Patterns</button><button class="tab market-tab" data-tab="market"><i class="fas fa-chart-line"></i> 📈 Candle Market</button>
 </nav>
 
-<div id="loading" class="loading glass" style="border-radius:22px"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:10px">Firebase දත්ත ලබා ගනිමින්...</p></div>
+<div id="loading" class="loading glass" style="border-radius:22px"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:10px">දත්ත ගබඩාවෙන් දත්ත ලබා ගනිමින්...</p></div>
 
 <main id="app" style="display:none">
 
@@ -195,36 +195,36 @@ canvas{max-height:300px}
 
   <div class="grid">
     <div class="card glass">
-      <h2><i class="fas fa-fire"></i> ඉහළම Hot අංක 10</h2>
+      <h2><i class="fas fa-fire"></i>වැඩිපුර ඇදෙන අංක</h2>
       <div id="overviewHot" class="two"></div>
     </div>
     <div class="card glass">
-      <h2><i class="fas fa-snowflake"></i> අඩුම Frequency අංක</h2>
+      <h2><i class="fas fa-snowflake"></i>අඩුවෙන්ම ඇදී ඇති අංක</h2>
       <div id="overviewCold"></div>
     </div>
     <div class="card glass wide">
       <h2><i class="fas fa-info-circle"></i> මේ කාල සීමාවේ සාරාංශය</h2>
       <div id="overviewText" class="mini"></div>
-      <div class="note">මෙහි පෙන්වන්නේ ඉතිහාසගත සංඛ්‍යාන පමණි. Frequency, gap හෝ pattern එකක් මත ඊළඟ lottery draw එක නිශ්චිතව පුරෝකථනය කළ නොහැක.</div>
+      <div class="note">මෙහි පෙන්වන්නේ ඉතිහාසගත සංඛ්‍යාන පමණි. මෙමගින් ඉදිරියේදී ඇදෙන අංක හෝ අනුමාන අංක ලබා නොදේ. මහජන සම්පත හඹා යන්නන් වෙනුවෙන් නිර්මාණය කර ඇත. නීති විරෝධී කටයුතු සදහා භාවිතා නොකරන්න</div>
     </div>
   </div>
 </section>
 
 <section class="tab-content" id="tab-search">
   <div class="searchbar glass">
-    <input id="searchInput" type="text" inputmode="numeric" maxlength="20" placeholder="අග අංක 1ක් හෝ 2ක් සොයන්න... උදා: 7 / 37">
+    <input id="searchInput" type="text" inputmode="numeric" maxlength="20" placeholder="අග අංක 1ක් හෝ 2ක් ටයිප් කරන්න">
     <button class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> සොයන්න</button>
     <button class="btn" id="clearSearch"><i class="fas fa-times"></i></button>
   </div>
   <div class="card glass">
-    <h2><i class="fas fa-list"></i> ප්‍රතිඵල <span class="badge" id="resultCount">0</span></h2><div class="mini" style="margin-bottom:10px">Search නොකළ විට අග ඉලක්කම් 2 පාටින් පමණක් පෙන්වයි. Search කළ විට සෙවූ අග ඉලක්කම/අංක 2 කොටුවකින් highlight කරයි.</div>
+    <h2><i class="fas fa-list"></i> ප්‍රතිඵල <span class="badge" id="resultCount">0</span></h2><div class="mini" style="margin-bottom:10px">සෙවීමට අවැසි අංකය ටයිප් කල සැණින් ඔබ ඉහතින් තෝරා ඇති කාල සීමව ඇතුලත ඇති එම අංකය ඇදුණු දිනය, වාරය, හා එම අංකය ක්ෂණිකව පෙරා පෙන්වන ප්‍රභල සෙවුම් යන්ත්‍රයකි.</div>
     <div id="searchResults" class="result-list"></div>
   </div>
 </section>
 
 <section class="tab-content" id="tab-analytics">
   <div class="card glass wide" style="margin-bottom:15px">
-    <h2><i class="fas fa-fire"></i> 00–99 Frequency Heatmap <span class="mini" style="margin-left:auto">තද වර්ණ = වැඩි frequency</span></h2>
+    <h2><i class="fas fa-fire"></i> 00–99 තාප මාපකය <span class="mini" style="margin-left:auto">තද වර්ණ = වැඩි frequency</span></h2>
     <div class="heatwrap"><div id="heatmap" class="heat"></div></div>
     <div class="legend"><span>අඩු</span><div class="gradient"></div><span>වැඩි</span></div>
   </div>
@@ -233,14 +233,14 @@ canvas{max-height:300px}
     <div class="card glass"><h2><i class="fas fa-chart-bar"></i> අග ඉලක්කම් 0–9</h2><div id="digitBars" class="rows"></div></div>
     <div class="card glass"><h2><i class="fas fa-layer-group"></i> 10-අංක කලාප</h2><div id="rangeBars" class="rows"></div></div>
     <div class="card glass wide"><h2><i class="fas fa-chart-line"></i> 7 / 14 / 30 / 60 Draw Trend</h2><canvas id="trendChart"></canvas></div>
-    <div class="card glass"><h2><i class="fas fa-calendar-week"></i> Weekday Analysis</h2><div id="weekdayBars" class="rows"></div></div>
-    <div class="card glass"><h2><i class="fas fa-balance-scale"></i> Odd / Even & High / Low</h2><div id="balanceBars" class="rows"></div></div>
+    <div class="card glass"><h2><i class="fas fa-calendar-week"></i> සති විමසුම</h2><div id="weekdayBars" class="rows"></div></div>
+    <div class="card glass"><h2><i class="fas fa-balance-scale"></i> ඔත්තේ ඉරට්ටේ සහ අඩු වැඩි</h2><div id="balanceBars" class="rows"></div></div>
   </div>
 </section>
 
 <section class="tab-content" id="tab-numbers">
   <div class="card glass">
-    <h2><i class="fas fa-search-plus"></i> Number Explorer</h2>
+    <h2><i class="fas fa-search-plus"></i>අංකයක් විමර්ෂණය</h2>
     <div class="searchbar" style="margin-bottom:12px">
       <input id="numberExplorerInput" type="text" inputmode="numeric" maxlength="2" placeholder="00–99">
       <button class="btn btn-primary" id="exploreBtn"><i class="fas fa-magnifying-glass"></i> බලන්න</button>
@@ -248,7 +248,7 @@ canvas{max-height:300px}
     <div id="numberExplorer"></div>
   </div>
   <div class="card glass feedback">
-    <h2><i class="fas fa-balance-scale"></i> Number Compare</h2>
+    <h2><i class="fas fa-balance-scale"></i> අංක සැසදුම</h2>
     <div class="compare">
       <div class="comparebox"><input id="compareA" type="text" inputmode="numeric" maxlength="2" value="27"></div>
       <div style="font-size:22px;color:var(--gold)">VS</div>
@@ -261,8 +261,8 @@ canvas{max-height:300px}
 
 <section class="tab-content" id="tab-patterns">
   <div class="grid">
-    <div class="card glass"><h2><i class="fas fa-clock"></i> Current Gap / Overdue View</h2><div id="gapList" class="list"></div></div>
-    <div class="card glass"><h2><i class="fas fa-retweet"></i> Reverse Pairs</h2><div id="reversePairs" class="list"></div></div>
+    <div class="card glass"><h2><i class="fas fa-clock"></i> නොඇදුනු අංක නොඇදුනු කාලය</h2><div id="gapList" class="list"></div></div>
+    <div class="card glass"><h2><i class="fas fa-retweet"></i> දෙපැත්ත මාරුවීම්</h2><div id="reversePairs" class="list"></div></div>
     <div class="card glass"><h2><i class="fas fa-link"></i> Consecutive / Repeat</h2><div id="patternSummary"></div></div>
     <div class="card glass"><h2><i class="fas fa-calculator"></i> Digit Sum Distribution</h2><div id="sumBars" class="rows"></div></div>
     <div class="card glass wide"><h2><i class="fas fa-calendar-check"></i> දිනයේ අග 2 = ජය අංකයේ අග 2</h2><div id="dateMatch"></div></div>
