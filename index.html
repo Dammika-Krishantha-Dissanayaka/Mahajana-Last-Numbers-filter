@@ -104,7 +104,7 @@ button{font-family:inherit;cursor:pointer}
 .compareline{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}.compareline:last-child{border:0}
 .result-list{max-height:500px;overflow:auto}
 .result{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin-bottom:7px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.04)}
-.result .big{font-size:24px;font-weight:800;color:var(--green);letter-spacing:.5px}.last2{color:#ffd166;font-weight:900;text-shadow:0 0 12px rgba(255,209,102,.25)}.search-highlight{display:inline-block;padding:0 4px;border:1px solid #ffd166;border-radius:6px;line-height:1.05}.date-pink{color:#ffb6c9;font-size:16px;font-weight:800;letter-spacing:.2px}.letter-box{display:inline-grid;place-items:center;width:38px;height:38px;margin-right:9px;border-radius:9px;background:linear-gradient(135deg,#1769d2,#0d3e83);color:#fff;font-size:22px;font-weight:900;vertical-align:middle;box-shadow:0 6px 18px rgba(23,105,210,.25)}
+.result .big{font-size:24px;font-weight:800;color:var(--green);letter-spacing:.5px}.last2{color:#ffd166;font-weight:900;text-shadow:0 0 12px rgba(255,209,102,.25)}.search-highlight{display:inline-block;padding:0 4px;border:1px solid #ffd166;border-radius:6px;line-height:1.05}.date-pink{color:#ffb6c9;font-size:16px;font-weight:800;letter-spacing:.2px}.letter-box{display:inline;margin-right:9px;color:#fff;font-size:22px;font-weight:900;vertical-align:middle;background:none;border:0;box-shadow:none}
 .empty{text-align:center;padding:35px 15px;color:var(--muted)}.empty i{font-size:35px;opacity:.25;margin-bottom:10px}
 .loading{text-align:center;padding:45px;color:var(--muted)}.loading i{font-size:30px;color:var(--blue)}
 canvas{max-height:300px}
@@ -142,7 +142,7 @@ canvas{max-height:300px}
   <div class="logo"><i class="fas fa-chart-line"></i></div>
   <div>
     <h1>මහජන සම්පත පසුගිය අංක බැලීම හා විශ්ලේෂණ පසු විපරම</h1>
-    <h1><small>Historical Search • Statistics • Patterns • Trends</small></h1>
+    <h1><small>නීති විරොධී කටයුතු සදහා යොදා නොගන්න</small></h1>
   </div>
   <div style="margin-left:auto;text-align:right">
     <div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:800;letter-spacing:.4px;color:#ffd166">KRISHAN LOTTERY SYSTEM</div>
@@ -371,7 +371,7 @@ function renderWinningNumber(n, digits=2, boxed=false){
  const value=cleanNumber(n);
  if(!value)return "—";
 
- // Separate the leading letter (E/U/B/D/S...) into its own box.
+ // Separate the leading letter (E/U/B/D/S...) as bold text only — no box.
  const first = /^[A-Za-z]/.test(value) ? value.charAt(0) : "";
  const body = first ? value.slice(1) : value;
  const count=Math.min(Math.max(Number(digits)||2,1),2);
