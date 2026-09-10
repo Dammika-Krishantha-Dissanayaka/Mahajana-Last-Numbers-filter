@@ -113,6 +113,17 @@ canvas{max-height:300px}
 .feedback{margin-top:15px}.feedback textarea{width:100%;min-height:90px;background:rgba(255,255,255,.045);border:1px solid var(--line);color:white;border-radius:15px;padding:12px;font-family:inherit;resize:vertical}
 .footer{text-align:center;color:rgba(255,255,255,.25);font-size:11px;padding:20px}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.wide{grid-column:auto}}
+
+.date-full-search-card{margin-bottom:15px}
+.date-full-search-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.date-full-search-row label{color:#9fd5ff;font-weight:800;font-size:13px}
+.date-full-search-row input[type=date]{min-width:180px;font-size:15px;font-weight:700}
+.fullnumber-date-result{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,rgba(77,163,255,.10),rgba(101,230,173,.07));border:1px solid rgba(77,163,255,.20)}
+.fullnumber-date-result .result-label{color:var(--muted);font-size:11px;font-weight:700;margin-bottom:4px}
+.fullnumber-date-result .full-number-value{font-size:32px;font-weight:900;letter-spacing:1px;color:var(--green);line-height:1.15}
+.fullnumber-date-result .draw-value{color:var(--gold);font-size:13px;font-weight:800;margin-top:5px}
+.fullnumber-date-empty{text-align:center;padding:18px;border-radius:16px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.13);color:#ffb0b0}
+@media(max-width:600px){.date-full-search-row{align-items:stretch}.date-full-search-row label{width:100%}.date-full-search-row input[type=date],.date-full-search-row button{width:100%;min-width:0}.fullnumber-date-result{flex-direction:column;align-items:flex-start}.fullnumber-date-result .full-number-value{font-size:28px}}
 @media(max-width:600px){body{padding:10px}.header{padding:15px;flex-wrap:wrap}.header h1{font-size:19px}.logo{width:48px;height:48px}.header>div:last-child{width:100%;margin-left:0!important;text-align:left!important}.stats{grid-template-columns:repeat(2,1fr)}.controls{border-radius:18px}.compare{grid-template-columns:1fr}.compare>div:nth-child(2){display:none}.two{grid-template-columns:1fr}.tabs{overflow:auto}.tab{white-space:nowrap;padding:10px 14px}}
 
 .market-tab{background:linear-gradient(135deg,rgba(101,230,173,.10),rgba(77,163,255,.10))}
@@ -216,6 +227,19 @@ canvas{max-height:300px}
     <button class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> සොයන්න</button>
     <button class="btn" id="clearSearch"><i class="fas fa-times"></i></button>
   </div>
+
+  <div class="card glass date-full-search-card">
+    <h2><i class="far fa-calendar-check"></i> දිනය අනුව මහජන සම්පත ප්‍රතිඵලය සොයන්න</h2>
+    <div class="mini" style="margin-bottom:12px">දිනයක් තෝරන්න. Firebase හි <b>mahajana_results</b> collection එකෙන් එම දිනයට අදාළ <b>fullNumber</b> එක සෘජුව සොයා පෙන්වයි.</div>
+    <div class="date-full-search-row">
+      <label for="fullNumberDateSearch"><i class="far fa-calendar-alt"></i> දිනය</label>
+      <input id="fullNumberDateSearch" type="date">
+      <button class="btn btn-primary" id="fullNumberDateSearchBtn"><i class="fas fa-search"></i> දිනය අනුව සොයන්න</button>
+      <button class="btn" id="fullNumberDateTodayBtn"><i class="fas fa-calendar-day"></i> අද</button>
+    </div>
+    <div id="fullNumberDateSearchResult" style="margin-top:14px"></div>
+  </div>
+
   <div class="card glass">
     <h2><i class="fas fa-list"></i> ප්‍රතිඵල <span class="badge" id="resultCount">0</span></h2><div class="mini" style="margin-bottom:10px">සෙවීමට අවැසි අංකය ටයිප් කල සැණින් ඔබ ඉහතින් තෝරා ඇති කාල සීමව ඇතුලත ඇති එම අංකය ඇදුණු දිනය, වාරය, හා එම අංකය ක්ෂණිකව පෙරා පෙන්වන ප්‍රභල සෙවුම් යන්ත්‍රයකි.</div>
     <div id="searchResults" class="result-list"></div>
@@ -652,6 +676,63 @@ function renderSearch(){
 }
 
 /* =========================
+   DATE → FULL NUMBER SEARCH
+   ========================= */
+async function searchFullNumberByDate(){
+  const dateStr=$("fullNumberDateSearch").value;
+  const box=$("fullNumberDateSearchResult");
+  if(!dateStr){
+    box.innerHTML=`<div class="error">කරුණාකර සොයන්න අවශ්‍ය දිනය තෝරන්න.</div>`;
+    return;
+  }
+
+  box.innerHTML=`<div class="loading" style="padding:22px"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:8px">Firebase වෙතින් ප්‍රතිඵලය සොයමින්...</p></div>`;
+
+  try{
+    // Query the mahajana_results collection for the selected calendar day.
+    // Firestore date is stored as a Timestamp, so use the day's start/end range.
+    const start=new Date(dateStr+"T00:00:00");
+    const end=new Date(dateStr+"T23:59:59.999");
+    const snap=await db.collection(COLLECTION)
+      .where("date",">=",start)
+      .where("date","<=",end)
+      .get();
+
+    const rows=[];
+    snap.forEach(doc=>{
+      const d=doc.data();
+      const full=cleanNumber(d.fullNumber);
+      if(full) rows.push({
+        id:doc.id,
+        fullNumber:full,
+        numberId:d.id??"",
+        date:dateObj(d.date)
+      });
+    });
+
+    rows.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+
+    if(!rows.length){
+      box.innerHTML=`<div class="fullnumber-date-empty"><i class="fas fa-calendar-xmark"></i><br><b>${esc(dateStr)}</b> සඳහා mahajana_results තුළ fullNumber ප්‍රතිඵලයක් හමු නොවීය.</div>`;
+      return;
+    }
+
+    box.innerHTML=rows.map(r=>`
+      <div class="fullnumber-date-result">
+        <div>
+          <div class="result-label">${esc(dateStr)} • මහජන සම්පත FullNumber</div>
+          <div class="full-number-value">${renderWinningNumber(r.fullNumber,2,false)}</div>
+          <div class="draw-value">Draw / වාර අංකය: ${esc(r.numberId || r.id || "—")}</div>
+        </div>
+        <span class="pill green"><i class="fas fa-database"></i> Firebase</span>
+      </div>`).join("");
+  }catch(err){
+    console.error(err);
+    box.innerHTML=`<div class="error">ප්‍රතිඵලය සෙවීමේදී දෝෂයක් ඇතිවිය: ${esc(err.message)}</div>`;
+  }
+}
+
+/* =========================
    NUMBER EXPLORER
    ========================= */
 function numberInfo(num,data,s){
@@ -842,6 +923,13 @@ $("resetRange").addEventListener("click",()=>applyRange("all"));
 $("searchBtn").addEventListener("click",renderSearch);
 $("clearSearch").addEventListener("click",()=>{$("searchInput").value="";renderSearch()});
 $("searchInput").addEventListener("input",()=>{clearTimeout(window.__searchTimer);window.__searchTimer=setTimeout(renderSearch,250)});
+$("fullNumberDateSearchBtn").addEventListener("click",searchFullNumberByDate);
+$("fullNumberDateTodayBtn").addEventListener("click",()=>{
+  const d=new Date();
+  $("fullNumberDateSearch").value=dayKey(d);
+  searchFullNumberByDate();
+});
+$("fullNumberDateSearch").addEventListener("change",searchFullNumberByDate);
 $("exploreBtn").addEventListener("click",()=>explore($("numberExplorerInput").value));
 $("numberExplorerInput").addEventListener("keypress",e=>{if(e.key==="Enter")explore(e.target.value)});
 $("compareBtn").addEventListener("click",compareNumbers);
