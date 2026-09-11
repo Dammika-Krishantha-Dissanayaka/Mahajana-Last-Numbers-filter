@@ -114,6 +114,33 @@ canvas{max-height:300px}
 .footer{text-align:center;color:rgba(255,255,255,.25);font-size:11px;padding:20px}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.wide{grid-column:auto}}
 
+
+.result-period-card{
+  display:flex;align-items:center;gap:14px;padding:15px 18px;margin-bottom:15px;
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(77,163,255,.12),rgba(101,230,173,.07));
+  border:1px solid rgba(77,163,255,.22);
+  box-shadow:0 12px 30px rgba(0,0,0,.16);
+}
+.result-period-icon{
+  width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+  background:rgba(77,163,255,.15);color:#72c1ff;font-size:19px;flex:0 0 auto;
+}
+.result-period-content{min-width:0;flex:1}
+.result-period-title{color:#8ecbff;font-size:12px;font-weight:900;margin-bottom:3px}
+.result-period-text{color:#edf5ff;font-size:14px;font-weight:700;line-height:1.55}
+.result-period-text strong{color:#65e6ad;font-weight:900}
+.result-period-badge{
+  flex:0 0 auto;padding:7px 11px;border-radius:20px;
+  background:rgba(101,230,173,.10);border:1px solid rgba(101,230,173,.18);
+  color:#8af0c4;font-size:12px;font-weight:900;white-space:nowrap
+}
+@media(max-width:600px){
+  .result-period-card{align-items:flex-start;padding:14px}
+  .result-period-badge{font-size:11px;padding:6px 9px}
+  .result-period-text{font-size:13px}
+}
+
 .date-full-search-card{margin-bottom:15px}
 .date-full-search-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .date-full-search-row label{color:#9fd5ff;font-weight:800;font-size:13px}
@@ -222,6 +249,16 @@ canvas{max-height:300px}
 </section>
 
 <section class="tab-content" id="tab-search">
+
+  <div class="result-period-card glass" id="resultPeriodCard">
+    <div class="result-period-icon"><i class="fas fa-database"></i></div>
+    <div class="result-period-content">
+      <div class="result-period-title">ප්‍රතිපල කාල සීමාව</div>
+      <div class="result-period-text" id="resultPeriodText">ප්‍රතිපල දත්ත පූරණය වෙමින්...</div>
+    </div>
+    <div class="result-period-badge" id="resultPeriodDays">-- දින</div>
+  </div>
+
   <div class="searchbar glass">
     <input id="searchInput" type="text" inputmode="numeric" maxlength="20" placeholder="අග අංක 1ක් හෝ 2ක් ටයිප් කරන්න">
     <button class="btn btn-primary" id="searchBtn"><i class="fas fa-search"></i> සොයන්න</button>
@@ -453,6 +490,7 @@ async function fetchData(mode="all"){
    allDocs.push({id:doc.id,fullNumber:cleanNumber(d.fullNumber),numberId:d.id??"",date});
   });
   allDocs.sort((a,b)=>(b.date?.getTime()||0)-(a.date?.getTime()||0));
+   renderResultPeriodInfo(allDocs);
   $("dataInfo").textContent=`${allDocs.length.toLocaleString()} records loaded`;
   renderAll();
   $("loading").style.display="none";
@@ -509,6 +547,26 @@ function stats(data){
 /* =========================
    OVERVIEW
    ========================= */
+
+function renderResultPeriodInfo(data){
+  const box=$("resultPeriodText"), badge=$("resultPeriodDays");
+  if(!box || !badge)return;
+  const rows=(data||[]).filter(x=>x && x.date);
+  if(!rows.length){
+    box.textContent="ප්‍රතිපල දත්ත නොමැත.";
+    badge.textContent="0 දින";
+    return;
+  }
+  const dates=rows.map(x=>x.date).sort((a,b)=>a-b);
+  const first=dates[0], last=dates[dates.length-1];
+  const firstDay=new Date(first.getFullYear(),first.getMonth(),first.getDate());
+  const lastDay=new Date(last.getFullYear(),last.getMonth(),last.getDate());
+  const dayCount=Math.floor((lastDay-firstDay)/86400000)+1;
+  box.innerHTML=`<strong>${niceDate(first)}</strong> සිට <strong>${niceDate(last)}</strong> දක්වා
+    <span>ප්‍රතිපල මෙහි අඩංගු ඇත.</span>`;
+  badge.textContent=`${dayCount.toLocaleString()} දින`;
+}
+
 function renderOverview(data,s){
  const sorted=Array.from({length:100},(_,i)=>i).sort((a,b)=>s.freq2[b]-s.freq2[a]);
  const hot=sorted.slice(0,10), cold=Array.from({length:100},(_,i)=>i).sort((a,b)=>s.freq2[a]-s.freq2[b]).slice(0,10);
